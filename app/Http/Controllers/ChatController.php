@@ -25,6 +25,11 @@ class ChatController extends Controller
             return back();
         }
         
+        DB::table('ReminderTbl')->where([
+            'UserId'=>auth()->user()->Id,
+            'Link'=>"/chat/".$chall->Id])
+            ->update(['Seen'=>1]);
+
         if(!$chall->Chat()->exists())
         $chat=DB::table('InterviewChallChatTbl')->insertGetId(['ChallUserId'=>$chall->Id,'Sender'=>auth()->user()->Id,'Resiver'=>auth()->user()->SupportId??auth()->user()->SellerId]);
         if(!$chall->Chat->Closed)
@@ -33,7 +38,7 @@ class ChatController extends Controller
         ->where('Resiver',auth()->user()->Id)
         ->where('Seen',0)
         ->update(['Seen'=>1]);
-
+        
         $EventController=new EventController();
         $EventController->ChallengeChatSeen($chall->Chat->Id,$chall->Chat->Resiver);
 
@@ -74,6 +79,12 @@ class ChatController extends Controller
         DB::table('InterviewChallMsgTbl')->where('ChatId',$chat->Id)
         ->where('Resiver',$req->Resiver)
         ->update(['Seen'=>1]);
+        
+        DB::table('ReminderTbl')->where([
+            'UserId'=>auth()->user()->Id,
+            'Link'=>"/chat/".$chat->ChallUserId])
+            ->update(['Seen'=>1]);
+
         $EventController=new EventController();
         $EventController->ChallengeChatSeen($chat->Id,$chat->Resiver);
          return response()->json(['success'=>1]);

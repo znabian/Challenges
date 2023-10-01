@@ -18,13 +18,20 @@ class NotifController extends Controller
         { 
             $data->url="/chat/".$data->ChatId;
         }
-        DB::table('ReminderTbl')->insert([
+       /* DB::table('ReminderTbl')->insert([
             'UserId'=>$data->ResiverId,
             'Body'=>$data->Body,
             'Link'=>$data->url,
             'Seen'=>0,
             'Date'=>$data->Date,
-        ]);
+        ]);*/
+        DB::table('ReminderTbl')->updateOrInsert([
+            'UserId'=>$data->ResiverId,
+            'Body'=>$data->Body,
+            'Link'=>$data->url],
+            ['Seen'=>0,
+            'Date'=>$data->Date,
+            ]);
         return 1;
         
     }
