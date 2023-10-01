@@ -1,0 +1,66 @@
+@import url(font.css);
+body
+{
+ font-family: 'PEYDA-EXTRABOLD','Peyda',system-ui;
+ direction: rtl;
+ background-color: #3B407A ;
+}
+.pull-left
+{
+    float: left;
+}
+.pull-rigth
+{
+    float: right;
+}
+.mr-auto
+{
+    margin-right: auto;
+}
+.content-center
+{
+    display: block;
+    margin: 0 auto;
+    width: 40px;
+    height: 40px;
+}
+.bold
+{
+    font-weight: 500;
+}
+.ltr
+{
+    direction: ltr!important;
+}
+.rtl
+{
+    direction: rtl!important;
+}
+.bg-2F3068 
+{
+    background-color: #2F3068 ;
+}
+.text-left
+{
+    text-align: left;
+}
+/* .text-right
+{
+    text-align: right;
+} */
+.number
+{
+    font-family: 'Vazir';
+}
+.text-3b407a
+{
+    color: #3b407a;
+}
+.c-pointer
+{
+    cursor: pointer;
+}
+.c-pointer[disabled]
+{
+    cursor: not-allowed!important;
+}

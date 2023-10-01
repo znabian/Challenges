@@ -1,0 +1,53 @@
+@font-face {
+  font-family: Peyda;
+  src: url(../fonts/Peyda-Medium.woff);
+  font-weight: normal;
+}
+@font-face {
+  font-family: PeydaB;
+  src: url(../fonts/Peyda-Bold.woff);
+  font-weight: bold;
+}
+@font-face {
+  font-family: PEYDA-BLACK;
+  src: url(../fonts/peyda/PEYDA-BLACK.TTF);
+}
+@font-face {
+  font-family: PEYDA-BOLD;
+  src: url(../fonts/peyda/PEYDA-BOLD.TTF);
+}
+@font-face {
+  font-family: PEYDA-EXTRABOLD;
+  src: url(../fonts/peyda/PEYDA-EXTRABOLD.TTF);
+}
+/*@font-face {
+  font-family: PEYDA-EXTRALIGHT;
+  src: url(../fonts/peyda/PEYDA-EXTRALIGHT.TTF);
+}
+@font-face {
+  font-family: PEYDA-LIGHT;
+  src: url(../fonts/peyda/PEYDA-LIGHT.TTF);
+}
+@font-face {
+  font-family: PEYDA-MEDIUM;
+  src: url(../fonts/peyda/PEYDA-MEDIUM.TTF);
+}
+@font-face {
+  font-family: PEYDA-REGULAR;
+  src: url(../fonts/peyda/PEYDA-REGULAR.TTF);
+}
+@font-face {
+  font-family: PEYDA-SEMIBOLD;
+  src: url(../fonts/peyda/PEYDA-SEMIBOLD.TTF);
+}
+@font-face {
+  font-family: PEYDA-THIN;
+  src: url(../fonts/peyda/PEYDA-THIN.TTF);
+}*/
+@font-face {
+  font-family: Vazir;
+  src: url(../fonts/Vazir.eot);
+  src: url(../fonts/Vazir.eot?#iefix) format('embedded-opentype'),
+       url(../fonts/Vazir.ttf) format('truetype'),
+       url(../fonts/Vazir.woff) format('woff');
+}
