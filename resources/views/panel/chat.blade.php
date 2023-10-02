@@ -113,6 +113,25 @@
           display: inline-flex;
           flex-direction: row-reverse;
         }
+        .emoji {
+          display: inline-block;
+          font-size: 10pt;
+          margin: 5px;
+          cursor: pointer;
+        }
+        #emojiBox {
+            width: 190px;
+            height: 120px;
+            border: 1px solid #d0d1df91;
+            overflow-y: scroll;
+            background-color: #d0d1df91;
+            border-radius: 6px;
+            position: relative;   
+            bottom: 25%;
+            right: 5%;
+            padding: 8px;
+            padding-right:10px;
+        }
     </style>
 @endsection
 @section('content')
@@ -193,8 +212,9 @@
 @else
 <div class="col-md-12 sendbox d-flex">
   <div class="d-flex " style="border-radius:  0px 25px 25px 0;background-color: #ffffffc2;">
-  <button class="btn fa fa-paperclip" style="color:#f83673;border:none;"  onclick="fileatt.click()"></button>
-  </div>
+  <button class="btn fa fa-paperclip" style="color:#f83673;border:none;"  onclick="emojiBox.classList.add('d-none');fileatt.click()"></button>
+  <button class="btn fa fa-regular fa-smile-beam" style="color:#f83673;border:none;" onclick="emojiBox.classList.toggle('d-none')"></button>
+</div>
   <textarea name="" id="msgtxt" rows="2" class="col-md-9 form-control" style="background-color: #ffffffc2;font-size: 9pt;border: none;border-radius: 0; resize: none;" placeholder="متن پیام"></textarea>
   <div class="d-flex flex-row-reverse" style="border-radius: 25px 0px 0 25px;background-color: #ffffffc2;">
     <button class="fa fa-paper-plane btn "  style="color:#f83673;border:none"  onclick="sendmsg(this)"></button>
@@ -202,10 +222,109 @@
     <input type="file" name="" id="fileatt" onchange="showprewview(this);" class="d-none" accept=".zip, .rar, .tar, .gz,.pdf">
   </div>
 </div>
-
-
 @endif
-
+<div id="emojiBox" class="d-none">
+  <div class="emoji">😉</div>
+  <div class="emoji">😀</div>
+  <div class="emoji">😊</div>
+  <div class="emoji">😇</div>
+  <div class="emoji">🙂</div>
+  <div class="emoji">🙃</div>  
+  <div class="emoji">😚</div>
+  <div class="emoji">😃</div>
+  <div class="emoji">😄</div>
+  <div class="emoji">😁</div>
+  <div class="emoji">😆</div>
+  <div class="emoji">😅</div>  
+  <div class="emoji">😂</div>
+  <div class="emoji">🤣</div>
+  <div class="emoji">😎</div>
+  <div class="emoji">😌</div>
+  <div class="emoji">😋</div>
+  <div class="emoji">😍</div>
+  <div class="emoji">🥰</div>
+  <div class="emoji">😗</div>
+  <div class="emoji">😙</div>
+  <div class="emoji">😘</div>
+  <div class="emoji">🤨</div>
+  <div class="emoji">🤔</div>
+  <div class="emoji">🤩</div>
+  <div class="emoji">😐</div>
+  <div class="emoji">😑</div>
+  <div class="emoji">😶</div>
+  <div class="emoji">😣</div>
+  <div class="emoji">😏</div>
+  <div class="emoji">🙄</div>
+  <div class="emoji">😥</div>
+  <div class="emoji">😮</div>
+  <div class="emoji">🤐</div>
+  <div class="emoji">😫</div>
+  <div class="emoji">😪</div>
+  <div class="emoji">😯</div>
+  <div class="emoji">🥱</div>
+  <div class="emoji">😴</div>
+  <div class="emoji">😛</div>
+  <div class="emoji">😜</div>
+  <div class="emoji">😝</div>
+  <div class="emoji">🤤</div>
+  <div class="emoji">😒</div>
+  <div class="emoji">😓</div>
+  <div class="emoji">😔</div>
+  <div class="emoji">😕</div>
+  <div class="emoji">🙁</div>
+  <div class="emoji">😖</div>
+  <div class="emoji">😞</div>
+  <div class="emoji">😤</div>
+  <div class="emoji">😟</div>
+  <div class="emoji">😢</div>
+  <div class="emoji">😭</div>
+  <div class="emoji">😲</div>
+  <div class="emoji">😦</div>
+  <div class="emoji">😨</div>
+  <div class="emoji">😰</div>
+  <div class="emoji">😱</div>
+  <div class="emoji">😬</div>
+  <div class="emoji">😳</div>
+  <div class="emoji">😠</div>
+  <div class="emoji">😡</div>
+  <div class="emoji">🤒</div>
+  <div class="emoji">🥺</div>
+  <div class="emoji">🤓</div>
+  <div class="emoji">😈</div>
+  <div class="emoji">👿</div>
+  <div class="emoji">💀</div>
+  <div class="emoji">🐵</div>
+  <div class="emoji">🙈</div>
+  <div class="emoji">🙉</div>
+  <div class="emoji">🙊</div>
+  <div class="emoji">👀</div>
+  <div class="emoji">👂</div>
+  <div class="emoji">💪</div>  
+  <div class="emoji">🌼</div>
+  <div class="emoji">🌻</div>
+  <div class="emoji">🌺</div>
+  <div class="emoji">🌸</div>
+  <div class="emoji">🌷</div>
+  <div class="emoji">🌹</div>
+  <div class="emoji">🍂</div>
+  <div class="emoji">💋</div>
+  <div class="emoji">💙</div>
+  <div class="emoji">👉</div>
+  <div class="emoji">👈</div>
+  <div class="emoji">👇</div>
+  <div class="emoji">☝</div>
+  <div class="emoji">👍</div>
+  <div class="emoji">👎</div>
+  <div class="emoji">🖐</div>
+  <div class="emoji">👋</div>
+  <div class="emoji">☝</div>
+  <div class="emoji">✌</div>
+  <div class="emoji">👌</div>
+  <div class="emoji">👏</div>
+  <div class="emoji">🙏</div>
+  <div class="emoji">🙌</div>
+  <div class="emoji">🤲</div>
+</div>
 <dialog id="dialogFile" style="height: unset">
   <div class="d-flex">
     <h6 class="col-11">ارسال فایل</h6>
@@ -239,6 +358,15 @@
   {
     chatBox.scrollTo( chatBox.scrollHeight, chatBox.scrollHeight); 
   });
+  chatBox.addEventListener('click', () => {emojiBox.classList.add('d-none'); });
+  const emojiButtons = document.querySelectorAll('.emoji');
+emojiButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const messageInput = document.querySelector('#msgtxt');
+    const emoji = button.textContent;
+    messageInput.value += emoji;
+  });
+});
 </script>
 <script>
     
@@ -292,6 +420,7 @@ var preSender=0;
     function sendmsg(obj,msgBox=0)
     {
       obj.disabled=true;
+      emojiBox.classList.add('d-none');
       var file=fileatt.files;
       if(msgBox)
       var msg=msg2.value;
