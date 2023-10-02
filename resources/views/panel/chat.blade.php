@@ -586,7 +586,7 @@ var preSender=0;
 @if(!$chall->Chat->Closed)
 @if(!$chall->Expired)
 <script>
-  const ably2 = new Ably.Realtime.Promise('900Xog.XhH1eQ:aV0Kdq_mJUTBt5KUsgQvHTdtjbUAaXHAkHvVanuuG9U');
+  const ably2 = new Ably.Realtime.Promise('fg8Z8w.tNJAiQ:J0hhzygP6hmd0TXqy8P-EqqAEQLVRhA-UZeXl8eBORQ');
     ably2.connection.once('connected');
   /* Rsive Message Channel*/
     var channel1 = ably2.channels.get('Challenge-Chat-Messages.'+ChatId+'_'+uId);
