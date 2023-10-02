@@ -460,7 +460,7 @@ var preSender=0;
                         title: 'پیام ارسال نشد',                        
                         confirmButtonText: 'بله',
                         //text:"{{auth()->user()->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                         html:"مشکلی پیش آمده است لطفا مجددا تلاش کنید<p><small> <br>  "+error.stack+"</small></p>",
+                         html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
 
                     });
          });

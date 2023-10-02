@@ -8,6 +8,17 @@
   max-width: 800px;
   margin: 0 auto;
 } */
+.btn-master {
+    border: 1px solid #5c6096!important;
+    border-radius: 5px!important;
+    color: #686da7!important;
+    padding: 5px!important;
+    width: fit-content!important;
+    font-size: 9pt!important;
+    display: block!important;
+    margin: 10px auto!important;
+    margin-bottom: 0!important;
+}
 #content {
             color: #fff;
             background-image: url("{{asset('img/details/back.png')}}");
@@ -186,6 +197,25 @@
         <div class="cardChall text-white">
           <div class="card-body">
             <p> {!!$chall->Chall->Body!!}</p>
+              @php
+                  $num=['first'=>'الف','second'=>'ب','third'=>'ج','forth'=>'د','fifth'=>'ه','sixth'=>'و'];
+                  $answers=json_decode($chall->Chall->Options??'[]');
+              @endphp
+            @if($answers)
+            <p class="row">
+              @foreach ($answers as $index=>$opt)
+                @if($index!='ans')
+                <label for="" class="col-6 d-inline-flex gap-1">
+                  <input type="radio" name="Answer" id="answer" @if($chall->َMyAnswer==("پاسخ این سوال  ".$opt." است")) checked  @endif @if($chall->Closed || $chall->Expired) disabled @endif value="{{$opt}}">
+                  {{$num[$index].') '.$opt}}
+                  </label> 
+                @endif  
+              @endforeach 
+              <button onclick="setAnswer()" class="btn btn-master">ثبت پاسخ</button>
+            </p>
+            @endif  
+                       
+            
           </div>
         </div>
         @endif
@@ -229,4 +259,71 @@
         <i class="fa fa-comments c-pointer" onclick="location.href='{{route('chat.index',[$chall->Id])}}'" ></i>
         <i class="fa fa-home c-pointer" onclick="location.href='{{route('home')}}'"></i>
     </div>
+    @endsection
+    @section('script')
+        <script>
+          function setAnswer()
+          {
+            const Expired={{$chall->Expired}};
+            const closed={{$chall->Chat->Closed??0}};
+            var useranswer=document.querySelector('input[type=radio]:checked');              
+
+            if(Expired || closed)
+            Swal.fire({
+                icon: 'error',
+                title: 'توجه',                
+                confirmButtonText: 'بله',
+                text:"{{auth()->user()->FullName}} \n زمان ارسال پاسخ این چالش گذشته "
+            });
+            else
+            {
+              if(useranswer)
+              {
+                Swal.fire({
+                title:"صبر کن ...",
+                html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
+                icon:'info',
+                allowOutsideClick:false,
+                showConfirmButton:false,
+              });
+                axios.post('{{route("chall.answer")}}', {chall:'{{$chall->Id}}',answer:useranswer.value})
+                  .then(response => { 
+                    if(response.data.success)
+                        Swal.fire({
+                                  icon: 'success',                      
+                                  confirmButtonText: 'بله',
+                                  html:response.data.msg,
+                              });
+                    else
+                        Swal.fire({
+                                  icon: 'error',                      
+                                  confirmButtonText: 'بله',
+                                  html:response.data.msg,
+                              });
+                    })
+                  .catch(error => {
+                      console.log(error);
+                      Swal.fire({
+                                  icon: 'error',
+                                  title: 'خطا',                        
+                                  confirmButtonText: 'بله',
+                                  //text:"{{auth()->user()->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                                  html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+
+                              });
+                  });
+                }
+              else
+              {
+                Swal.fire({
+                icon: 'error',
+                title: 'توجه',                
+                confirmButtonText: 'بله',
+                text:"{{auth()->user()->FullName}} \n یه گزینه انتخاب کن "
+                 });
+              }
+            }
+              
+          }
+        </script>
     @endsection

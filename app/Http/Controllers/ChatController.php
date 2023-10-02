@@ -132,4 +132,41 @@ class ChatController extends Controller
         
     }
     
+    public function ajaxSetAnswer(Request $req)
+    {      
+       $chall=InterviewChallUser::find($req->chall);
+        if($chall->UserId!=auth()->user()->Id)
+        return response()->json(['success'=>0,'msg'=>"چالشی پیدا نکردم"]);
+
+        if(date('Y-m-d',strtotime($chall->Date))>date('Y-m-d'))
+        return response()->json(['success'=>0,'msg'=>"چالشی پیدا نکردم"]);
+        if(!$chall->Chat()->exists() && $chall->Expired)
+        return response()->json(['success'=>0,'msg'=>"زمان چالشت تموم شده"]);
+        
+
+        if(!$chall->Chat()->exists())
+        $chat=DB::table('InterviewChallChatTbl')->insertGetId(['ChallUserId'=>$chall->Id,'Sender'=>auth()->user()->Id,'Resiver'=>auth()->user()->SupportId??auth()->user()->SellerId]);
+        $Body="پاسخ این سوال  ".$req->answer." است";
+        
+        if(!$chall->Chat->MSG()->where("Body",'like',"%$Body%")->exists())
+        {
+        $chatId=DB::table('InterviewChallMsgTbl')->insertGetId(['ChatId'=>$chall->Chat->Id,'Sender'=>$chall->Chat->Sender,'Resiver'=>$chall->Chat->Resiver,'Body'=>$Body,"Seen"=>0]);
+        $msg=InterviewChallMsg::find($chatId);   
+        }
+        else
+        {
+            $msg=$chall->Chat->MSG()->where("Body",'like',"%$Body%")->first();
+            
+        }
+        DB::table('InterviewChallUserTbl')->where('Id',$chall->Id)->update(['Answer'=>$msg->Id]);
+            $logo=$msg->SenderUser->Logo??asset('dist/img/Logored.png');                    
+            $EventController=new EventController();
+            if(jdate($msg->Date)->format('Y-m-d')==jdate()->format('Y-m-d'))
+            $date2="امروز";
+            else
+            $date2=jdate($msg->Date)->format('d F');
+            $EventController->ChallengeChat($chall->Chat->Id,$msg->Id,$msg->Resiver,$msg->Sender,$msg->Body??null,'',$msg->SenderUser->FullName,$msg->ResiverUser->FullName,jdate($msg->Date)->format('Y-m-d H:i:s'),$date2,jdate($msg->Date)->format('H:i:s'),$logo);
+
+        return response()->json(['success'=>1,'msg'=>"جوابت ثبت شد"]);
+    }
 }
