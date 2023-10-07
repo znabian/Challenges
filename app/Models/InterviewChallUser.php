@@ -47,5 +47,9 @@ class InterviewChallUser extends Model
     {
         return $this->attributes['txtStatus'] = $this->GetStatus($this->Status);
     }
+    public function getَMyAnswerAttribute()
+    {
+        return $this->attributes['َMyAnswer'] = $this->Chat->MSG()->find($this->Answer)->Body??'';
+    }
 
 }

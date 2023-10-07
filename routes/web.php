@@ -29,6 +29,7 @@ Route::post('/notifications/ajax',[NotifController::class,'ajaxNotif'])->name('n
 Route::get('/history',[PanelController::class,'history'])->name('history');
 Route::get('/details/{chall}',[PanelController::class,'details'])->name('chall.details');
 Route::post('/challdetails',[ChatController::class,'ajaxDetailes'])->name('chall.get');
+Route::post('/chall-answer',[ChatController::class,'ajaxSetAnswer'])->name('chall.answer');
 Route::prefix('/chat')->group(function () {
     Route::get('/{chall}',[ChatController::class,'index'])->name('chat.index');
     Route::post('/send_message', [ChatController::class,'send_message'])->name('chat.send');
