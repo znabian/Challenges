@@ -120,7 +120,11 @@
                     /* margin-top: 6px; */
                 }
         /* } */
-        
+        .imgicon {
+            width: 75px;
+            height: 80px;
+            border-radius: 11px;
+        }
     </style>
 @endsection
 @section('content')   
@@ -131,8 +135,12 @@
             <div class="card mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
                 <div class="card-body">
                     <div class="row d-flex">
-                        <div class="col-1 m-auto" >                                
-                                <span class="circle">{{$item->Chall->Level}}</span>
+                        <div class="col-2 m-auto" >  
+                            @if(in_array($item->Chall->Type??'text',['image','audio','text']))                              
+                               <img src="{{asset('img/home/'.$item->Chall->Type.'.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
+                            @else
+                            <img src="{{asset('img/home/text.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
+                            @endif
                         </div>
                         <div class="col d-flex flex-column pt-0" >
                             <div class="" style="margin-left: -2px;margin-top: -2px;">
