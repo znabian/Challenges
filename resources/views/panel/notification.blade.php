@@ -106,9 +106,9 @@
                 } 
                 .btn-master {
                     width: 45px!important;
-                    font-size: 8pt!important;
+                    /* font-size: 8pt!important; */
                     margin-left: 1px!important;
-                    margin-top: 6px;
+                    /* margin-top: 6px; */
                 }
         /* } */
         
@@ -122,7 +122,7 @@
     @endphp        
      @if($notifs->count())
             @foreach ($notifs as $item) 
-            <div class="card mt-2 p-md-3">
+            <div class="card mt-2 p-md-3" onclick="location.href='{{$item->Link}}'">
                 <div class="card-body">
                     <div class="row d-flex">
                         <div class="col-1 m-auto" >                                

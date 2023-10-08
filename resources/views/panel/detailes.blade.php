@@ -22,8 +22,8 @@
 #content {
             color: #fff;
             background-image: url("{{asset('img/details/back.png')}}");
-            /* background-attachment: fixed; */
-            background-attachment: scroll;
+            background-attachment: fixed;
+            /* background-attachment: scroll; */
             background-size: cover;
             background-repeat: repeat-y;
             /* background-repeat: no-repeat; */
@@ -48,7 +48,7 @@
     padding: 10px;
     justify-content: center;
     opacity: 0.7;
-    font-size: 9pt;
+    font-size: 15pt;
 }
 /* .row {
   margin-bottom: 20px;
@@ -206,12 +206,17 @@
               @foreach ($answers as $index=>$opt)
                 @if($index!='ans')
                 <label for="" class="col-6 d-inline-flex gap-1">
-                  <input type="radio" name="Answer" id="answer" @if($chall->َMyAnswer==("پاسخ این سوال  ".$opt." است")) checked  @endif @if($chall->Closed || $chall->Expired) disabled @endif value="{{$opt}}">
+                  @if($chall->Chat->Closed??0 || $chall->Expired) 
+                  <i @if($chall->َMyAnswer==("پاسخ این سوال  ".$opt." است")) class="fa fa-circle-check fa-regular my-auto " @else class="fa fa-circle fa-regular my-auto"  @endif ></i>
+                  @else 
+                  <input type="radio" name="Answer" id="answer" @if($chall->َMyAnswer==("پاسخ این سوال  ".$opt." است")) checked  @endif  value="{{$opt}}">                  
+                  @endif
                   {{$num[$index].') '.$opt}}
                   </label> 
                 @endif  
-              @endforeach 
-              <button onclick="setAnswer()" class="btn btn-master">ثبت پاسخ</button>
+              @endforeach                  
+                <button onclick="setAnswer()" class="btn btn-master mx-3 @if(($chall->Chat->Closed??0) ) d-none @endif">ثبت پاسخ</button>
+                
             </p>
             @endif  
                        

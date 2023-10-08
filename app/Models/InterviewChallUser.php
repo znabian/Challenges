@@ -49,7 +49,13 @@ class InterviewChallUser extends Model
     }
     public function getَMyAnswerAttribute()
     {
-        return $this->attributes['َMyAnswer'] = $this->Chat->MSG()->find($this->Answer)->Body??'';
+        if( $this->Chat()->exists())
+            if($this->Chat->MSG()->exists())
+            return $this->attributes['َMyAnswer'] = $this->Chat->MSG()->find($this->Answer)->Body??'';
+            else
+            return $this->attributes['َMyAnswer'] = null;
+        else
+        return $this->attributes['َMyAnswer'] = null;
     }
 
 }

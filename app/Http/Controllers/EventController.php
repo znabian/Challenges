@@ -12,7 +12,8 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    public $ABLY_KEY='fg8Z8w.tNJAiQ:J0hhzygP6hmd0TXqy8P-EqqAEQLVRhA-UZeXl8eBORQ';
+    public $ABLY_KEY='900Xog.XhH1eQ:aV0Kdq_mJUTBt5KUsgQvHTdtjbUAaXHAkHvVanuuG9U';
+    //public $ABLY_KEY='fg8Z8w.tNJAiQ:J0hhzygP6hmd0TXqy8P-EqqAEQLVRhA-UZeXl8eBORQ';
     public function ChallengeChat($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo) 
     {
         $a=new chatEvent($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo);

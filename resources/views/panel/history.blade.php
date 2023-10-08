@@ -115,9 +115,9 @@
                 } 
                 .btn-master {
                     width: 60px!important;
-                    font-size: 12pt!important;
+                    /* font-size: 12pt!important; */
                     margin-left: 1px!important;
-                    margin-top: 6px;
+                    /* margin-top: 6px; */
                 }
         /* } */
         
@@ -128,7 +128,7 @@
 <div id="content2" class="content2">             
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card mt-2 p-md-3">
+            <div class="card mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
                 <div class="card-body">
                     <div class="row d-flex">
                         <div class="col-1 m-auto" >                                

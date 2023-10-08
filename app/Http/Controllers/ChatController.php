@@ -143,11 +143,16 @@ class ChatController extends Controller
         if(!$chall->Chat()->exists() && $chall->Expired)
         return response()->json(['success'=>0,'msg'=>"زمان چالشت تموم شده"]);
         
+        if($chall->Chat->Closed??0)
+        return response()->json(['success'=>0,'msg'=>"چالشت بسته شده"]);
 
         if(!$chall->Chat()->exists())
         $chat=DB::table('InterviewChallChatTbl')->insertGetId(['ChallUserId'=>$chall->Id,'Sender'=>auth()->user()->Id,'Resiver'=>auth()->user()->SupportId??auth()->user()->SellerId]);
         $Body="پاسخ این سوال  ".$req->answer." است";
-        
+        if($chall->َMyAnswer==$Body)
+        {
+            return response()->json(['success'=>1,'msg'=>"جوابت ثبت شده بود"]);
+        }
         if(!$chall->Chat->MSG()->where("Body",'like',"%$Body%")->exists())
         {
         $chatId=DB::table('InterviewChallMsgTbl')->insertGetId(['ChatId'=>$chall->Chat->Id,'Sender'=>$chall->Chat->Sender,'Resiver'=>$chall->Chat->Resiver,'Body'=>$Body,"Seen"=>0]);
@@ -156,7 +161,7 @@ class ChatController extends Controller
         else
         {
             $msg=$chall->Chat->MSG()->where("Body",'like',"%$Body%")->first();
-            DB::table('InterviewChallMsgTbl')->where('Id',$msg->Id)->update(['Date'=>date('Y-m-d H:i:s')]);
+           // DB::table('InterviewChallMsgTbl')->where('Id',$msg->Id)->update(['Date'=>date('Y-m-d H:i:s')]);
             
         }
         DB::table('InterviewChallUserTbl')->where('Id',$chall->Id)->update(['Answer'=>$msg->Id]);
