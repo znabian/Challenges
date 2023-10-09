@@ -22,8 +22,8 @@
 #content {
             color: #fff;
             background-image: url("{{asset('img/details/back.png')}}");
-            background-attachment: fixed;
-            /* background-attachment: scroll; */
+            /* background-attachment: fixed; */
+            background-attachment: scroll;
             background-size: cover;
             background-repeat: repeat-y;
             /* background-repeat: no-repeat; */
@@ -82,7 +82,7 @@
 }
 .challFile{
     position: relative;
-    top: -67px;
+    top: -67px;    
 }
 .text-title {
     /* position: relative;
@@ -124,7 +124,7 @@
     font-family: Peyda;
 }
 
-..card-body p {
+.card-body p {
   /* line-height: 1.5; */
     line-height: 20px;
 }
@@ -174,9 +174,18 @@
     {
         left: 27%!important;
     } 
+    #content
+     {
+      background-attachment: fixed;
+    }
 }
 
 </style>
+@if($chall->Chall->Type=='audio')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel='stylesheet' href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css'>
+<link rel="stylesheet" href="{{asset('css/player.css')}}">
+@endif
 @section('content')   
 
     <div class="row">
@@ -233,8 +242,9 @@
           <source src="{{$chall->Chall->File}}" type="video/mp4">
         </video>
         @elseif($chall->Chall->Type=='audio')
-        <audio class="embed-responsive-16by9 challVideo" controlsList="nodownload" controls src="{{$chall->Chall->File}}" >
-        </audio>
+        {{-- <audio class="embed-responsive-16by9 challVideo" controlsList="nodownload" controls src="{{$chall->Chall->File}}" >
+        </audio> --}}
+        @include('panel.audioplayer') 
         @elseif($chall->Chall->Type=='image')
         <div class="d-inline-block">
             <img class="img-fluid challImg" src="{{$chall->Chall->File}}" alt="Image" >
@@ -266,6 +276,85 @@
     </div>
     @endsection
     @section('script')
+    @if($chall->Chall->Type=='audio')
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> --}}
+    {{-- <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script> --}}
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jplayer/2.6.4/jquery.jplayer/jquery.jplayer.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jplayer/2.6.4/add-on/jplayer.playlist.min.js'></script>
+
+
+<script>
+  $(document).ready(function(){
+
+
+var playlist = [{
+    title:"{{$chall->Chall->Title}}",
+    artist:"",
+    mp3:"{{$chall->Chall->File}}",
+    poster: "{{asset('img/login/pic.png')}}"
+  }];
+
+var cssSelector = {
+  jPlayer: "#jquery_jplayer",
+  cssSelectorAncestor: ".music-player"
+};
+
+var options = {
+  swfPath: "https://cdnjs.cloudflare.com/ajax/libs/jplayer/2.6.4/jquery.jplayer/Jplayer.swf",
+  supplied: "mp3",
+  volumechange: function(event) {
+    $( ".volume-level" ).slider("value", event.jPlayer.options.volume);
+  },
+  timeupdate: function(event) {
+    $( ".progress" ).slider("value", event.jPlayer.status.currentPercentAbsolute);
+  }
+};
+
+var myPlaylist = new jPlayerPlaylist(cssSelector, playlist, options);
+var PlayerData = $(cssSelector.jPlayer).data("jPlayer");
+
+
+// Create the volume slider control
+$( ".volume-level" ).slider({
+   animate: "fast",
+  max: 1,
+  range: "min",
+  step: 0.01,
+  value : $.jPlayer.prototype.options.volume,
+  slide: function(event, ui) {
+    $(cssSelector.jPlayer).jPlayer("option", "muted", false);
+    $(cssSelector.jPlayer).jPlayer("option", "volume", ui.value);
+  }
+});
+
+// Create the progress slider control
+$( ".progress" ).slider({
+  animate: "fast",
+  max: 100,
+  range: "min",
+  step: 0.1,
+  value : 0,
+  slide: function(event, ui) {
+    var sp = PlayerData.status.seekPercent;
+    if(sp > 0) {
+      // Move the play-head to the value and factor in the seek percent.
+      $(cssSelector.jPlayer).jPlayer("playHead", ui.value * (100 / sp));
+    } else {
+      // Create a timeout to reset this slider to zero.
+      setTimeout(function() {
+         $( ".progress" ).slider("value", 0);
+      }, 0);
+    }
+  }
+});
+
+
+});
+</script>
+@endif
         <script>
           function setAnswer()
           {
