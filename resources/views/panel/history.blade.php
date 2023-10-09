@@ -152,16 +152,16 @@
                                 <i class="fa fa-close pull-left status"></i>
                                 @endif
                             </div>
-                            <div class="d-flex gap-1 flex-column mx-4">                                
-                                <b class="h6" style="font-size: 15pt;">
+                            <div class="d-flex gap-1 flex-column mx-4" style="padding-right:15px;">                                
+                                <b class="h6" style="font-size: 12pt; line-height:0 !important;">
                                     {{$item->Chall->Title}}
                                 </b>
-                                <span style="font-family:Peyda;font-size: 8pt;font-weight: 100;">
+                                <span style="font-family:Peyda;font-size: 9pt;font-weight: 100;">
                                     {{ Str::limit($item->Chall->Body, 47, '...')}}
                                 </span>
                             </div> 
                             <div class="p-0">
-                                <button class="btn-master fa fa-arrow-left-long p-1 pull-left" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
+                                <button style="font-size: 9pt;" class="btn-master fa fa-arrow-left-long pull-left" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
                                 
                                 </button>
                             </div>

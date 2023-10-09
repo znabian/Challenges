@@ -106,7 +106,7 @@
                 } 
                 .btn-master {
                     width: 45px!important;
-                    /* font-size: 8pt!important; */
+                    font-size: 9pt!important;
                     margin-left: 1px!important;
                     /* margin-top: 6px; */
                 }
@@ -115,7 +115,7 @@
     </style>
 @endsection
 @section('content')   
-<h6 class="mb-3 bold text-center" style="font-size: 18pt">پیام های من</h6> 
+<h6 class="mb-3 bold text-center" style="font-size: 18pt; margin-bottom:0px !important; margin-top:-10px !important; ">پیام های من</h6> 
 <div id="content2" class="content2">     
     @php
         $notifs=auth()->user()->MyNotifs()->get();
@@ -125,7 +125,7 @@
             <div class="card mt-2 p-md-3" onclick="location.href='{{$item->Link}}'">
                 <div class="card-body">
                     <div class="row d-flex">
-                        <div class="col-1 m-auto" >                                
+                        <div class="col-1 m-auto" style="padding-right:5px !important;" >                               
                                 <span class="circle"><i class="fa fa-bell"></i></span>
                         </div>
                         <div class="col d-flex flex-column" >
@@ -136,7 +136,7 @@
                                 <i class="fa pull-left status"></i>
                                 @endif
                             </div>
-                            <div class="d-flex flex-column mx-4">                                
+                            <div class="d-flex gap-1 flex-column mx-4" style="padding-right:15px;">                            
                                 <span style="font-size: 8pt;">
                                     {!! $item->Body !!}
                                 </span>
@@ -148,7 +148,7 @@
                                 <span style="font-size: 7pt;font-weight: normal;color: #686da7;padding: 20px" class="pull-right">
                                     {!! jdate($item->Date)->format('d F - H:i:s')!!}
                                 </span>
-                                <button class="btn-master fa fa-arrow-left-long p-1 pull-left" onclick="location.href='{{$item->Link}}'">
+                                <button class="btn-master fa fa-arrow-left-long pull-left"  onclick="location.href='{{$item->Link}}'">
                                 
                                 </button>
                             </div>

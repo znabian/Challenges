@@ -22,8 +22,8 @@
 #content {
             color: #fff;
             background-image: url("{{asset('img/details/back.png')}}");
-            /* background-attachment: fixed; */
-            background-attachment: scroll;
+            background-attachment: fixed;
+            /* background-attachment: scroll; */
             background-size: cover;
             background-repeat: repeat-y;
             /* background-repeat: no-repeat; */
@@ -104,18 +104,18 @@
 
 .cardChall {
     width: 100%;
-    background: linear-gradient(230deg, #20234c, #373c74);
+    background: linear-gradient(230deg, #20234c, #373c7478);
     border-radius: 12px;
     /* padding: 5px 15px; */
     padding: 15px;
     /* width: 95%; */
     /* transform: translate(-40%, 0); */
     box-shadow: 0 0 5px -1px #2f346c;
-    font-size: 8pt;
+    font-size: 12pt;
     /* height: 23vh; */
     overflow: auto;
     font-family: Peyda;
-    line-height: 20px;
+    line-height: 25px;
     text-align: justify;
 }
 
@@ -200,10 +200,10 @@
     </div>
     <div class="row bodyChall">
       <div class="col-12">
-        <h1 class="text-right text-title">چالش</h1>
-        <h2 class=" text-subtitle">{{$chall->Chall->Title}}</h2>
+        <h1 class="text-right text-title" style="margin-top:-30px;">چالش</h1>
+        <h2 class=" text-subtitle"  >{{$chall->Chall->Title}}</h2>
         @if($chall->Chall->Body)
-        <div class="cardChall text-white">
+        <div class="cardChall text-white" style="margin-top:25px !important;">
           <div class="card-body">
             <p> {!!$chall->Chall->Body!!}</p>
               @php
@@ -236,7 +236,7 @@
       </div>
     </div>
     <div class="row ChallFile">
-      <div class="col-12">
+      <div class="mt-3 col-12">
         @if($chall->Chall->Type=='movie')
         <video class="challImg embed-responsive-16by9 challVideo" controlsList="nodownload" controls >
           <source src="{{$chall->Chall->File}}" type="video/mp4">

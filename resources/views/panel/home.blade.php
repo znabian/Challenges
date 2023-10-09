@@ -32,10 +32,10 @@
             border: unset;
             /* box-shadow: -5px 0px 9px -3px #d2d3e38f; */
             color: #fff;
-            padding: 10px;
+            /* padding: 10px; */
             font-weight: bolder;
             font-family: 'PEYDA-BLACK';
-            box-shadow: -5px 0px 9px -3px #d2d3e38f, 5px 5px 10px 0px #1c1e3c;
+            box-shadow: -5px 0px 7px -3px #d2d3e38f, 5px 5px 7px 0px #1c1e3c;
             margin-bottom: 30px;
         }
         .btn-master
@@ -75,11 +75,11 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                font-size:18px;   
+                font-size:13px;   
                 border: none;
                 font-weight: bolder;
-                width: 30px;
-                height: 30px;
+                width: 23px;
+                height: 23px;
             }
             i.status.fa-close
             {                
@@ -114,7 +114,7 @@
                 font-size: 10pt!important;
                 } 
                 .btn-master {
-                    width: 60px!important;
+                    width: 40px!important;
                     /* font-size: 12pt!important; */
                     margin-left: 1px!important;
                     /* margin-top: 6px; */
@@ -128,14 +128,14 @@
     </style>
 @endsection
 @section('content')   
-<h6 class="mb-3 bold text-center" style="font-size: 18pt">چالش های امروز</h6> 
+<h6 class="mb-3 bold text-center" style="font-size: 18pt; margin-bottom:0px !important; margin-top:-10px !important; ">چالش های امروز</h6> 
 <div id="content2" class="content2">             
      @if($challs->count())
             @foreach ($challs as $item) 
             <div class="card mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
                 <div class="card-body">
                     <div class="row d-flex">
-                        <div class="col-2 m-auto" >                                
+                        <div class="col-2 m-auto" style="padding-right:5px !important;" >                                
                             @if(in_array($item->Chall->Type??'text',['image','audio','text']))                              
                             <img src="{{asset('img/home/'.$item->Chall->Type.'.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
                             @else
@@ -152,16 +152,16 @@
                                 <i class="fa fa-close pull-left status"></i>
                                 @endif
                             </div>
-                            <div class="d-flex gap-1 flex-column mx-4">                                
-                                <b class="h6" style="font-size: 15pt;">
+                            <div class="d-flex gap-1 flex-column mx-4" style="padding-right:15px;">                                
+                                <b class="h6" style="font-size: 12pt; line-height:0 !important;">
                                     {{$item->Chall->Title}}
                                 </b>
-                                <span style="font-family:Peyda;font-size: 8pt;font-weight: 100;">
+                                <span style="font-family:Peyda;font-size: 9pt;font-weight: 100;">
                                     {{ Str::limit($item->Chall->Body, 47, '...')}}
                                 </span>
                             </div> 
                             <div class="p-0">
-                                <button class="btn-master fa fa-arrow-left-long p-1 pull-left" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
+                                <button style="font-size: 9pt;"  class="btn-master fa fa-arrow-left-long p-1 pull-left" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
                                 
                                 </button>
                             </div>
