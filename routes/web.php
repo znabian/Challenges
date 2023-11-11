@@ -22,7 +22,7 @@ Route::post('/forget',[LoginController::class,'forget'])->name('login.forget');
 
 Route::middleware('auth')->group(function () {
 Route::get('/',[PanelController::class,'index'])->name('home');
-Route::view('/notifications','panel.notification')->name('notif.index');
+Route::get('/notifications',[NotifController::class,'index'])->name('notif.index');
 Route::post('/notifications/reg',[NotifController::class,'insert'])->name('notif.reg');
 Route::post('/notifications/seen',[NotifController::class,'seen'])->name('notif.seen');
 Route::post('/notifications/ajax',[NotifController::class,'ajaxNotif'])->name('notif.ajax');

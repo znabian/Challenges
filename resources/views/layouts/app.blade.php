@@ -16,42 +16,74 @@
         <link rel="stylesheet" href="{{ asset('fontawesome-6.4.2/css/all.css') }}">
         <!-- Styles -->
         <style>
+            .navicon {
+                margin-top: 13px;
+                background-color: #4c4c4c;
+                color: #b59f64;
+                border: 3px solid #060606;
+                border-radius: 50px;
+                width: 40px;
+                height: 40px;
+                font-weight: 500;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 21px;
+                box-shadow: 3px 3px 10px -2px #9E9E9E;
+            }
+            nav a
+            {
+                text-decoration:none
+            }
             .navimg {
                 width: 70px;
             }
+            #home .navimg {
+                width: 64px!important;
+            }
+            #home {
+                margin-top: 4px;
+            }
             .dotnotif {
                 position: relative;
-                right: 31px;
-                top: -18px;
-                color: #fb4f9c;
+                /* right: 30px;
+                top: -14px; */
+                right: 12px;
+                top: 14px;
+                color: #10df39;
                 font-size: 8pt;
                 animation-name: notification;
                 animation-duration: 1s;
                 animation-iteration-count: infinite;
             }
             .menu2 {
-                background-color: #444a7e;
+                /* background-color: #f5f5f5;
                 border-radius: 50px;
-                color: #9a9ba5;
+                color: #000;
                 justify-content: center;
                 padding: 10px;
                 gap: 45px;
                 text-align: center;
-                box-shadow: 0px 4px 11px -4px #363a6f;
+                box-shadow: 0px 4px 11px -4px #b5b5b5;
                 position: fixed;
                 width: calc(46vw - 10vw);
                 bottom: 15px;
                 right: calc(46vw - 15vw);
+                z-index: 2; */
+                position: fixed;
+                width: calc(46vw - 10vw);
+                bottom: 15px;
+                right: calc(46vw - 15vw);
+                z-index: 2;
             }
             .trophy_Active {
-                background-color: #444a7e;
+                background-color: #ececec;
                 border-radius: 50px;
-                /* box-shadow: 0px 4px 11px -4px #363a6f; */
+                box-shadow: 0px 4px 11px -4px #5c5c5c;
                 position: fixed;
                 bottom: 51px;
                 width: 50px;
-                outline: 4px solid #3b407a;
-                color: #fff;
+                outline: 4px solid #ececec;
                 z-index: 2;
                 font-size: 12pt;
                 height: 50px;
@@ -59,21 +91,21 @@
                 justify-content: center;
                 align-items: center;
                 right: 44vw;
+                z-index: 3;
             }
             .trophy_Active i{
-                display: flex;
+                display: flex;color: #636363;
                 justify-content: center;
                 align-items: center;
             }
             .history_Active {
-                background-color: #444a7e;
+                background-color: #ececec;
                 border-radius: 50px;
-                /* box-shadow: 0px 4px 11px -4px #363a6f; */
+                box-shadow: 0px 4px 11px -4px #5c5c5c;
                 position: fixed;
                 bottom: 51px;
                 width: 50px;
-                outline: 4px solid #3b407a;
-                color: #fff;
+                outline: 4px solid #ececec;
                 z-index: 2;
                 font-size: 12pt;
                 height: 50px;
@@ -82,9 +114,11 @@
                 align-items: center;
                 /* right: 19vw; */
                 right: 12vh;
+                z-index: 3;
             }
             .history_Active i{
                 display: flex;
+                color: #636363;
                 justify-content: center;
                 align-items: center;
             }
@@ -112,7 +146,7 @@
             .Active
             {
                 margin-top: auto;
-                color: #fff;
+                color: #000;
             }
             .swal2-popup
             {
@@ -121,7 +155,8 @@
             .content2
             {
                 overflow-y: auto;
-                height: 58vh;
+                /* height: 58vh; */
+                height: 78vh;
                 padding: 12px;
             }
             dialog {
@@ -143,7 +178,7 @@
                 width: 46vw;
                 margin: 0 auto;
                 }
-                #loader
+                #loader,#content
                 {
                 width: 51%;
                 }
@@ -164,7 +199,7 @@
            @media (min-width: 420px)
             {
                 #FullHeight,#content {
-                background-repeat: repeat!important;
+                /* background-repeat: repeat!important; */
                 height: 97vh!important;
                 }
                 dialog
@@ -202,51 +237,7 @@
             to {text-shadow: 0px 0px 7px }
             }
         </style>  
-        <style>
-            /*.loader{
-                width: 86px;
-                height: 94px;
-                margin: 0 auto;
-                position: relative;
-            }
-            .loader div{
-                width: 18px;
-                height: 18px;
-                margin: 0 10px 0 0;
-                border-radius: 50px;
-                transform-origin: 50% 0;
-                display: inline-block;
-                animation: bounce 1s linear infinite;
-            }
-            .loader div:last-child{ margin: 0; }
-            .loader div:nth-child(1){ background: #f42f25; }
-            .loader div:nth-child(2){
-                background: #f49725;
-                animation-delay: 0.1s;
-            }
-            .loader div:nth-child(3){
-                background: #255ff4;
-                animation-delay: 0.2s;
-            }
-        @keyframes bounce{
-            0%, 100%{
-                transform: translateY(0) scale(1, 1);
-                animation-timing-function: ease-in;
-            }
-            45%{
-                transform: translateY(80px) scale(1, 1);
-                animation-timing-function: linear;
-            }
-            50%{
-                transform: translateY(80px) scale(1.5, 0.5);
-                animation-timing-function: linear;
-            }
-            55%{
-                transform: translateY(80px) scale(1, 1);
-                animation-timing-function: ease-out;
-            }
-        }*/
-        </style>
+        
         <style>
             #loader
             {
@@ -260,124 +251,127 @@
                 position: relative;
                 flex-direction: column;
                 gap: 16px;
-                color: #fff;
+                color: #5c5c5c;
+                place-items: center;
             }
-            .planet {
-                display: block;
-                width: 125px;
-                height: 125px;
-                position: relative;
-                transform-style: preserve-3d;
-                border-radius: 50%;
-                background: #fcc96b;
-                background: rgb(252, 201, 107);
-                background: linear-gradient(
-                    180deg,
-                    rgba(252, 201, 107, 1) 0%,
-                    rgba(252, 201, 107, 1) 15%,
-                    rgba(247, 174, 1, 1) 15%,
-                    rgba(247, 174, 1, 1) 19%,
-                    rgba(252, 201, 107, 1) 19%,
-                    rgba(252, 201, 107, 1) 22%,
-                    rgba(247, 174, 1, 1) 22%,
-                    rgba(247, 174, 1, 1) 28%,
-                    rgba(252, 201, 107, 1) 28%,
-                    rgba(252, 201, 107, 1) 31%,
-                    rgba(252, 201, 107, 1) 33%,
-                    rgba(252, 201, 107, 1) 36%,
-                    rgba(247, 174, 1, 1) 36%,
-                    rgba(247, 174, 1, 1) 48%,
-                    rgba(252, 201, 107, 1) 48%,
-                    rgba(252, 201, 107, 1) 55%,
-                    rgba(247, 174, 1, 1) 55%,
-                    rgba(247, 174, 1, 1) 66%,
-                    rgba(252, 201, 107, 1) 66%,
-                    rgba(252, 201, 107, 1) 70%,
-                    rgba(247, 174, 1, 1) 70%,
-                    rgba(247, 174, 1, 1) 73%,
-                    rgba(252, 201, 107, 1) 73%,
-                    rgba(252, 201, 107, 1) 82%,
-                    rgba(247, 174, 1, 1) 82%,
-                    rgba(247, 174, 1, 1) 86%,
-                    rgba(252, 201, 107, 1) 86%
-                );
-            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.25),
-                inset 8px -4px 6px rgba(199, 128, 0, 0.5),
-                inset -8px 4px 8px rgba(255, 235, 199, 0.5),
-                inset 20px -5px 12px #f7ae01,
-                0 0 100px rgba(255, 255, 255, 0.35);
-            transform: rotateZ(-15deg);
-            
+            .scene {
+            position: relative;
+            z-index: 2;
+            height: 220px;
+            width: 220px;
+            display: grid;
+            place-items: center;
             }
 
-            .planet::before {
+            .cube-wrapper {
+            transform-style: preserve-3d;
+            animation: bouncing 2s infinite;
+            }
+
+            .cube {
+            transform-style: preserve-3d;
+            transform: rotateX(45deg) rotateZ(45deg);
+            animation: rotation 2s infinite;
+            }
+
+            .cube-faces {
+            transform-style: preserve-3d;
+            height: 80px;
+            width: 80px;
+            position: relative;
+            transform-origin: 0 0;
+            transform: translateX(0) translateY(0) translateZ(-40px);
+            }
+
+            .cube-face {
             position: absolute;
-            content: "";
-            display: block;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            border: 16px solid #7b6f42;
-            border-top-width: 0;
-            border-radius: 50%;
-            box-shadow: 0 -2px 0 #b1a693;
-            /* animation: rings1 0.8s infinite linear; */
-            animation: shine 1s infinite  alternate;
-            transform: rotateX(65deg) rotateZ(0deg) scale(1.75);
+            inset: 0;
+            background: #110d31ff;
+            border: solid 1px #fff;
+            }
+            .cube-face.shadow {
+            transform: translateZ(-80px);
+            animation: bouncing-shadow 2s infinite;
+            }
+            .cube-face.top {
+            transform: translateZ(80px);
+            }
+            .cube-face.front {
+            transform-origin: 0 50%;
+            transform: rotateY(-90deg);
+            }
+            .cube-face.back {
+            transform-origin: 0 50%;
+            transform: rotateY(-90deg) translateZ(-80px);
+            }
+            .cube-face.right {
+            transform-origin: 50% 0;
+            transform: rotateX(-90deg) translateY(-80px);
+            }
+            .cube-face.left {
+            transform-origin: 50% 0;
+            transform: rotateX(-90deg) translateY(-80px) translateZ(80px);
             }
 
-            .planet::after {
-            position: absolute;
-            content: "";
-            display: block;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-            border: 8px solid #b1a693;
-            border-top-width: 0;
-            border-radius: 50%;
-            box-shadow: 0 -2px 0 #7b6f42;
-            /* animation: rings2 0.8s infinite linear; */
-            transform: rotateX(65deg) rotateZ(0deg) scale(1.7);
-            }
-
-            @keyframes rings1 {
+            @keyframes rotation {
             0% {
-                transform: rotateX(65deg) rotateZ(0deg) scale(1.75);
+                transform: rotateX(45deg) rotateY(0) rotateZ(45deg);
+                animation-timing-function: cubic-bezier(0.17, 0.84, 0.44, 1);
+            }
+            50% {
+                transform: rotateX(45deg) rotateY(0) rotateZ(225deg);
+                animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
             }
             100% {
-               transform: rotateX(65deg) rotateZ(360deg) scale(1.75);
+                transform: rotateX(45deg) rotateY(0) rotateZ(405deg);
+                animation-timing-function: cubic-bezier(0.17, 0.84, 0.44, 1);
             }
             }
-
-            @keyframes rings2 {
+            @keyframes bouncing {
             0% {
-                transform: rotateX(65deg) rotateZ(0deg) scale(1.7);
+                transform: translateY(-40px);
+                animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+            }
+            45% {
+                transform: translateY(40px);
+                animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
             }
             100% {
-                transform: rotateX(65deg) rotateZ(360deg) scale(1.7);
+                transform: translateY(-40px);
+                animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
             }
             }
-            @keyframes shine {
+            @keyframes bouncing-shadow {
             0% {
-               box-shadow: 0 0 2px #fcc96b;
+                transform: translateZ(-80px) scale(1.3);
+                animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+                opacity: 0.05;
+            }
+            45% {
+                transform: translateZ(0);
+                animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+                opacity: 0.3;
             }
             100% {
-                box-shadow: 0 0 15px  #fcc96b;
+                transform: translateZ(-80px) scale(1.3);
+                animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+                opacity: 0.05;
             }
             }
         </style>     
         @yield('style')
     </head>
-    <body class="antialiased overflow-hidden" onload="loding() ">
-        <div class="container d-none"  id="content" >
+    <body class="antialiased overflow-x-hidden" onload="loding() ">
+        <div class="container-fluid d-none"  id="content" >
         
             @if(Auth::check())
                         
                 @include('layouts.menu')
             
             @endif
-          
+            <div class="d-flex justify-content-center mb-3 w-100" id="title">
+                <h6 class=" bold text-center" style="font-size: 16pt;" >@yield('title')</h6> 
+            </div>
                 @yield('content')
         </div>
 
@@ -389,7 +383,21 @@
                 </div>
          </div> --}}
          <div id="loader">
-            <div class="planet"></div>
+            <div class="scene">
+                <div class="cube-wrapper">
+                  <div class="cube">
+                    <div class="cube-faces">
+                      <div class="cube-face shadow"></div>
+                      <div class="cube-face bottom"></div>
+                      <div class="cube-face top"></div>
+                      <div class="cube-face left"></div>
+                      <div class="cube-face right"></div>
+                      <div class="cube-face back"></div>
+                      <div class="cube-face front"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             @auth
             <b>منتظر بمون تا صفحه کامل بارگیری بشه</b>
             @else

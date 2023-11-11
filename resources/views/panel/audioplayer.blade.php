@@ -1,5 +1,5 @@
 
-<div class="music-player">
+<div class="music-player d-none">
   <div class="info">
     
     <div class="left">
@@ -41,3 +41,12 @@
   <div id="jquery_jplayer" class="jp-jplayer"></div>
   
 </div>
+<div class="bg-light d-flex justify-content-center waveplayer">
+<div id="wave">
+    <input type="range"  value="0" step="0.1" onchange="changeCurrentTime(this.value)" id="progress">  
+    <div id="played"></div>
+</div>
+</div>
+  <div class="circleplay m-auto" onclick="playAudio()">
+    <i class="fa fa-play " id="playericon"></i>
+  </div>

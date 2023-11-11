@@ -45,14 +45,14 @@
                 
             }
             #content
-        {
-            color: #fff;
-            background-image: url("{{asset('img/home/back.png')}}");
+            {
+            color: #535353;
+            /* background-image: url("http://www.xe-non.ir/img/home/back.png"); 
             background-attachment: fixed;
             background-size: contain;
-            background-repeat: repeat-y;
+            background-repeat: repeat-y;*/
             /* background-repeat: no-repeat; */
-            background-position: center;
+            /* background-position: center; */
             height: 100vh;
             /* height: 88vh; */
             padding: 4vw;
@@ -60,23 +60,45 @@
         }
         .btn-master
         {
-            background: linear-gradient(274deg, #1b1d50, #333870);
-            border: 2px solid #5c6096;
+            background: linear-gradient(274deg, #c4ae75, #dcc5a1);
+            border: 2px solid #f4f5f0;
             border-radius: 15px;
-            color: #686da7;
+            color: #fffffd;
             padding: 0px;
             width: 74px;
+            box-shadow: -1px 2px 12px -2px #c5c5c5;
+        }
+        .txt404
+         {
+            color: #d8c199;
+            font-size: 83pt;
+            font-weight: bold;
+            text-shadow: 11px 1px #c7b17b;
+            text-align: center;
+        }
+        .des404 {
+            font-weight: 500;
+            font-size: 10pt;
+            font-family: peyda;
+            color: #878787;
+            text-align: center;
         }
         </style>   
     </head>
     <body class="antialiased overflow-hidden">
         <div class="container"  id="content" >
            
-              <div class="content2 mt-5"> 
-                <img src="{{asset('img/404.png')}}" class="w-100 m-auto" alt="404">
-                <p class="text-center">صفحه مورد نظر یافت نشد
-                  <button class="btn-master d-block m-auto p-1 w-50" onclick="location.href='{{route('home')}}'">صفحه اصلی</button>
-                </p>
+            <div class="content2 d-flex flex-column gap-3 justify-content-center mt-5"> 
+                <h1 class="txt404">404</h1>
+                <b class="text-center h4">
+                    صفحه یا فایل  درخواست شده وجود ندارد
+                </b>
+                <span class="des404">
+                    صفحه مورد نظر در دسترس نیست. ممکن است نشانی صفحه اشتباه وارد شده باشد. چنانچه توسط لینکی از دیگر صفحات به این خطا رسیده اید، لطفا نشانی آن را به پشتیبان خود اطلاع دهید.
+
+                </span>
+                  <button class="btn-master d-block mx-auto p-3 w-50" onclick="location.href='{{route('home')}}'">صفحه اصلی</button>
+                
             </div>
 
         </div>

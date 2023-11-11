@@ -3,7 +3,7 @@ body
 {
  font-family: 'PEYDA-EXTRABOLD','Peyda',system-ui;
  direction: rtl;
- background-color: #3B407A ;
+ background-color: #fff ;
 }
 .pull-left
 {
@@ -55,6 +55,10 @@ body
 .text-3b407a
 {
     color: #3b407a;
+}
+.text-5c5
+{
+    color: #5c5c5c;
 }
 .c-pointer
 {

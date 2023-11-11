@@ -6,7 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class NotifController extends Controller
-{   
+{  
+    public function index()
+    {
+        if(auth()->user()->Age<12)
+        return view('panel.child.notification');
+        else
+        return view('panel.teenager.notification');
+    } 
     public function insert(Request $req)
     {
         $data=json_decode($req->get('data'));
@@ -57,33 +64,70 @@ class NotifController extends Controller
     public function ajaxNotif(Request $req)
     {       
        $out='';
+       if(auth()->user()->Age<12)
        foreach(auth()->user()->MyNotifs()->get() as $item)
        {
-        $out.='
-        <div class="card mt-2 p-md-3">
-            <div class="card-body">
-                <div class="row d-flex">
-                    <div class="col-1 m-auto">
-                        <span class="circle"><i class="fa fa-bell"></i></span>
-                    </div>
-                    <div class="col d-flex flex-column">
-                        <div class="p-0">'.(!$item->Seen ? '<i class="fa fa-circle pull-left status"></i>':'<i class="fa pull-left status"></i>').
-                       '</div>
-                        <div class="d-flex flex-column mx-4">
-                            <span style="font-size: 8pt;">'.$item->Body.
-                            '</span>
-                            <span style="font-size: 5pt;font-weight: normal;"></span>
-                        </div>
-                        <div class="p-0">
-                            <span style="font-size: 7pt;font-weight: normal;color: #686da7;padding: 20px" class="pull-right">
-                                '.jdate($item->Date)->format('d F - H:i:s').'
-                            </span>
-                            <button class="btn-master fa fa-arrow-left-long p-1 pull-left" onclick="location.href=\''.$item->Link.'\'"></button>
-                        </div>
-                    </div>
+        $card_body = '
+        <div class="card-body">
+            <div class="row d-flex">
+                <div class="col-1 m-auto" style="padding-right:5px !important;" >                               
+                <img src="'.asset('img/child/home/notif.png').'" class="imgicon" alt="">
                 </div>
+                <div class="col d-flex flex-column" >
+                    <div class="p-0">
+                        ' . (!$item->Seen ? '<i class="fa fa-circle pull-left status" ></i>' : '<i class="fa pull-left status"></i>') . '
+                    </div>
+                    <div class="d-flex gap-1 flex-column mx-4" style="padding-right:15px;">                            
+                        <span style="font-size: 8pt;">
+                            ' . $item->Body . '
+                        </span>
+                        <span style="font-size: 5pt;font-weight: normal;">
+                            
+                        </span>
+                    </div> 
+                    <div class="p-0">
+                        <span style="font-size: 7pt;font-weight: normal;color: #686da7;padding: 20px" class="pull-right">
+                            ' . jdate($item->Date)->format('d F - H:i:s') . '
+                        </span>
+                        <button class="btn-master fa fa-arrow-left-long pull-left p-1" onclick="location.href=\'' . $item->Link . '\'">
+                        
+                        </button>
+                    </div>
+                </div>                  
             </div>
         </div>';
+
+            $out.= '<div class="card col-5 p-md-3" onclick="location.href=\'' . $item->Link . '\'">' . $card_body . '</div>';
+       }
+       else
+       foreach(auth()->user()->MyNotifs()->get() as $item)
+       {
+        $out.='<div class="card mt-2 p-md-3" onclick="location.href=\''.$item->Link.'\'">
+        <div class="card-body">
+            <div class="row d-flex">
+                <div class="col-1 m-auto" style="padding-right:5px !important;" >                               
+                        <span class="circle"><i class="fa fa-bell"></i></span>
+                </div>
+                <div class="col d-flex flex-column" >
+                    <div class="p-0">'.(!$item->Seen ? '<i class="fa fa-circle pull-left status"></i>':'<i class="fa pull-left status"></i>').
+                    '</div>
+                    <div class="d-flex gap-1 flex-column mx-4" style="padding-right:15px;">                            
+                        <span style="font-size: 8pt;">'.$item->Body.
+                        '</span>
+                        <span style="font-size: 5pt;font-weight: normal;">
+                            
+                        </span>
+                    </div> 
+                    <div class="p-0">
+                        <span style="font-size: 7pt;font-weight: normal;color: #686da7;padding: 20px" class="pull-right">
+                        '.jdate($item->Date)->format('d F - H:i:s').'
+                        </span>
+                        <button class="btn-master fa fa-arrow-left-long pull-left" onclick="location.href=\''.$item->Link.'\'"></button>
+                    </div>
+                </div>                  
+            </div>
+        </div>
+         </div>';
        }
       DB::table('ReminderTbl')->where('UserId',auth()->user()->Id)->update(['Seen'=>1]);
 

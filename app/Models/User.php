@@ -49,6 +49,17 @@ class User extends Authenticatable
         public function getFullNameAttribute()
         {
             return $this->attributes['FullName'] = $this->Name . ' ' . $this->Family;
+        } 
+        public function getAgeAttribute()
+        {
+            if($this->BirthDay)
+            {
+                list($y,$m,$d)=explode('-',$this->BirthDay);
+               $age=(jdate(now())->format('Y'))-$y;
+            }
+            else
+            $age=8;
+            return $this->attributes['Age'] = $age;
         }        
         public function MyChalls()
         {
