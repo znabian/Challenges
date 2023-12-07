@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}">
+        <link rel="apple-touch-icon" href="{{asset('favicon.ico')}}">
         <title>چالش فرست کلاس</title>
 
         <!-- Fonts -->
@@ -20,6 +21,7 @@
                 margin-top: 13px;
                 background-color: #dcdcdc;
                 color: #404040;
+                fill: #404040;
                 border: 3px solid #838383;
                 border-radius: 50px;
                 width: 40px;
@@ -45,11 +47,11 @@
                 margin-top: 4px;
             }
             .dotnotif {
-                position: relative;
+                position: absolute;
                 /* right: 30px;
                 top: -14px; */
-                right: 12px;
-                top: 14px;
+                right: 0px;
+                top: 17px;
                 color: #d43d3c;
                 font-size: 8pt;
                 animation-name: notification;
@@ -355,22 +357,22 @@
             div#title 
             {
             /* font-size: 16pt; */
-            margin-bottom: 0px !important;
-            margin-top: -15px !important;
+            /* margin-bottom: 0px !important;
+            margin-top: -15px !important; */
+            position: relative;
+            top:7px;
             }
         </style>     
         @yield('style')
     </head>
     <body class="antialiased overflow-x-hidden" onload="loding() ">
         <div class="container-fluid d-none"  id="content" >
-        
-            @if(Auth::check())
-                        
-                @include('layouts.menu')
-            
-            @endif
-            <div class="d-flex justify-content-center mb-3 w-100" id="title">
+        @if(session('User'))                        
+                @include('layouts.menu')            
+        @endif
+            <div class="d-grid justify-content-center w-100" id="title">
                 <h6 class=" bold text-center" style="font-size: 16pt;" >@yield('title')</h6> 
+                @yield('subtitle')
             </div>
                 @yield('content')
         </div>
@@ -398,11 +400,11 @@
                   </div>
                 </div>
               </div>
-            @auth
+              @if(session('User'))
             <b>منتظر بمون تا صفحه کامل بارگیری بشه</b>
             @else
             <b>لطفا صبر کنید ...</b>
-            @endauth
+            @endif
          </div>
         
         <audio src="{{asset('sound/notification.mp3') }}" id="notifaudio" style="display: none"></audio>
@@ -417,12 +419,12 @@
     <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
     
     <script>
-        @auth
+        @if(session('User'))
         function logout()
         {
             Swal.fire({
                 title: 'خروج از برنامه',
-                text: "{{auth()->user()->FullName}}  می خوای خارج بشی؟",//"آیا از خروج از حساب کاربری خود اطمینان دارید؟",
+                text: "{{session('User')->FullName}}  می خوای خارج بشی؟",//"آیا از خروج از حساب کاربری خود اطمینان دارید؟",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -444,45 +446,76 @@
                 }
             });
         }
-        @endauth
+        function showWallet()
+        {
+            Swal.fire({
+                title:"صبر کن ...",
+                html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
+                icon:'info',
+                allowOutsideClick:false,
+                showConfirmButton:false,
+              });
+                axios.post('{{route("user.wallet")}}')
+                  .then(response => { 
+                    if(response.data.success)
+                        Swal.fire({
+                                  icon: 'success',                      
+                                  confirmButtonText: 'بله',
+                                  html:response.data.msg,
+                              });
+                    })
+                  .catch(error => {
+                      console.log(error);
+                      Swal.fire({
+                                  icon: 'error',
+                                  title: 'خطا',                        
+                                  confirmButtonText: 'بله',
+                                  //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                                  html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+
+                              });
+                  });
+        }
+        @endif
            function loding () {
-                    @auth
-                        @if(auth()->user()->MyNewNotifs()->exists())
+                    @if(session('User'))
+                        @if(session('Notifs'))
                         notif.classList.remove('d-none');
                         @else
                         notif.classList.add('d-none');
                         @endif
-                    @endauth
+                    @endif
                    loader.remove();
                     content.classList.remove('d-none');
-            }
-    @if(session('error'))
-    Swal.fire({
-        icon: 'error',
-        title: 'توجه',
-        confirmButtonText: 'بله',
-        text:"{{auth()->user()->FullName}} \n {{session('error')}}"
-    });
-    @endif
-    @if(session('success'))
-    Swal.fire({
-        icon: 'success',
-        title: 'عملیات موفقیت آمیز',
-        confirmButtonText: 'بله',
-        text:"{{auth()->user()->FullName}} \n {{session('success')}}"
-    });
-    @elseif($errors->any())
-    Swal.fire({
-                icon: 'error',
-                title: 'خطا',
-                text:"<?php foreach ($errors->all() as $error) echo $error;?>"
-            });
-    @endif
+
+                    @if(session('error'))
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'توجه',
+                            confirmButtonText: 'بله',
+                            text:"{{session('User')->FullName}} \n {{session('error')}}"
+                        });
+                        @endif
+                        @if(session('success'))
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'عملیات موفقیت آمیز',
+                            confirmButtonText: 'بله',
+                            text:"{{session('User')->FullName}} \n {{session('success')}}"
+                        });
+                        @elseif($errors->any())
+                        Swal.fire({
+                                    icon: 'error',
+                                    title: 'خطا',
+                                    text:"<?php foreach ($errors->all() as $error) echo $error;?>"
+                                });
+                        @endif
+            }    
     
     </script>  
-     @auth
+     @if(session('User'))
     <script>
-        const userid='{{auth()->user()->Id}}';
+        const userid='{{session('User')->Id}}';
         if(typeof Notification !== "undefined")
         {
         var perm=Notification.permission;
@@ -589,6 +622,6 @@
                 
          }
       </script>
-     @endauth
+     @endif
     @yield('script')
 </html>

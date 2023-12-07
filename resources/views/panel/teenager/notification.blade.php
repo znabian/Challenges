@@ -139,9 +139,9 @@
             background-image: url("{{asset('img/home/side.png')}}");
             background-size: 30vw;
             background-repeat: no-repeat;
-            background-position: left;
+            background-position: left 113px;
             padding: 0!important;
-            background-attachment:fixed;
+            /* background-attachment:fixed; */
         }
         @media (min-width: 760px)
         {
@@ -166,12 +166,12 @@
 پیام های من
 @endsection
 @section('content')   
-<div id="content2" class="content2">     
-    @php
-        $notifs=auth()->user()->MyNotifs()->get();
-    @endphp        
+<div id="content2" class="content2">           
      @if($notifs->count())
             @foreach ($notifs as $item) 
+            @php
+                $item = (object)($item);
+            @endphp
             <div class="card mt-2 p-md-3" onclick="location.href='{{$item->Link}}'">
                 <div class="card-body">
                     <div class="row d-flex">
@@ -196,7 +196,7 @@
                             </div> 
                             <div class="p-0">
                                 <span style="font-size: 7pt;font-weight: normal;color: #686da7;padding: 20px" class="pull-right">
-                                    {!! jdate($item->Date)->format('d F - H:i:s')!!}
+                                    {!! ltrim(jdate($item->Date)->format('d F - H:i:s'),'0')!!}
                                 </span>
                                 <button class="btn-master fa fa-arrow-left-long pull-left p-1"  onclick="location.href='{{$item->Link}}'">
                                 
@@ -212,9 +212,6 @@
         <p class="text-center text-center noinfo">پیامی یافت نشد</p>
     @endif
 </div>
-   @php
-      DB::table('ReminderTbl')->where('UserId',auth()->user()->Id)->update(['Seen'=>1]);
-   @endphp
    @include('layouts.menu3') 
 @endsection
 @section('script')

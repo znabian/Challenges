@@ -12,11 +12,11 @@
         }
         .btn-img
         {
-            background: linear-gradient(to bottom,#f4daa0,#998553);
+            background:linear-gradient(to bottom,#FFE5AB,#8E7A4A);/* linear-gradient(to bottom,#f4daa0,#998553);*/
             border-radius: 50px;
             box-shadow: 0px -3px 10px -2px #9e9e9e7a;
             width: 150px;
-            padding:8px;
+            padding:10px;
             color: white!important;
             border: none;
             box-sizing: content-box;

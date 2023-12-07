@@ -174,12 +174,12 @@
 @endsection
 @section('content')  
 
-<div id="content2" class="content2 gap-3 gap-md-4  justify-content-center row w-100 m-auto" >             
-    @php
-        $notifs=auth()->user()->MyNotifs()->get();
-    @endphp        
+<div id="content2" class="content2 gap-3 gap-md-4  justify-content-center row w-100 m-auto" >       
      @if($notifs->count())
             @foreach ($notifs as $item) 
+            @php
+                $item = (object)($item);
+            @endphp
             <div class="card col-5 mt-2 p-md-3" onclick="location.href='{{$item->Link}}'">
                 <div class="card-body d-grid gap-1 text-center">
                     <div class="">
@@ -197,7 +197,7 @@
                                 </span>
                                 <br>
                                 <span style="font-size: 7pt;font-weight: normal;color: #686da7;padding: 20px" class="pull-right">
-                                    {!! jdate($item->Date)->format('d F ساعت  H:i')!!}
+                                    {!! ltrim(jdate($item->Date)->format('d F ساعت  H:i'),'0') !!}
                                 </span>
                             </div>                         
                                 
@@ -212,9 +212,6 @@
     </div>
     @endif
 </div>
-   @php
-      DB::table('ReminderTbl')->where('UserId',auth()->user()->Id)->update(['Seen'=>1]);
-   @endphp
    @include('layouts.menu3') 
 @endsection
 @section('script')

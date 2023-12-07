@@ -18,7 +18,7 @@
             /* padding: 10px; */
             font-weight: bolder;
             font-family: 'PEYDA-BLACK';
-            box-shadow: -3px 0px 7px -3px #c2c2c2, 5px 5px 10px -3px #c2c2c2;
+            box-shadow: -3px 0px 7px -3px #00000078, 5px 5px 10px -4px #00000078;
             margin-bottom: 30px;
         }
         .noinfo
@@ -37,7 +37,7 @@
         }
         .btn-master
         {
-            background: linear-gradient(to left, #c5ae77, #dbc4a0);
+            background:linear-gradient(to left, #C5AD76, #E2CBAC);/* linear-gradient(to left, #c5ae77, #dbc4a0);*/
             border: 1px solid #fff;
             border-radius: 15px;
             color: #fff;
@@ -67,7 +67,7 @@
                 }
                 .status {
                 border-radius: 50%;
-                background-color: #b5b5b5;
+                background-color: #4c4c4c;
                 color: #fff;
                 display: flex;
                 justify-content: center;
@@ -86,6 +86,7 @@
             i.status .fa-check
             {                
                 /* color: #9effc2; */
+                background-color: #38a274!important;
             }
             i.status .fa-exclamation
             {                
@@ -151,9 +152,9 @@
             background-image: url("{{asset('img/home/side.png')}}");
             background-size: 121px;
             background-repeat: no-repeat;
-            background-position: left;
+            background-position: left 113px;
             padding: 0!important;
-            background-attachment:fixed;
+            /* background-attachment:fixed; */
         }
         .circleImg {
                 width: 73px;
@@ -163,7 +164,7 @@
                 color: #fff;
                 position: absolute;
                 top: 13px;
-                right: 4px;
+                right: 8px;
             }
         @media (min-width: 760px)
         {
@@ -178,6 +179,10 @@
                
             }
         }
+        #content2
+            {
+               padding: 12px 15px;
+            }
     </style>
 @endsection
 @section('title')  
@@ -187,39 +192,46 @@
 <div id="content2" class="content2">             
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
+            <div class="card mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body">
                     <div class="row d-flex">
                         <div class="col-2 m-auto mx-1" style="padding-right:5px !important;" >                                
-                            @if($item->Chall->Options??0)                   
-                            <img src="{{asset('img/home/quiz.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
-                            @elseif(in_array($item->Chall->Type??'text',['image','audio','text','movie']))                              
-                            <img src="{{asset('img/home/'.$item->Chall->Type.'.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
+                            @if($item['Options']??0)                   
+                            <img src="{{asset('img/home/quiz.png')}}" class="imgicon" alt="{{$item['Type']}}">
+                            @elseif(in_array($item['Type']??'text',['image','audio','text','movie']))                              
+                            <img src="{{asset('img/home/'.$item['Type'].'.png')}}" class="imgicon" alt="{{$item['Type']}}">
                             @else
-                            <img src="{{asset('img/home/text.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
+                            <img src="{{asset('img/home/text.png')}}" class="imgicon" alt="{{$item['Type']}}">
                             @endif
                             <span class="circleImg"></span>
                         </div>
                         <div class="col d-flex flex-column pt-0" style="border-right: 2px solid #edc587;margin-right: 16px;">
                             <div class="" style="margin-left: -2px;margin-top: -2px;">
-                                @if($item->Done)
+                                @if($item['Done'])
                                 <i class="fa fa-check pull-left status" ></i>
-                                @elseif($item->Expired)
+                                @elseif($item['Expired'])
                                 <i class="fa fa-exclamation pull-left status" ></i>
                                 @else
                                 <i class="fa fa-close pull-left status"></i>
                                 @endif
                             </div>
-                            <div class="d-flex gap-1 flex-column mx-4" style="margin-right:0.25rem!important;">                                
-                                <b class="h6 title" >
-                                    {{$item->Chall->Title}}
+                            <div class="d-flex gap-2 flex-column mx-4" style="margin-right:0.25rem!important;">                                
+                                <b class="h6 text-lg-end text-sm-center  title" >
+                                    {{$item['Title']}}
                                 </b>
-                                <span class="subtitle">
-                                    {{ Str::limit($item->Chall->Body, 36, '...')}}
+                                <span class="subtitle">							
+									@php
+									$item['Body']= strtr($item['Body'],['%کاربر%'=> session('User')->Name]);
+									@endphp
+                                    {{ Str::limit($item['Body'], 30, '...')}}
                                 </span>
                             </div> 
                             <div class="p-0">
-                                <button style="font-size: 9pt;"  class="btn-master fa fa-arrow-left-long pull-left p-1" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
+                                
+                                <span class="subtitle fw-bold">
+                                    {{ltrim(jdate($item['ExpiredAt'])->format('d ام F ماه'),'0')}}
+                                </span>
+                                <button style="font-size: 9pt;"  class="btn-master fa fa-arrow-left-long pull-left p-1" onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                                 
                                 </button>
                             </div>

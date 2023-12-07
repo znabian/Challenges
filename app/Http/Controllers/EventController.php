@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Ably\AblyRest;
+use App\Events\ChatChange;
 use App\Events\chatEvent;
 use App\Events\closeEvent;
 use App\Events\privateEvent;
@@ -12,11 +13,11 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    public $ABLY_KEY='900Xog.XhH1eQ:aV0Kdq_mJUTBt5KUsgQvHTdtjbUAaXHAkHvVanuuG9U';
-    //public $ABLY_KEY='fg8Z8w.tNJAiQ:J0hhzygP6hmd0TXqy8P-EqqAEQLVRhA-UZeXl8eBORQ';
-    public function ChallengeChat($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo) 
+    //public $ABLY_KEY='900Xog.XhH1eQ:aV0Kdq_mJUTBt5KUsgQvHTdtjbUAaXHAkHvVanuuG9U';
+    public $ABLY_KEY='fg8Z8w.tNJAiQ:J0hhzygP6hmd0TXqy8P-EqqAEQLVRhA-UZeXl8eBORQ';
+    public function ChallengeChat($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo,$parent=0) 
     {
-        $a=new chatEvent($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo);
+        $a=new chatEvent($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo,$parent);
 
         $client = new  AblyRest($this->ABLY_KEY);
         $channel = $client->channels->get('Challenge-Chat-Messages.'.$ChatId.'_'.$userId);
@@ -30,6 +31,15 @@ class EventController extends Controller
         $client = new  AblyRest($this->ABLY_KEY);
         $channel = $client->channels->get('Challenge-Chat-Seen.'.$ChatId.'_'.$UID);
         $channel->publish('ChatSeen',json_encode($a->broadcastWith()));
+        return true;
+    }
+    public function ChallengeChatChange($ChatId) 
+    {
+        $a=new ChatChange($ChatId);
+
+        $client = new  AblyRest($this->ABLY_KEY);
+        $channel = $client->channels->get('Challenge-Chat-Change.'.$ChatId);
+        $channel->publish('ChatChange',json_encode($a->broadcastWith()));
         return true;
     }
     public function ChallengeChatClose($ChatId,$UID) 

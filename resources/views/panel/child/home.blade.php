@@ -78,8 +78,8 @@
                 font-size:13px;   
                 border: none;
                 font-weight: bolder;
-                width: 23px;
-                height: 23px;
+                width: 20px;
+                height: 20px;
             }
             i.status.fa-close
             {                
@@ -89,7 +89,7 @@
             i.status.fa-check
             {                
                 /* color: #9effc2; */
-                /* background-color: #38a274!important; */
+                background-color: #38a274!important;
             }
             i.status .fa-exclamation
             {                
@@ -123,7 +123,7 @@
                 }
         /* } */
         .imgicon {
-            width: 40px;
+            width: 42px;
             height: auto;
             margin: 0 auto;
         
@@ -138,7 +138,7 @@
         .title
         {
             color: #676767;
-            font-size: 10pt; 
+            font-size: 8pt; 
             /* line-height:0 !important; */
         }
       
@@ -186,8 +186,11 @@
         }
         .content2
         {
-            height: auto!important;
-            max-height:72vh;
+            height:69vh!important;
+        }
+        .card-body
+        {
+            padding: 9px;
         }
     </style>
 @endsection
@@ -196,37 +199,42 @@
 @endsection
 @section('content')  
 
-<div id="content2" class="content2 gap-3 gap-md-4  justify-content-center row w-100 m-auto" >             
+<div id="content2" class="content2 " >             
+    <div class="gap-3 gap-md-4 h-auto justify-content-center row w-100 m-auto">
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card col-5 mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item->Id])}}'">
+            <div class="card col-5 mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body d-grid gap-1 text-center">
                     <div class="">
-                        @if($item->Done)
+                        @if($item['Done'])
                             <i class="fa fa-check pull-left status" ></i>
-                            {{-- @elseif($item->Expired)
-                            <i class="fa fa-exclamation pull-left status" ></i> --}}
                             @else
                             <i class="fa fa-close pull-left status"></i>
                         @endif
                     </div>
                         
                         
-                        @if($item->Chall->Options??0)                   
-                            <img src="{{asset('img/child/home/quiz.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
-                            @elseif(in_array($item->Chall->Type??'text',['image','audio','text','movie']))                              
-                            <img src="{{asset('img/child/home/'.$item->Chall->Type.'.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
+                        @if($item['Options']??0)                   
+                            <img src="{{asset('img/child/home/quiz.png')}}" class="imgicon" alt="{{$item['Type']}}">
+                            @elseif(in_array($item['Type']??'text',['image','audio','text','movie']))                              
+                            <img src="{{asset('img/child/home/'.$item['Type'].'.png')}}" class="imgicon" alt="{{$item['Type']}}">
                             @else
-                            <img src="{{asset('img/child/home/text.png')}}" class="imgicon" alt="{{$item->Chall->Type}}">
+                            <img src="{{asset('img/child/home/text.png')}}" class="imgicon" alt="{{$item['Type']}}">
                         @endif
-                        <b class="h6 title " >
-                            {{$item->Chall->Title}}
+                        <b class="title " >
+                            {{$item['Title']}}
                         </b>
-                        <span class="subtitle">
-                            {{ Str::limit($item->Chall->Body, 36, '...')}}
+                        <span class="subtitle">							
+                            @php
+                            $item['Body']= strtr($item['Body'],['%کاربر%'=> session('User')->Name]);
+                            @endphp
+                            {{ Str::limit($item['Body'], 26, '...')}}
+                        </span>
+                        <span class="subtitle fw-bold">
+                            تا  {{ltrim(jdate($item['ExpiredAt'])->format('d ام F ماه'),'0')}}
                         </span>
                         
-                        <button style=""  class=" btn-master fa fa-arrow-left-long pull-left m-auto" onclick="location.href='{{route('chall.details',[$item->Id])}}'"></button>
+                        <button style=""  class=" btn-master fa fa-arrow-left-long pull-left m-auto" onclick="location.href='{{route('chall.details',[$item['Id']])}}'"></button>
                 </div>  
             </div>
             @endforeach
@@ -236,6 +244,8 @@
         <p class="noinfo text-center">چالشی یافت نشد</p>
     </div>
     @endif
+
+    </div>
 </div>
 
 @include('layouts.menu3')          

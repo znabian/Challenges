@@ -27,12 +27,13 @@ class chatEvent implements ShouldBroadcastNow
     public $msgId;
     public $ResiverId;
     public $SenderId;
+    public $Parent;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo)
+    public function __construct($ChatId,$msgId,$userId,$senderId,$message,$file,$sender,$resiver,$date,$date2,$time,$logo,$parent=null)
     {
         $this->ChatId  = $ChatId;
         $this->message = $message;
@@ -45,7 +46,8 @@ class chatEvent implements ShouldBroadcastNow
         $this->logo = $logo;
         $this->msgId = $msgId;
         $this->ResiverId = $userId;
-        $this->SenderId = $senderId;
+        $this->SenderId = $senderId; 
+        $this->Parent= $parent;       
     }
 
     /**
@@ -70,7 +72,10 @@ class chatEvent implements ShouldBroadcastNow
             'Date2'  => $this->date2,
             'Time'  => $this->time,
             'Logo'  => $this->logo,
-            'msgId'  => $this->msgId
+            'msgId'  => $this->msgId,
+            'Id'  => $this->msgId,
+            "Parent"=>$this->Parent,
+            'sender_user' => ['Name'=> $this->sender,"Family"=>'']
         ];
     }
     public function broadcastAs()

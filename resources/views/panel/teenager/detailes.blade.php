@@ -1,8 +1,11 @@
 
 @extends('layouts.app')
+@section('style')   
 <style>
-
-
+video
+{
+  object-fit: fill;
+}
 /* .container {
   width: 100%;
   max-width: 800px;
@@ -48,12 +51,12 @@
 .earth {
     max-width: 12rem!important;
     /* max-width: 150%!important; */
-    height: auto;
-    /* position: relative;
-    right: -83px; */
+    height: 161px;
     /* top: -118px; */
     /* max-width: 1009px; */
     /* rotate: 342deg; */
+    /* left: 0; */
+    width: 150px;
 }
 .bodyChall
 {
@@ -65,22 +68,18 @@
     /* top: -67px;     */
 }
 .text-title {
-    /* position: relative;
-    top: -103px; */
     /* opacity: 0.25; */
     color: #86827e;
     font-weight: 900;
-    font-family:'PEYDA-BLACK';
-    font-size: calc(2.5rem + 1.5vw);
+    font-family: 'PEYDA-BLACK';
+    font-size: calc(3rem + 2.75vw);
 }
 .text-subtitle {
-    /* position: relative;
-    top: -103px; */
     font-weight: 900;
     color: #535353;
-    font-size: calc(1.65rem + 1vw);
-    padding-inline-start: 14px;
-    margin-right:65px;
+    font-size: calc(1.65rem + 1.2vw);
+    /* padding-inline-start: 14px; */
+    /* margin-right: 65px; */
     /* text-shadow: 2px 3px 3px #323030ad; */
 }
 
@@ -99,7 +98,8 @@
 
 .card-body p {
   /* line-height: 1.5; */
-    line-height: 20px;
+    /* line-height: 20px; */
+    color: black;
 }
 
 .challVideo {
@@ -150,8 +150,8 @@
 }
 #content
         {
-        background-image: url("{{asset('img/details/back.png')}}");
-        padding: 0!important;
+       background-image: url("{{asset('img/details/back.png')}}");
+        padding: 0!important; 
         background-size: cover;
         background-attachment: fixed;
         background-color: #eff0f2!important;
@@ -169,7 +169,7 @@
             }
             .backcircle
              {
-             opacity:0!important;
+             /* opacity:0!important; */
             }
         }
 
@@ -219,17 +219,23 @@
 }
 .backcircle {
     position: absolute;
-    background-image: url('{{asset("img/details/circle.png")}}');
-    background-repeat: no-repeat;
-    background-size: 80%;
-    background-position: 125px -1px;
-    width: 100%;
-    height: 350px;
+    /* background-image: url('http://localhost:8000/img/details/circle.png'); */
+    /* background-repeat: no-repeat; */
+    /* background-size: 83%; */
+    /* background-position: 126px -1px; */
+    /* width: 112%; */
+    /* height: 350px; */
     display: block;
     /* margin-right: -308px; */
-    /* opacity: 0.6; */
+    /* opacity: 0.7; */
     justify-content: center;
     z-index: 0;
+    background-color: #FFF5E6;
+    border-radius: 50%;
+    width: 300px;
+    height: 300px;
+    right: -28px;
+    top: 32px;
 }
 .waveplayer {
     width: 100%;
@@ -287,77 +293,129 @@
                 direction: ltr;
                 opacity: 0; 
                 cursor: pointer;
-            }
-            
+                      }
+.timeline
+{
+  display: block!important;
+  font-weight: bold;
+}
+
+.priceDiv
+{
+  @if(!$chall->Pay)
+  border:2px solid #939393;
+  @endif  
+  font-size: 9pt;
+  align-items: center;
+  padding-block: 1px;
+  justify-content: space-between;
+}
+.priceDiv span
+{
+  color: #7e7e7e;
+  font-family: 'PEYDA-BLACK';
+  font-size: 7pt;  
+}
+#Paybtn
+{
+  font-size: 9pt;  
+  box-shadow: 4px 3px 10px -3px #000;
+  padding-block: 3px;
+  @if($chall->Pay)
+  background: #939393;
+  @else
+  background: #00772D;
+  @endif
+  color: #fff;
+    cursor: pointer; 
+}
 </style>
+@endsection
 @section('content')   
 
-    <div class="col-12 overflow-x-hidden overflow-y px-3" style="height: 88vh">
-      <div class="d-flex justify-content-center ">
-        <div class="backcircle"></div>
-        @if(in_array($chall->Chall->Type??'text',['image','movie','audio']))
-        <img src="{{asset('img/home/'.($chall->Chall->Type??'text').'.png')}}" class="earth z-1" alt="">
-        @else
-        <img src="{{asset('img/home/text.png')}}" class="earth z-1" alt="">
-        @endif
-        
+    <div class="col-12 overflow-x-hidden overflow-y px-3 position-relative" style="height: 88vh">
+      <div class="col-12 d-flex justify-content-around pb-1">
+        <span class="small" style="font-family: 'Peyda'">تاریخ چالش:</span>
+        <div class="d-flex gap-2 small">
+          <div class="d-flex flex-row-reverse gap-1 small">
+            <i class="fa fa-calendar-minus fa-regular"></i>
+            <span class="text-danger">{{jdate($chall->ExpiredAt)->format('y/m/d')}}</span>
+          </div>
+          <div class="d-flex flex-row-reverse gap-1 small">
+            <i class="fa fa-calendar-plus fa-regular"></i>
+            <span>{{jdate($chall->Date)->format('y/m/d')}}</span>
+          </div>
+        </div>
       </div>
-      <div class="px-3 position-relative  z-1">
+      <div class="d-flex position-relative">
+        <div class="backcircle"></div>
+        <img src="{{asset('img/child/challenge.png')}}" class="earth z-1" alt="">
+        
+      <div class="position-relative pt-5  z-1">
           <h1 class="text-right text-title" >چالش</h1>
-          <h2 class=" text-subtitle "  >
-            {{$chall->Chall->Title}}
+          <h2 class="pt-3 text-subtitle "  >
+            {{$chall->Title}}
           </h2>
       </div>
-      <div class="ChallFile mt-5 px-3">
+      </div>
+      <div class="position-relative ChallFile  z-1 px-3">
         <div class="col-12 d-flex gap-2 justify-content-center mt-3">
-          @if($chall->Chall->Type=='movie')
-          <video id="videoRes" poster="{{asset('img/Logored.png')}}" class="embed-responsive-16by9 picfile blurEffect" oncontextmenu="return false;"  controlsList="nodownload"  >
-            <source data-src="{{$chall->Chall->File}}" type="video/mp4">
+          @if($chall->Type=='movie')
+          <div class="col-12 position-relative">
+            <video id="videoRes" poster="{{asset('img/cover.png')}}" class="embed-responsive-16by9 picfile " oncontextmenu="return false;"  controlsList="nodownload"  >
+            <source data-src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" type="video/mp4">
           </video>
           <span class="playicon"></span>
-          @elseif($chall->Chall->Type=='audio')
-          <audio class="d-none" id="sounds" controlsList="nodownload" controls src="{{$chall->Chall->File}}" >
+          </div>
+          @elseif($chall->Type=='audio')
+          <audio class="d-none" id="sounds" controlsList="nodownload" controls src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" >
           </audio>
           @include('panel.audioplayer') 
-          @elseif($chall->Chall->Type=='image')
-          <div class="picfile" style="background-image: url({{$chall->Chall->File}})">
-            <a href="{{$chall->Chall->File}}" target="_blank" download>
+          @elseif($chall->Type=='image')
+          <div class="picfile" style="background-image: url({{$chall->File}})">
+            <a href="{{$chall->File}}" target="_blank" download>
               <img src="{{asset('img/details/download.png')}}" alt="Image" width="70" height="70">
               </a>
           </div>
           @endif
         </div>
       </div>
-      <div class="col-12 mt-4 px-3">
-        @if($chall->Chall->Body)
+      <div class="position-relative col-12 z-1 mt-4 px-3">
+        @if($chall->Body)
+        @php
+        $chall->Body=strtr($chall->Body,['%کاربر%'=> session('User')->Name]);
+        $chall->Body=strtr($chall->Body,["\n"=>"<br>"]);
+        if(!$chall->Done)
+        $chall->TimeLine=ltrim(jdate($chall->ExpiredAt)->format('d ام F ماه'),'0');
+        @endphp
         <div class="cardChall" >
           <div class="card-body">
-            @if(in_array(($chall->Chall->Type??'text'),['image','movie','audio']) || !$chall->Chall->Options??0)
-            <p id="mintxt"> {!! Str::limit($chall->Chall->Body, 200, ' ...<a onclick="mintxt.classList.toggle(\'d-none\');fulltxt.classList.toggle(\'d-none\');" class="btn btn-link"> بیشتر </a>')!!}</p>
-            <p id="fulltxt" class="d-none">{!!$chall->Chall->Body!!}</p>
+            @if(in_array(($chall->Type??'text'),['image','movie','audio']) || !$chall->Options??0)
+            <p id="mintxt"> {!! Str::limit($chall->Body, 200, ' ...<a onclick="mintxt.classList.toggle(\'d-none\');fulltxt.classList.toggle(\'d-none\');" class="btn btn-link"> بیشتر </a>')!!}</p>
+            <p id="fulltxt" class="d-none">{!!$chall->Body!!}</p>
             @else
-            <p> {!!$chall->Chall->Body!!}</p>
+            <p> {!!$chall->Body!!}</p>
             @endif
               @php
                   $num=['first'=>'الف','second'=>'ب','third'=>'ج','forth'=>'د','fifth'=>'ه','sixth'=>'و'];
-                  $answers=json_decode($chall->Chall->Options??'[]');
+                  $answers=json_decode($chall->Options??'[]');
               @endphp
             @if($answers)
             <p class="row text-center">
               @foreach ($answers as $index=>$opt)
                 @if($index!='ans')
                 <label for="" class="col-6 d-inline-flex gap-1">
-                  @if($chall->Chat->Closed??0 || $chall->Expired) 
-                  <i @if($chall->َMyAnswer==("پاسخ این سوال  ".$opt." است")) class="fa fa-circle-check fa-regular my-auto " @else class="fa fa-circle fa-regular my-auto"  @endif ></i>
+                  @if($chall->Closed??0 || $chall->Expired) 
+                  <i @if($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) class="fa fa-circle-check fa-regular my-auto " @else class="fa fa-circle fa-regular my-auto"  @endif ></i>
                   @else 
-                  <input type="radio" name="Answer" id="answer" @if($chall->َMyAnswer==("پاسخ این سوال  ".$opt." است")) checked  @endif  value="{{$opt}}">                  
+                  <input type="radio" name="Answer" id="answer" @if($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) checked  @endif  value="{{$opt}}">                  
                   @endif
                   {{$num[$index].') '.$opt}}
                   </label> 
                 @endif  
               @endforeach  
               <div class="d-flex justify-content-center">
-                <button onclick="setAnswer()" class="btn btn-master  @if(($chall->Chat->Closed??0) ) d-none @endif">ثبت پاسخ</button>
+                <button onclick="setAnswer()" class="btn btn-master  @if(($chall->Closed??0) ) d-none @endif">ثبت پاسخ</button>
               </div>                
                 
             </p>
@@ -368,23 +426,59 @@
         </div>
         @endif
       </div>
-      @if($chall->Chall->Type=='archive')
+      @if($chall->Type=='archive')
       <div class="d-flex justify-content-center col-12">
-        <a href="{{$chall->Chall->File}}"  target="_blank" download class="btn btn-master  ">دانلود فایل</a>
+        <a href="{{$chall->File}}"  target="_blank" download class="btn btn-master  ">دانلود فایل</a>
       </div>  
       @endif
+
     </div>
+      <div class="position-relative row px-3 ">
+        <div class="bottom-0 card justify-content-center mx-auto overflow-hidden position-fixed rounded-5 col-12 col-md-5"  style="z-index: 350;font-size: 9pt;height:40px">
+          <div class="align-items-center card-body d-flex gap-3 justify-content-center" style="">
+
+            @if(!$chall->Pay)      
+              @php
+              $spd= date_diff(date_create(session('User')->CallTime),now())->format("%R%a");
+              $f=$spd-$chall->Level;
+              $price=$chall->Price+(($f>2)?$f-2:0)*10000;
+              if($price>50000)
+              $price=50000;
+            @endphp
+            <i class="fa fa-arrow-left-long text-danger"></i>
+            <span class="">قیمت چالش:</span>
+              <b class="">{{number_format($price)}}</b>
+              <span class="">تومان</span>
+              <button  onclick="buyChall()" class="align-items-center btn btn-success col-4 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13.283" height="9.66" viewBox="0 0 13.283 9.66">
+                  <path id="payments_FILL0_wght400_GRAD0_opsz24" d="M47.849-794.566a1.747,1.747,0,0,1-1.283-.528,1.747,1.747,0,0,1-.528-1.283,1.747,1.747,0,0,1,.528-1.283,1.747,1.747,0,0,1,1.283-.528,1.747,1.747,0,0,1,1.283.528,1.747,1.747,0,0,1,.528,1.283,1.747,1.747,0,0,1-.528,1.283A1.747,1.747,0,0,1,47.849-794.566Zm-4.226,1.811a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853v-4.83a1.163,1.163,0,0,1,.355-.853,1.163,1.163,0,0,1,.853-.355h8.453a1.163,1.163,0,0,1,.853.355,1.163,1.163,0,0,1,.355.853v4.83a1.163,1.163,0,0,1-.355.853,1.163,1.163,0,0,1-.853.355Zm1.208-1.208h6.038a1.163,1.163,0,0,1,.355-.853,1.163,1.163,0,0,1,.853-.355v-2.415a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853H44.83a1.163,1.163,0,0,1-.355.853,1.163,1.163,0,0,1-.853.355v2.415a1.163,1.163,0,0,1,.853.355A1.163,1.163,0,0,1,44.83-793.962Zm6.641,3.623H41.208a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853v-6.641h1.208v6.641H51.471Zm-7.849-3.623v0Z" transform="translate(-40 800)" fill="#fff"/>
+                </svg>              
+                  خرید
+              </button>
+              @else
+              <i class="fa fa-arrow-left-long text-success"></i>
+              <span class="">قیمت چالش:</span>
+                <b class=""></b>
+                <span class=""></span>
+                <span class="align-items-center col-4 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;border: 1px solid #939393;color: #000;">
+                    <i class="fa fa-money-bills"></i>
+                    {{number_format($chall->Pay)}}تومان 
+                </span>
+              @endif
+          </div>
+        </div>
+      </div>
     {{-- <div class="leftnav">
-        @if($chall->Chall->Link)
-        <i class="fa fa-link c-pointer" @if($chall->Chall->Link) onclick="window.open('{{$chall->Chall->Link}}');window.focus();" @else disabled @endif></i>
+        @if($chall->Link)
+        <i class="fa fa-link c-pointer" @if($chall->Link) onclick="window.open('{{$chall->Link}}');window.focus();" @else disabled @endif></i>
         @endif
-        <i class="fa fa-download c-pointer" @if($chall->Chall->File) onclick="window.open('{{$chall->Chall->File}}');window.focus();" @else disabled @endif></i>   
+        <i class="fa fa-download c-pointer" @if($chall->File) onclick="window.open('{{$chall->File}}');window.focus();" @else disabled @endif></i>   
         <i class="fa fa-comments c-pointer" onclick="location.href='{{route('chat.index',[$chall->Id])}}'" ></i>
         <i class="fa fa-home c-pointer" onclick="location.href='{{route('home')}}'"></i>
     </div> --}}
     @endsection
     @section('script')
-    @if($chall->Chall->Type=='audio')
+    @if($chall->Type=='audio')
     <script>
         const audioPlayer=document.getElementById('sounds');
         const progressBar = document.getElementById('progress');
@@ -399,7 +493,7 @@
                       icon: 'error',
                       title: 'خطا',                        
                       confirmButtonText: 'بله',
-                      text:"{{auth()->user()->FullName}} \n  متاسفم فایلش پیدا نشد  \n شاید حذف شده "
+                      text:"{{session('User')->FullName}} \n  متاسفم فایلش پیدا نشد  \n شاید حذف شده "
 
                   });
           return 0;
@@ -453,10 +547,45 @@
     </script>
     @endif
         <script>
+          @if(!$chall->Pay)
+          function buyChall()
+          {
+            axios.post('{{route("chall.buy")}}', {chall:'{{$chall->Id}}',expired:'{{$chall->Expired}}',expiredAt:'{{$chall->ExpiredAt}}',Price:'{{$price}}',day:'{{$chall->Expire}}'})
+                  .then(response => { 
+                    if(response.data.success)
+                    {
+                      Swal.fire({
+                                  icon: 'success',                      
+                                  confirmButtonText: 'بله',
+                                  html:response.data.msg,
+                              });
+                              location.reload();
+                    }
+                        
+                    else
+                        Swal.fire({
+                                  icon: 'error',                      
+                                  confirmButtonText: 'بله',
+                                  html:response.data.msg,
+                              });
+                    })
+                  .catch(error => {
+                      console.log(error);
+                      Swal.fire({
+                                  icon: 'error',
+                                  title: 'خطا',                        
+                                  confirmButtonText: 'بله',
+                                  //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                                  html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+
+                              });
+                  });
+          }
+          @endif
           function setAnswer()
           {
             const Expired={{$chall->Expired}};
-            const closed={{$chall->Chat->Closed??0}};
+            const closed={{$chall->Closed??0}};
             var useranswer=document.querySelector('input[type=radio]:checked');              
 
             if(Expired || closed)
@@ -464,7 +593,7 @@
                 icon: 'error',
                 title: 'توجه',                
                 confirmButtonText: 'بله',
-                text:"{{auth()->user()->FullName}} \n زمان ارسال پاسخ این چالش گذشته "
+                text:"{{session('User')->FullName}} \n زمان ارسال پاسخ این چالش گذشته "
             });
             else
             {
@@ -498,7 +627,7 @@
                                   icon: 'error',
                                   title: 'خطا',                        
                                   confirmButtonText: 'بله',
-                                  //text:"{{auth()->user()->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                                  //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
                                   html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
 
                               });
@@ -510,7 +639,7 @@
                 icon: 'error',
                 title: 'توجه',                
                 confirmButtonText: 'بله',
-                text:"{{auth()->user()->FullName}} \n یه گزینه انتخاب کن "
+                text:"{{session('User')->FullName}} \n یه گزینه انتخاب کن "
                  });
               }
             }
@@ -518,7 +647,7 @@
           }
         </script>
         <script>
-           $(document).ready(function()
+          $(document).ready(function()
           {
             if(document.getElementById('videoRes'))
             {

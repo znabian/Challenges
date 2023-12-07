@@ -1,6 +1,66 @@
 @extends('layouts.childApp')
 @section('style')
     <style>
+      .Parent
+      {
+        word-break: break-word;
+        text-align: left;
+        font-size: 7pt;
+        border-radius: 11px 4px 4px 4px;
+        background-color: #ffffff1c;
+        padding: 5px 0px 0 0px;
+        border-left: 2px solid #ffffff47;
+      }
+      .Parent>div
+      {
+        padding-top: 2px;padding-left: 12px; gap: 4px;
+      }
+      .replydiv
+      {
+        bottom: -10px;
+        font-size: 8pt;
+        height: 29px;
+        position: absolute;
+        width: 92%;
+        margin-right: 13px;
+        margin-block: 0px;
+        z-index: 0;
+        background: #f3f3f3;
+        opacity: 0.5;
+        border-radius: 16px 16px 0 0px;
+        overflow: hidden;
+
+      }
+      .tools i
+      {
+        width: 23px;
+        height: 23px;
+        border-radius: 50%;
+        background-color: #98999f8c;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 10px;
+        cursor: pointer;
+      }
+      .tools i:hover
+      {
+        background-color: #98999f;
+      }
+      .toolsDiv
+      {
+        background-color: #98999f;
+        color: #fff;
+        font-size: 7pt;
+        padding: 4px;
+        border-radius: 4px;
+        height: auto;
+        margin: auto;
+        justify-content: space-around;
+        display: flex;
+        width: 60px;
+      }
       @media (min-width: 760px)
         {
             #content
@@ -12,18 +72,18 @@
         #content
          {
             color: #4b4b4b;
-            background-color: #ffffff;
+            background-color: #F7F7F7;
             /* height: 95vh; */
-            height: auto!important;
+             height: auto!important; 
+            /*height: 100vh;*/
             overflow: hidden;
-            /* height: 88vh; */
             /* padding: 4vw; */
         }
         #chats {
-            background: #faf8f9;
-            padding: 15px;
-            border-radius: 35px;
-            box-shadow: inset 0px 4px 11px -4px #b5b5b5;
+            background: #F7F7F7;
+            /* padding: 15px; */
+          /* border-radius: 35px; */
+          /* box-shadow: inset 0px 4px 11px -4px #b5b5b5; */
             height: 75vh;
             overflow: hidden;
         }
@@ -91,11 +151,11 @@
 
         .sender
         {
-          background-color: #ababab;
+          background-color: #fff;
           /* border:2px solid #7C80AB; */
           color: #2d2d2d;
            float:right;
-           border-radius:6px 0 6px 6px;
+           border-radius:16px 0 16px 16px;
            margin: 5px;
            padding: 6px;
            font-size: 8pt;
@@ -166,10 +226,10 @@
         }
         .resiver
         {
-            background-color: #cdc8b2;
+            background-color: #FEF3D2;
             color: #454442;
             float: left;
-            border-radius: 0 6px 6px 6px;
+            border-radius: 0 16px 16px 16px;
             margin: 5px;
             padding: 6px;
             font-size: 8pt;
@@ -199,19 +259,20 @@
         }
         .emoji {
           display: inline-block;
-          font-size: 10pt;
+          font-size: 15pt;
           margin: 5px;
           cursor: pointer;
         }
+
         #emojiBox {
             width: 85%;
-            height: 120px;
+            height: 230px;
             border: 1px solid #d0d1df91;
             overflow-y: scroll;
             background-color: #d0d1df91;
             border-radius: 6px;
             position: relative;
-            bottom: 26%;
+            bottom:292px;
             right: 7%;
             padding: 8px;
             padding-right: 10px;
@@ -325,16 +386,17 @@
 @section('title')  
   چت با پشتیبان  
 @endsection
+@section('subtitle')  
+<h6 onclick="location.href='{{route('chall.details',[$chall->Id])}}';" class="mb-2 text-center" style="cursor: pointer;font-size: 9pt">{{$chall->Title}}</h6> 
+@endsection
 @section('content')
-<h6 class="mb-2 text-center" style="font-size: 9pt">{{$chall->Chall->Title}}</h6> 
-  <div class="col-md-12 " id="chats">
+  <div class="col-md-12 mt-2" id="chats">
     @php
-        $chats=$chall->Chat->MSG()->orderBy('Date')->get();
         $pre=0;
     @endphp
     <div id="chatBox">
      @foreach($chats->groupBy(function($chats) {
-        return date('Y-m-d',strtotime($chats->Date));
+        return date('Y-m-d',strtotime($chats['Date']));
         }) as $date => $messages)
         @if(jdate($date)->format('Y-m-d')!=jdate()->format('Y-m-d'))
         <h6 class="datechat" >{{jdate($date)->format('d F')}}</h6>
@@ -347,29 +409,54 @@
           else
           $dates[]='امروز';
       @endphp
-        @foreach($messages as $msg)
-          <div class="col-md-12 d-flex @if(auth()->user()->Id!=$msg->Sender) flex-row-reverse @endif " >
+        @foreach($messages as $msg)        
+        @php
+            $msg=(object)$msg;
+        @endphp
+          <div id="msg_{{$msg->Id}}" class="col-md-12 d-flex @if($pre!=$msg->Sender) mt-2 @endif  @if(session('User')->Id!=$msg->Sender) flex-row-reverse @endif " >
               {{-- <div class="" style="text-align: left;"> --}}
-                <img src="{{ asset('img/user.png') }}" class="img-circle @if(auth()->user()->Id==$msg->Sender) senderImg @endif @if($pre==$msg->Sender) opacity-0 @endif " alt="User Image">                          
+                <img src="{{ asset('img/user.png') }}" class="img-circle @if(session('User')->Id==$msg->Sender) senderImg @endif @if($pre==$msg->Sender) opacity-0 @endif " alt="User Image">                          
               {{-- </div> --}}
               @if($pre!=$msg->Sender)
-                @if(auth()->user()->Id==$msg->Sender)
+                @if(session('User')->Id==$msg->Sender)
                 <svg width="10" height="10" class="STriangle">
-                  <polygon points="0,0 0,10 10,0"   fill="#ababab" />
+                  <polygon points="0,0 0,10 10,0"   fill="#fff" />
                 </svg>
                 @else
                 <svg width="10" height="10" class="RTriangle">
-                  <polygon points="0,0 10,0 10,10" fill="#cdc8b2"  />
+                  <polygon points="0,0 10,0 10,10" fill="#FEF3D2"  />
                 </svg>
                 @endif
               @else
-              <svg width="10" height="10" class="@if(auth()->user()->Id==$msg->Sender) STriangle @else RTriangle @endif"></svg>
+              <svg width="10" height="10" class="@if(session('User')->Id==$msg->Sender) STriangle @else RTriangle @endif"></svg>
               @endif
               
-              <div class=" @if(auth()->user()->Id==$msg->Sender) @if($pre==$msg->Sender) preSender @endif sender @else @if($pre==$msg->Sender) preResiver @endif resiver @endif  col-md-6 col-8 row  ">            
+              <div class=" @if(session('User')->Id==$msg->Sender) @if($pre==$msg->Sender) preSender @endif sender @else @if($pre==$msg->Sender) preResiver @endif resiver @endif  col-md-6 col-8 row  ">            
                 <div class="col-md-12 text-right" style="word-break: break-word;">
                   @if($pre!=$msg->Sender) 
-                  <b>{{$msg->SenderUser->FullName}}</b>
+                  <b>{{$msg->SenderName}}</b>
+                  @endif
+                  @if($msg->Parent)
+                  <div class="col-md-12 text-right Parent">
+                    <div>
+                      @php
+                      $body=$txt=$mFile='';
+                      $rep=(object)$chats->where('Id',$msg->Parent)->first();
+                      if($chats->where('Id',$msg->Parent)->count())
+                      {
+                        $txt=str_replace("\n"," ",$rep->Body);
+                        $body=Str::limit($txt, 20, ' ');
+                        $mfile=$rep->File;
+                        if(strlen($txt)>20)
+                        $body.='...';
+                        $body=($body)?$body:((Str::contains($mfile, '_voice__'))?"پیام صوتی":'رسانه');
+                      }
+                      
+                      @endphp
+                      <b class="">{{$rep->SenderName??''}}</b>
+                      <p>{{$body}}</p>
+                    </div>
+                  </div>
                   @endif
                   @if($msg->Body)
                       <p>{!!strtr($msg->Body,["\n"=>"<br>"])!!}</p>
@@ -406,19 +493,48 @@
                   @else
                   <div class="d-flex gap-1" style="cursor: pointer;word-break: break-word;padding: 10px;" onclick="window.open('{{$msg->File}}','_blank')">
                     <i class=" fa fa-2x fa-file fa-regular"></i>
-                    <b dir="ltr" style="font-size: 5pt;">{{last(explode('/Chat/'.$chall->Id.'/'.$chall->Chat->Id.'/',$msg->File))}}</b>                
+                    <b dir="ltr" style="font-size: 5pt;">{{last(explode('/Chat/'.$chall->Id.'/'.$chall->ChatId.'/',$msg->File))}}</b>                
                   </div>
                   @endif
                 </div>
-                <div class="@if(auth()->user()->Id==$msg->Sender) p-0 text-right  @else text-left @endif ">
-                  @if(auth()->user()->Id==$msg->Sender)
+                <div class="@if(session('User')->Id==$msg->Sender) p-0 text-right  @else text-left @endif ">
+                  @if(session('User')->Id==$msg->Sender)
                   <i class="fa  @if($msg->Seen) fa-check-double px-1 text-3b407a @else fa-check @endif "></i>
                   @endif
                   <label class="fw-bolder number">{{jdate($msg->Date)->format('H:i:s')}}</label>
                 </div>
               
               </div> 
-
+              <div class="tools d-flex flex-wrap-reverse gap-2 h-100 my-auto p-1 @if(!$chall->Closed) d-none @endif " id="divtools_{{$msg->Id}}" >
+                @if(!$chall->Closed)
+                  @if(session('User')->Id==$msg->Sender)
+                    @if(date_create($msg->Date)->modify('+24 hours')>=date_create(date('Y-m-d H:i:s')))                  
+                      <div class="d-flex gap-1 @if(session('User')->Id==$msg->Resiver) flex-row-reverse @endif " onclick="removemsg({{$msg->Id}});" >
+                        <i class="fa fa-trash"></i>
+                        <div id="divtrash{{$msg->Id}}" class="toolsDiv d-none">حذف</div>
+                      </div>
+                      @if($msg->Body)
+                      <div class="d-flex gap-1 @if(session('User')->Id==$msg->Resiver) flex-row-reverse @endif " onclick="editmsg({{$msg->Id}});">
+                        <i class="fa fa-pencil"></i>
+                        <div id="divpencil{{$msg->Id}}" class="toolsDiv d-none">ویرایش</div>
+                      </div>
+                      @endif
+                    @endif
+                  @endif
+                  @if($msg->Body)                  
+                    <div class="d-flex gap-1 @if(session('User')->Id==$msg->Resiver) flex-row-reverse @endif " onclick="copymsg({{$msg->Id}});" >
+                      <i class="fa fa-copy"></i>
+                      <div id="divcopy{{$msg->Id}}" class="toolsDiv d-none">کپی</div>
+                    </div>
+                  @endif
+                  <div class="d-flex gap-1 @if(session('User')->Id==$msg->Resiver) flex-row-reverse @endif " onclick="replymsg({{$msg->Id}});">
+                    <i class="fa fa-reply"></i>
+                    <div id="divreply{{$msg->Id}}" class="toolsDiv d-none">پاسخ</div>
+                  </div>                  
+                @elseif($chall->Answer==$msg->Id)
+                <i class="fa fa-check bg-success"></i>
+                @endif
+              </div>
           </div> 
           
           @php
@@ -433,15 +549,21 @@
      @endforeach
     </div>
    
-     @if($chall->Chat->Closed)
+     @if($chall->Closed)
 <div class="text-center " style="">
-  <p class="alert border-top">{{auth()->user()->FullName}}  چت این چالش بسته شده </p>
+  <p class="alert border-top">{{session('User')->FullName}}  چت این چالش بسته شده </p>
 </div>
 @elseif($chall->Expired)
 <div class="text-center " style="">
-  <p class="alert border-top">{{auth()->user()->FullName}}  زمان تحویل این چالش گذشته </p>
+  <p class="alert border-top">{{session('User')->FullName}}  زمان تحویل این چالش گذشته </p>
 </div>
 @else
+<div class="position-relative text-center d-none" id="ReplyConter">
+  <div class="d-flex p-2 replydiv">
+    <i class="col-2 fa fa-close c-pointer" onclick="rmReply()"></i>
+    <p class="col" id="replyTxt"></p>        
+  </div>
+</div>
 <div class="col-md-9 d-flex  mx-auto sendbox">
   <div class="d-flex chatbox-rightbtn" >
   <button class="btn fa fa-paperclip" onclick="emojiBox.classList.add('d-none');fileatt.click()"></button>
@@ -450,14 +572,13 @@
   </div>
   <textarea name="" id="msgtxt" rows="2" class="col-md-9 form-control"  placeholder="متن پیام"></textarea>
   <div class="d-flex flex-row-reverse chatbox-leftbtn" >
-    <button class="fa fa-paper-plane btn "  onclick="sendmsg(this)"></button>
+    <button class="fa fa-paper-plane btn " id="btnSMSG" onclick="sendmsg(this)"></button>
+    <button class="fa fa-check-circle btn d-none" id="btnEMSG" onclick="updatemsg(this)"></button>
     {{-- <button class="btn  fa fa-file fa-regular" style="border: none;" onclick="fileatt.click()"></button> --}}
     <input type="file" name="" id="fileatt" onchange="showprewview(this);" class="d-none" accept="">
   </div>
 </div>
 @endif
-  </div> 
-
 <div id="emojiBox" class="d-none">
   <div class="emoji">😉</div>
   <div class="emoji">😀</div>
@@ -560,6 +681,8 @@
   <div class="emoji">🙌</div>
   <div class="emoji">🤲</div>
 </div>
+  </div> 
+
 <dialog id="dialogFile" style="height: unset">
   <div class="d-flex">
     <h6 class="col-11">ارسال فایل</h6>
@@ -586,7 +709,7 @@
 <dialog id="recordVoice" style="height: unset">
   <div class="d-flex">
     <h6 class="col-11">ارسال صدا</h6>
-    <button class="btn btn-close " id="recordVoice_del" onclick="delvoice();recordVoice.close()"></button>
+    <button class="btn btn-close " id="recordVoice_del" onclick="stopRecording(rcdBtn);delvoice();recordVoice.close()"></button>
   </div>
   <div class=" p-3" id="record">
     <div class="bg-body-secondary d-flex p-2 p-md-4">
@@ -605,7 +728,7 @@
         </div>
       </div>
     
-      <div class="circle btn btn-dark bg-dark" onclick="startRecording(this)">
+      <div class="circle btn btn-dark bg-dark" id="rcdBtn" onclick="startRecording(this)">
         <i class="fa fa-microphone"></i>
       </div>
     </div>
@@ -639,10 +762,27 @@
 @endsection
 @section('script')
 <script>
+  var replyId=0;
+  var msgs=[];
+  getMsgs({!!$chats->toJson()!!});
   $(chatBox).ready(function()
   {
     chatBox.scrollTo( chatBox.scrollHeight, chatBox.scrollHeight); 
   });
+  
+  function getMsgs(allItems)
+   {
+    var options = { day: "2-digit", month: "long" };
+    allItems.forEach(function(data){
+      
+       var date = new Date(data.Date);
+       data.Time = new Date(data.Date).toLocaleDateString("fa-IR", { hour: '2-digit', minute: '2-digit',second:'2-digit' }).split(',')[1];
+       data.Date2 = date.toLocaleDateString("fa-IR", options);
+       if(data.Date2==new Date().toLocaleDateString("fa-IR", options))
+       data.Date2="امروز";
+       msgs.push(data);
+    });
+   }
   chatBox.addEventListener('click', () => {emojiBox.classList.add('d-none'); });
   const emojiButtons = document.querySelectorAll('.emoji');
   emojiButtons.forEach(button => {
@@ -652,18 +792,68 @@
       messageInput.value += emoji;
       });
     });
-</script>
-<script>
-  var recording=0;
-  let chunks = []; 
+    function replymsg(msgid)
+    {
+      replyId=msgid;
+      ReplyConter.classList.remove('d-none');
+      var msg=msgs.filter(function(item){if(item.Id==replyId) return item;});
+      if(msg[0].Body)
+      {
+        var body=msg[0].Body.replace("\n"," ").substring(0,20);
+         if(msg[0].Body.replace("\n"," ").length>20)
+          body+='...';
+      }
+      
+      var file=msg[0].File;
+     
+      replyTxt.innerHTML=(body)?body:((file.includes('_voice__'))?"پیام صوتی":'رسانه');
+      msgtxt.value='';
+      btnEMSG.classList.add('d-none');
+      btnSMSG.classList.remove('d-none');
+      document.querySelector('button.fa.fa-microphone').disabled=false;
+      document.querySelector('button.fa.fa-paperclip').disabled=false;
+    }
+    function rmReply()
+    {
+      replyId=0;
+      ReplyConter.classList.add('d-none');
+      replyTxt.innerHTML='';
+      btnEMSG.classList.add('d-none');
+      btnSMSG.classList.remove('d-none');
+      msgtxt.value='';
+      document.querySelector('button.fa.fa-microphone').disabled=false;
+      document.querySelector('button.fa.fa-paperclip').disabled=false;
+    }
+    function editmsg(msgid)
+    {
+      replyId=msgid;
+      ReplyConter.classList.remove('d-none');
+      var msg=msgs.filter(function(item){if(item.Id==replyId) return item;});
+      if(msg[0].Body)
+      {
+      var body=msg[0].Body.replace("\n"," ").substring(0,20);
+      if(msg[0].Body.replace("\n"," ").length>20)
+      body+='...';
+      }
+      var file=msg[0].File;
+      replyTxt.innerHTML=(body)?body:((file.includes('_voice__'))?"پیام صوتی":'رسانه');
+      msgtxt.value=msg[0].Body;msgtxt.focus();
+      btnEMSG.classList.remove('d-none');
+      btnSMSG.classList.add('d-none');
+      document.querySelector('button.fa.fa-microphone').disabled=true;
+      document.querySelector('button.fa.fa-paperclip').disabled=true;
+    }
+    
+    var recording=0;
+    let chunks = []; 
     var progressUpdate=1;
-    var ChatId='{{$chall->Chat->Id}}';
-  var uId='{{auth()->user()->Id}}';
-  var dates={!!json_encode($dates??[])!!};
+    var ChatId='{{$chall->ChatId}}';
+    var uId='{{session('User')->Id}}';
+    var dates={!!json_encode($dates??[])!!};
 
-  const bars = document.querySelectorAll('.bar');
+    const bars = document.querySelectorAll('.bar');
     var equ=0;
-  var blobsAduio=null;
+    var blobsAduio=null;
     function animateEqualizer() {
       bars.forEach((bar, index) => {
         const height = Math.floor(Math.random() *20) + 5;
@@ -683,7 +873,7 @@
                       icon: 'error',
                       title: 'خطا',                        
                       confirmButtonText: 'بله',
-                      text:"{{auth()->user()->FullName}} \n  متاسفم فایلش پیدا نشد "
+                      text:"{{session('User')->FullName}} \n  متاسفم فایلش پیدا نشد "
 
                   });
           return 0;
@@ -712,8 +902,8 @@
         sounds.currentTime=value
         sounds.play();
       }
-  function startRecording(thisButton)
-  { 
+      function startRecording(thisButton)
+      { 
         if(recording)
         stopRecording(thisButton);
         else
@@ -797,7 +987,7 @@
                       icon: 'error',
                       title: 'دسترسی به میکروفن',                        
                       confirmButtonText: 'بله',
-                      text:"{{auth()->user()->FullName}} \n  اجازه دسترسی به میکروفن رو نداریم "
+                      text:"{{session('User')->FullName}} \n  اجازه دسترسی به میکروفن رو نداریم "
 
                   });
           }); 
@@ -808,7 +998,7 @@
                       icon: 'error',
                       title: 'دسترسی به میکروفن',                        
                       confirmButtonText: 'بله',
-                      text:"{{auth()->user()->FullName}} \n دسترسی به میکروفن امکان نداره بهتره فایل ضبط شده ات رو ارسال کنی"
+                      text:"{{session('User')->FullName}} \n دسترسی به میکروفن امکان نداره بهتره فایل ضبط شده ات رو ارسال کنی"
 
                   });
         }
@@ -816,38 +1006,38 @@
       
   } 
 
-function stopRecording(thisButton) 
-{ 
+  function stopRecording(thisButton) 
+  { 
 
-  recording=0;
-	// Stop the recording 
-	window.mediaRecorder.stop(); 
+    recording=0;
+    // Stop the recording 
+    window.mediaRecorder.stop(); 
 
-	// Stop all the tracks in the 
-	// received media stream 
-	window.mediaStream.getTracks() 
-	.forEach((track) => { 
-		track.stop(); 
-	}); 
-  sendVoicebtn.classList.remove('d-none');
-  thisButton.classList.add('btn-dark','bg-dark');
-		thisButton.classList.remove('btn-danger','bg-danger');
-    clearInterval(equ);
-} 
- function delvoice()
- {
-  blobsAduio=null;
-  sendVoicebtn.classList.add('d-none');
-  record.classList.remove('d-none');
-        prev.classList.add('d-none');
-        bars.forEach((bar, index) => {
-        bar.style.height = '0px';
-      });
-      playerRecord.currentTime=0;
-      progressUpdate=1;
-      playerRecord.src='';
-      playedRecord.style.width ='0%';
- }
+    // Stop all the tracks in the 
+    // received media stream 
+    window.mediaStream.getTracks() 
+    .forEach((track) => { 
+      track.stop(); 
+    }); 
+    sendVoicebtn.classList.remove('d-none');
+    thisButton.classList.add('btn-dark','bg-dark');
+      thisButton.classList.remove('btn-danger','bg-danger');
+      clearInterval(equ);
+  } 
+  function delvoice()
+  {
+    blobsAduio=null;
+    sendVoicebtn.classList.add('d-none');
+    record.classList.remove('d-none');
+          prev.classList.add('d-none');
+          bars.forEach((bar, index) => {
+          bar.style.height = '0px';
+        });
+        playerRecord.currentTime=0;
+        progressUpdate=1;
+        playerRecord.src='';
+        playedRecord.style.width ='0%';
+  }
         
         
       document.querySelectorAll("audio[id^='player']").forEach(function(itm){
@@ -889,10 +1079,31 @@ function stopRecording(thisButton)
         var upformData = new FormData(document.getElementById('frm3'));
         upformData.append('voice', blobsAduio, 'voice.mp3');
 
-        upformData.append('ChatId', '{{$chall->Chat->Id}}');
+        upformData.append('ChatId', '{{$chall->ChatId}}');
         upformData.append('ChallId', '{{$chall->Id}}');
-        upformData.append('Resiver', '{{$chall->Chat->Resiver}}');
-        upformData.append('Sender', '{{auth()->user()->Id}}');
+        upformData.append('Resiver', '{{$chall->ChatResiver}}');
+        upformData.append('Sender', '{{session('User')->Id}}');
+        if(replyId)
+        upformData.append('Parent', replyId);
+
+          var data={Body:'',
+          Date:"",Date2:"",
+          File:"_voice__",
+          Logo:"{{ asset('img/user.png') }}",
+          Parent:replyId??null,
+          ResiverId:"{{$chall->ChatResiver}}",
+          Sender:"{{session('User')->FullName}}",
+          SenderId:"{{session('User')->Id}}",
+          Time:"",chatId:"no"};
+          
+          var date = new Date();
+          data.Time = new Date().toLocaleDateString("fa-IR", { hour: '2-digit', minute: '2-digit',second:'2-digit' }).split(',')[1];
+          data.Date = date.toLocaleDateString("fa-IR", { day: "2-digit", month: "long" });
+          data.Date2="امروز";
+          recordVoice.close();
+          obj.disabled=false;
+          obj.classList.remove('disabled');
+          showmessages(data,1);
                     
         axios.post('{{route("chat.send")}}', upformData, {
         headers: {
@@ -901,20 +1112,53 @@ function stopRecording(thisButton)
         })
         .then(response => { 
           recordVoice.close();
-          URL.revokeObjectURL(document.getElementById('playerRecord'));
+          msg_no.remove();
+          URL.revokeObjectURL(document.getElementById('playerRecord'));          
+          rmReply();
            showmessages(response.data);
            obj.classList.remove('disabled');
             obj.disabled=false;
           })
         .catch(error => {
             console.log(error);
+
+            msg_no.querySelector('.fa-spinner').classList.add("fa-circle-exclamation","text-danger"); 
+            msg_no.querySelector('.fa-spinner').classList.remove("fa-spinner"); 
+            
+            var cancelDiv = document.createElement("div");
+            cancelDiv.classList.add("d-flex", "gap-1");
+            cancelDiv.onclick = function() {
+              msg_no.remove();
+            };
+           /* cancelDiv.onmouseover = function() {
+              document.getElementById("cancelDivno").classList.remove("d-none");
+            };
+            cancelDiv.onmouseout = function() {
+              document.getElementById("cancelDivno").classList.add("d-none");
+            };*/
+
+            var cancelIcon = document.createElement("i");
+            cancelIcon.classList.add("fa", "fa-trash");
+            cancelDiv.appendChild(cancelIcon);
+
+            var cancelTextDiv = document.createElement("div");
+            cancelTextDiv.id = "divcancelno" ;
+            cancelTextDiv.classList.add("toolsDiv", "d-none");
+            cancelTextDiv.innerHTML = "حذف";
+            cancelDiv.appendChild(cancelTextDiv);
+            divtools_no.innerHTML='';
+            divtools_no.appendChild(cancelDiv);
+
+            
+            
+            rmReply();
             obj.disabled=false;
             obj.classList.remove('disabled');
             Swal.fire({
                         icon: 'error',
                         title: 'پیام ارسال نشد',                        
                         confirmButtonText: 'بله',
-                        //text:"{{auth()->user()->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                        //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
                          html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
 
                     });
@@ -926,7 +1170,7 @@ function stopRecording(thisButton)
                         icon: 'error',
                         title: 'خطا ',                        
                         confirmButtonText: 'بله',
-                        text:"{{auth()->user()->FullName}} \n اول باید صداتو ضبط کنی"
+                        text:"{{session('User')->FullName}} \n اول باید صداتو ضبط کنی"
                          
 
                     });
@@ -1013,12 +1257,282 @@ function stopRecording(thisButton)
                 icon: 'error',
                 title: 'توجه',                
                 confirmButtonText: 'بله',
-                text:"{{auth()->user()->FullName}} \n فایل ارسالی بایستی کمتر از 100 مگ باشد"
+                text:"{{session('User')->FullName}} \n فایل ارسالی بایستی کمتر از 100 مگ باشد"
             });
           }
         } 
         else
         document.getElementById('dialogFile').close();    
+    }
+    function updatemsg(obj)
+    {
+      obj.disabled=true;
+      obj.classList.add('disabled');
+      emojiBox.classList.add('d-none');
+      var msg=msgtxt.value;
+      msgtxt.value=msg2.value='';
+      
+      if(msg)
+      {
+        var upformData = new FormData(document.getElementById('frm3'));
+        
+        upformData.append('Body', msg);
+        if(replyId)
+        upformData.append('Id', replyId);
+
+        upformData.append('ChatId', '{{$chall->ChatId}}');
+        upformData.append('ChallId', '{{$chall->Id}}');
+        upformData.append('Resiver', '{{$chall->ChatResiver}}');
+
+
+        elemEdit=document.getElementById('msg_'+replyId) ;
+        elemEdit.querySelector('.fa-check , .fa-check-double').classList.add("fa-spinner"); 
+        elemEdit.querySelector('.fa-check , .fa-check-double').classList.remove("fa-check" , "fa-check-double"); 
+        document.getElementById('divtools_'+replyId).innerHTML='';
+
+        axios.post('{{route("chat.update")}}', upformData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+        })
+        .then(response => { 
+          /*chatBox.innerHTML='';
+          messages=response.data.msgs;
+          dates=[];
+            preSender=0;
+            showAllmessages(messages);
+            //msgs=messages;*/
+            obj.disabled=false;
+            obj.classList.remove('disabled');
+            rmReply();
+          })
+        .catch(error => {
+            console.log(error);
+            var msgedit=msgs.filter(function(item){if(item.Id==replyId) return item;});
+            
+            elemEdit=document.getElementById('msg_'+replyId) ;
+            if(parseInt(msgedit[0].Seen))
+            elemEdit.querySelector('.fa-spinner').classList.add("fa-check-double"); 
+            else
+            elemEdit.querySelector('.fa-spinner').classList.add("fa-check"); 
+            elemEdit.querySelector('.fa-spinner').classList.remove("fa-spinner"); 
+            var divtools=document.getElementById('divtools_'+replyId);
+            {
+              if (uId == parseInt(msgedit[0].SenderId??msgedit[0].Sender))
+              {
+                var deleteDiv = document.createElement("div");
+                deleteDiv.classList.add("d-flex", "gap-1");
+                if (uId == parseInt(msgedit[0].ResiverId??msgedit[0].Resiver) )
+                deleteDiv.classList.add("flex-lg-row-reverse");
+                deleteDiv.onclick = function() {
+                  removemsg(msgedit[0].chatId??msgedit[0].Id);
+                };
+                /*deleteDiv.onmouseover = function() {
+                  document.getElementById("divtrash" + msgedit[0].chatId??msgedit[0].Id).classList.remove("d-none");
+                };
+                deleteDiv.onmouseout = function() {
+                  document.getElementById("divtrash" + msgedit[0].chatId??msgedit[0].Id).classList.add("d-none");
+                };*/
+                
+                var trashIcon = document.createElement("i");
+                trashIcon.classList.add("fa", "fa-trash");
+                deleteDiv.appendChild(trashIcon);
+
+                var deleteTextDiv = document.createElement("div");
+                deleteTextDiv.id = "divtrash" + msgedit[0].chatId??msgedit[0].Id;
+                deleteTextDiv.classList.add("toolsDiv", "d-none");
+                deleteTextDiv.innerHTML = "حذف";
+                deleteDiv.appendChild(deleteTextDiv);
+
+                divtools.appendChild(deleteDiv);
+
+              if (msgedit[0].Body) 
+              {
+                var editDiv = document.createElement("div");
+                editDiv.classList.add("d-flex", "gap-1");
+                if (uId == parseInt(msgedit[0].ResiverId??msgedit[0].Resiver))
+                  editDiv.classList.add("flex-lg-row-reverse");
+                editDiv.onclick = function() {
+                  editmsg(msgedit[0].chatId??msgedit[0].Id);
+                };
+               /* editDiv.onmouseover = function() {
+                  document.getElementById("divpencil" + msgedit[0].chatId??msgedit[0].Id).classList.remove("d-none");
+                };
+                editDiv.onmouseout = function() {
+                  document.getElementById("divpencil" + msgedit[0].chatId??msgedit[0].Id).classList.add("d-none");
+                };*/
+                
+                var pencilIcon = document.createElement("i");
+                pencilIcon.classList.add("fa", "fa-pencil");
+                editDiv.appendChild(pencilIcon);
+                
+                var editTextDiv = document.createElement("div");
+                editTextDiv.id = "divpencil" + msgedit[0].chatId??msgedit[0].Id;
+                editTextDiv.classList.add("toolsDiv", "d-none");
+                editTextDiv.innerHTML = "ویرایش";
+                editDiv.appendChild(editTextDiv);
+
+                divtools.appendChild(editDiv);
+
+
+              }
+            }
+            
+            if(msgedit[0].Body)
+            {
+              var copyDiv = document.createElement("div");
+                copyDiv.classList.add("d-flex", "gap-1");
+                if (uId == parseInt(msgedit[0].ResiverId??msgedit[0].Resiver))
+                  copyDiv.classList.add("flex-row-reverse");
+                copyDiv.onclick = function() {
+                  copymsg(msgedit[0].chatId??msgedit[0].Id);
+                };
+               /* copyDiv.onmouseover = function() {
+                  document.getElementById("divcopy" + msgedit[0].chatId??msgedit[0].Id).classList.remove("d-none");
+                };
+                copyDiv.onmouseout = function() {
+                  document.getElementById("divcopy" + msgedit[0].chatId??msgedit[0].Id).classList.add("d-none");
+                };*/
+                
+                var copyIcon = document.createElement("i");
+                copyIcon.classList.add("fa", "fa-copy");
+                copyDiv.appendChild(copyIcon);
+                
+                var copyTextDiv = document.createElement("div");
+                copyTextDiv.id = "divcopy" + msgedit[0].chatId??msgedit[0].Id;
+                copyTextDiv.classList.add("toolsDiv", "d-none");
+                copyTextDiv.innerHTML = "کپی";
+                copyDiv.appendChild(copyTextDiv);
+
+                divtools.appendChild(copyDiv);
+            }
+            var replyDiv = document.createElement("div");
+            replyDiv.classList.add("d-flex", "gap-1");
+            if (uId == parseInt(msgedit[0].ResiverId??msgedit[0].Resiver) )
+            replyDiv.classList.add("flex-row-reverse");
+            replyDiv.onclick = function() {
+              replymsg(msgedit[0].chatId??msgedit[0].Id);
+            };
+            /*replyDiv.onmouseover = function() {
+              document.getElementById("divreply" + msgedit[0].chatId??msgedit[0].Id).classList.remove("d-none");
+            };
+            replyDiv.onmouseout = function() {
+              document.getElementById("divreply" + msgedit[0].chatId??msgedit[0].Id).classList.add("d-none");
+            };*/
+
+            var replyIcon = document.createElement("i");
+            replyIcon.classList.add("fa", "fa-reply");
+            replyDiv.appendChild(replyIcon);
+
+            var replyTextDiv = document.createElement("div");
+            replyTextDiv.id = "divreply" + msgedit[0].chatId??msgedit[0].Id;
+            replyTextDiv.classList.add("toolsDiv", "d-none");
+            replyTextDiv.innerHTML = "پاسخ";
+            replyDiv.appendChild(replyTextDiv);
+
+            divtools .appendChild(replyDiv);
+
+                  
+        }
+            setMenu([document.getElementById('msg_'+replyId)]);
+            
+            rmReply();
+            obj.disabled=false;
+            obj.classList.remove('disabled');
+            Swal.fire({
+                        icon: 'error',
+                        title: 'پیام ویرایش نشد',                        
+                        confirmButtonText: 'بله',
+                        //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                         html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+
+                    });
+         });
+         
+      }
+      else
+      {
+        obj.disabled=false;obj.classList.remove('disabled');msgtxt.focus();
+      }
+      
+    }
+    function copymsg(msgid)
+    {
+      var msg=msgs.filter(function(item){if(item.Id==msgid) return item;});
+      if(msg[0].Body)
+      {
+        const elem = document. createElement('textarea');
+        elem. value = msg[0].Body;
+        document. body. appendChild(elem);
+        elem. select();
+        document. execCommand('copy');
+        document. body. removeChild(elem);
+        Swal.fire('انجام شد','{{session('User')->FullName}} پیامت کپی شد','success');  
+
+      }      
+    }
+    function removemsg(msgid)
+    {
+      Swal.fire({
+                title: 'حذف پیام',
+                text: "{{session('User')->FullName}}  می خوای این پیام حذف شه؟",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله',
+                cancelButtonText: 'نه',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                  var upformData = new FormData(document.getElementById('frm3'));
+                      upformData.append('Id', msgid);
+
+                      upformData.append('ChatId', '{{$chall->ChatId}}');
+                      upformData.append('ChallId', '{{$chall->Id}}');
+                      upformData.append('Resiver', '{{$chall->ChatResiver}}');
+                                  
+                      axios.post('{{route("chat.delete")}}', upformData, {
+                      headers: {
+                          'Content-Type': 'multipart/form-data'
+                      }
+                      })
+                      .then(response => { 
+                        /*document.getElementById('msg_'+msgid).remove();
+                        var index=msgs.findIndex(function(item){return item.Id==msgid;});
+                        var msg=msgs[index];msgs.splice(index,1);
+                       
+                        if(chatBox.childElementCount<=1 )
+                        {
+                          chatBox.innerHTML='';
+                          dates=[];
+                          preSender=0;
+                        }
+                        var items=msgs.filter(function(item){return item.Date2==msg.Date2;});
+                        msg.Date2=msg.Date2.replace(/[۰-۹]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 1728));
+                        if(items.length<1)
+                        chatBox.querySelectorAll(".datechat").forEach(function(elm){if(elm.innerText==msg.Date2) elm.remove();})
+                         */
+                         /*chatBox.innerHTML='';
+                        dates=[];
+                          preSender=0;
+                        showAllmessages(response.data.msgs);*/
+                        })
+                      .catch(error => {
+                          console.log(error);
+                          rmReply();
+                          Swal.fire({
+                                      icon: 'error',
+                                      title: 'پیام حذف نشد',                        
+                                      confirmButtonText: 'بله',
+                                      //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                                      html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+
+                                  });
+                      });
+                }
+            });
+      
+      
     }
     function sendmsg(obj,msgBox=0)
     {
@@ -1039,31 +1553,83 @@ function stopRecording(thisButton)
         upformData.append('file', file[0]);
         if(msg)
         upformData.append('Body', msg);
+        if(replyId)
+        upformData.append('Parent', replyId);
 
-        upformData.append('ChatId', '{{$chall->Chat->Id}}');
+        upformData.append('ChatId', '{{$chall->ChatId}}');
         upformData.append('ChallId', '{{$chall->Id}}');
-        upformData.append('Resiver', '{{$chall->Chat->Resiver}}');
-        upformData.append('Sender', '{{auth()->user()->Id}}');
-                    
+        upformData.append('Resiver', '{{$chall->ChatResiver}}');
+        upformData.append('Sender', '{{session('User')->Id}}');
+        
+        var data={Body:msg,
+            Date:"",Date2:"",
+            File:"",
+            Logo:"{{ asset('img/user.png') }}",
+            Parent:replyId??null,
+            ResiverId:"{{$chall->ChatResiver}}",
+            Sender:"{{session('User')->FullName}}",
+            SenderId:"{{session('User')->Id}}",
+            Time:"",chatId:"no"};
+          if(file.length)
+            data.File= "file";
+            var date = new Date();
+            data.Time = new Date().toLocaleDateString("fa-IR", { hour: '2-digit', minute: '2-digit',second:'2-digit' }).split(',')[1];
+            data.Date = date.toLocaleDateString("fa-IR", { day: "2-digit", month: "long" });
+            data.Date2="امروز";
+            showmessages(data,1);
+
         axios.post('{{route("chat.send")}}', upformData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
-        })
-        .then(response => { 
+        }).then(response => { 
+            rmReply();
+            msg_no.remove();
            showmessages(response.data);
             obj.disabled=false;
             obj.classList.remove('disabled');
           })
         .catch(error => {
-            console.log(error);
+            console.log(error); 
+            cnomsg=document.querySelectorAll('#msg_abort').length;
+            msg_no.querySelector('.fa-spinner').classList.add("fa-circle-exclamation","text-danger"); 
+            msg_no.querySelector('.fa-spinner').classList.remove("fa-spinner"); 
+            
+            var cancelDiv = document.createElement("div");
+            cancelDiv.classList.add("d-flex", "gap-1");
+            cancelDiv.onclick = function() {
+             document.getElementById('msg_abort'+cnomsg).remove();
+            };
+            /*cancelDiv.onmouseover = function() {
+              document.getElementById("cancelDivno").classList.remove("d-none");
+            };
+            cancelDiv.onmouseout = function() {
+              document.getElementById("cancelDivno").classList.add("d-none");
+            };*/
+
+            var cancelIcon = document.createElement("i");
+            cancelIcon.classList.add("fa", "fa-trash");
+            cancelDiv.appendChild(cancelIcon);
+
+            var cancelTextDiv = document.createElement("div");
+            cancelTextDiv.id = "divcancelno" ;
+            cancelTextDiv.classList.add("toolsDiv", "d-none");
+            cancelTextDiv.innerHTML = "حذف";
+            cancelDiv.appendChild(cancelTextDiv);
+            divtools_no.innerHTML='';
+            divtools_no.appendChild(cancelDiv);
+            msg_no.id='msg_abort'+cnomsg;
+            divtools_no.id='divtools_abort'+cnomsg;
+            
+
+            rmReply();
             obj.disabled=false;
             obj.classList.remove('disabled');
             Swal.fire({
                         icon: 'error',
                         title: 'پیام ارسال نشد',                        
                         confirmButtonText: 'بله',
-                        //text:"{{auth()->user()->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                        //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
                          html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
 
                     });
@@ -1076,306 +1642,981 @@ function stopRecording(thisButton)
       }
       
     }
-   function showmessages(data)
+   function showmessages(data,sending=0)
    {
-    if(!dates.includes(data.Date2))
-    {
-      var datechat=document.createElement("h6");
-      datechat.textContent=data.Date2;
-      datechat.classList.add("datechat");
-      chatBox.appendChild(datechat);
-      dates.push(data.Date2);
-    }
+        if(!dates.includes(data.Date2))
+        {
+          var datechat=document.createElement("h6");
+          datechat.textContent=data.Date2;
+          datechat.classList.add("datechat");
+          chatBox.appendChild(datechat);
+          dates.push(data.Date2);
+        }
     var div=document.createElement("div");
-    div.className = "col-md-12 d-flex";
-    if (uId == data.ResiverId)
-     div.classList.add("flex-row-reverse");
-    /*var innerDiv1 = document.createElement("div");
-    innerDiv1.style.textAlign = "left";*/
-    var img = document.createElement("img");
-    img.src = "{{ asset('img/user.png') }}";
-    img.className = "img-circle";
+        div.id="msg_"+data.chatId;
+        div.className = "col-md-12 d-flex";
+        if (uId == data.ResiverId)
+        div.classList.add("flex-row-reverse");
+        if (preSender != data.SenderId)
+        div.classList.add("mt-2");
+        /*var innerDiv1 = document.createElement("div");
+        innerDiv1.style.textAlign = "left";*/
+        var img = document.createElement("img");
+        img.src = "{{ asset('img/user.png') }}";
+        img.className = "img-circle";
 
-    if (preSender == data.SenderId)
-      img.classList.add("opacity-0");
-    if (uId != data.ResiverId)
-    img.classList.add("senderImg"); 
+        if (preSender == data.SenderId)
+          img.classList.add("opacity-0");
+        if (uId != data.ResiverId)
+        img.classList.add("senderImg"); 
 
-    //innerDiv1.appendChild(img);
-    div.appendChild(img);
-   
-   
-   var trig = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-   trig.setAttribute("width","10");
-   trig.setAttribute("height","10");
-  
+        //innerDiv1.appendChild(img);
+        div.appendChild(img);
       
-    if (preSender != data.SenderId)
-    {
-      var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-      if (uId != data.ResiverId) 
-      {
-       trig.classList.add("STriangle");
-        polygon.setAttribute('points',"0,0 0,10 10,0");
-        polygon.setAttribute('fill',"#ababab");
-      }      
-      else
-      {
-        trig.classList.add("RTriangle");
-        polygon.setAttribute('points',"0,0 10,0 10,10");
-        polygon.setAttribute('fill',"#cdc8b2");
-      }
-      trig.appendChild(polygon);
-    }
-     
-    div.appendChild(trig);
-
-    var innerDiv2 = document.createElement("div");
-    if (uId != data.ResiverId) 
-      if (preSender == data.SenderId)
-        innerDiv2.classList.add("sender","preSender");
-      else
-        innerDiv2.classList.add("sender");
-    else
-      if (preSender == data.SenderId)
-        innerDiv2.classList.add("resiver","preResiver");
-      else
-        innerDiv2.classList.add("resiver");
-    
-    innerDiv2.classList.add("col-md-6","col-6","row");
-    var innerDiv3 = document.createElement("div");
-    innerDiv3.className = "col-md-12 text-right";
-    innerDiv3.style.wordBreak = "break-word";
-    if (preSender != data.SenderId)
-     {
-      var h6 = document.createElement("b");
-      h6.textContent = data.Sender;
-      innerDiv3.appendChild(h6);
-    }
-    if (data.Body) 
-    {
-      var p = document.createElement("p");
-      p.innerHTML = data.Body.replace("\n","<br>");
-      innerDiv3.appendChild(p);
-      if (data.File) 
-      {
-          var button = document.createElement("button");
-          button.className = "pull-left fa fa-download btn ";
-          button.addEventListener("click",function() {
-                      window.open(data.File,'_blank');
-                    });
-          innerDiv3.appendChild(button);
-        
-      }
-    }
-    else 
-    {
-      if(data.File.includes('_voice__'))
-      { 
-        const divContainer = document.createElement("div");
-        divContainer.classList.add("d-flex","gap-2","m-0","py-1");
-
-        const AudioPlayer = document.createElement("audio");
-        AudioPlayer.classList.add("d-none");
-        AudioPlayer.id = "player"+data.chatId;
-        AudioPlayer.src = data.File;
-
-        AudioPlayer.addEventListener("timeupdate", function() {
-          const duration = AudioPlayer.duration;
-          const currentTime = AudioPlayer.currentTime;
-          const progress = (currentTime / duration) * 100;
-          document.getElementById('played'+data.chatId).style.width = progress + "%";
-          if(progressUpdate)
-          document.getElementById('progress'+data.chatId).value = AudioPlayer.currentTime ;
+      
+      var trig = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      trig.setAttribute("width","10");
+      trig.setAttribute("height","10");
+      
+          
+        if (preSender != data.SenderId)
+        {
+          var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          if (uId != data.ResiverId) 
+          {
+          trig.classList.add("STriangle");
+            polygon.setAttribute('points',"0,0 0,10 10,0");
+            polygon.setAttribute('fill',"#fff");
+          }      
           else
-          progressUpdate=1;
-        });
-        AudioPlayer.addEventListener("play", function() {
-        document.getElementById('playericon'+data.chatId).classList.add('fa-pause');
-            document.getElementById('playericon'+data.chatId).classList.remove('fa-play');
-        });
-        AudioPlayer.addEventListener("pause", function() {
-        document.getElementById('playericon'+data.chatId).classList.remove('fa-pause');
-            document.getElementById('playericon'+data.chatId).classList.add('fa-play');
-        });
-        AudioPlayer.addEventListener("end", function() {
-        document.getElementById('playericon'+data.chatId).classList.remove('fa-pause');
-            document.getElementById('playericon'+data.chatId).classList.add('fa-play');
-            document.getElementById('progress'+data.chatId).value = 0 ;
-        });
-
-                
-        const wavePlayerContainer = document.createElement("div");
-        wavePlayerContainer.classList.add("bg-light","d-flex","justify-content-center","waveplayer");
-
-        const waveContainer = document.createElement("div");
-        waveContainer.className = "wave";
-        waveContainer.id = "wave"+data.chatId;
-
-        const playedContainer = document.createElement("div");
-        playedContainer.className = "played";
-        playedContainer.id = "played"+data.chatId;
-
-        const progressInput = document.createElement("input");
-        progressInput.type = "range";
-        progressInput.value = "0";
-        progressInput.step = "0.1";
-        progressInput.onchange = function() {
-          changeCurrentTime(this.value,data.chatId);
-        };
-        progressInput.className = "progress";
-        progressInput.id = "progress"+data.chatId;
-
-        waveContainer.appendChild(playedContainer);
-        waveContainer.appendChild(progressInput);
-
-        wavePlayerContainer.appendChild(waveContainer);
-
-        const playButton = document.createElement("div");
-        playButton.classList.add("circle", "btn", "btn-dark", "bg-dark", "m-auto");
-        playButton.onclick =function() {
-          playAudio(data.chatId);
-        };
-
-        const playIcon = document.createElement("i");
-        playIcon.classList.add("fa", "fa-play");
-        playIcon.id = "playericon"+data.chatId;
-
-        playButton.appendChild(playIcon);
-
+          {
+            trig.classList.add("RTriangle");
+            polygon.setAttribute('points',"0,0 10,0 10,10");
+            polygon.setAttribute('fill',"#FEF3D2");
+          }
+          trig.appendChild(polygon);
+        }
         
+        div.appendChild(trig);
 
-        //divContainer.appendChild(deleteButton);
-        divContainer.appendChild(AudioPlayer);
-        divContainer.appendChild(wavePlayerContainer);
-        divContainer.appendChild(playButton);
-
-        innerDiv3.appendChild(divContainer);
-      }
-      else if(data.File.includes('_movie__'))
-      {    
-        const videoDiv = document.createElement("div");
-        videoDiv.className = "videofile";
-        videoDiv.id = "videoDiv"+data.chatId;
-        videoDiv.style.backgroundColor = "#fff";
-
-        const img = document.createElement("img");
-        img.style.cursor = "pointer";
-        img.src = "{{asset('img/details/play.png')}}";
-        img.alt = "Image";
-        img.width = 70;
-        img.height = 70;
-        img.onclick =function() {videoPlay(data.chatId)};
-
-        videoDiv.appendChild(img);
-
-        const video = document.createElement("video");
-        video.controls = true;
-        video.poster = "{{asset('img/Logored.png')}}";
-        video.classList.add("videoplayer","d-none");
-        video.id = "Vplayer"+data.chatId;
-
-        const source = document.createElement("source");
-        source.id = "VSource"+data.chatId;
-        source.setAttribute("data-src", data.File);
-        source.type = "video/"+data.File.split('.').pop();
-
-
-        video.appendChild(source);
-
-       // innerDiv2.appendChild(videoPlayer);
-        innerDiv3.appendChild(videoDiv);
-        innerDiv3.appendChild(video);
-      }
-      else if(data.File.includes('_image__'))
-      {    
-        const divElement = document.createElement("div");
-        divElement.classList.add("picfile");
-        divElement.style.backgroundImage ='url('+data.File+')';
-
-        const linkElement = document.createElement("a");
-        linkElement.href = data.File;
-        linkElement.target = "_blank";
-        linkElement.download = data.File.split("{{'Chat/'.$chall->Id.'/'.$chall->Chat->Id.'/'}}")[1];
-
-        const imgElement = document.createElement("img");
-        imgElement.src = "{{asset('img/details/download.png')}}";
-        imgElement.alt = "FirstClassChallImage";
-        imgElement.width = 70;
-        imgElement.height = 70;
-
-        linkElement.appendChild(imgElement);
-        divElement.appendChild(linkElement);
+        var innerDiv2 = document.createElement("div");
+        if (uId != data.ResiverId) 
+          if (preSender == data.SenderId)
+            innerDiv2.classList.add("sender","preSender");
+          else
+            innerDiv2.classList.add("sender");
+        else
+          if (preSender == data.SenderId)
+            innerDiv2.classList.add("resiver","preResiver");
+          else
+            innerDiv2.classList.add("resiver");
         
-        innerDiv3.appendChild(divElement);
-      }
-      else
-      {
-        var div2 = document.createElement("div");
-        div2.classList.add('d-flex','gap-1');
-        div2.style.cursor = "pointer";
-        div2.style.wordBreak = "break-word";
-        div2.style.padding = "10px";
-        div2.addEventListener("click",function() {
-                      window.open(data.File,'_blank');
-                    });
-        var i = document.createElement("i");
-        i.className = "fa fa-2x fa-file fa-regular";
-        var b = document.createElement("b");
-        b.dir = "ltr";
-        b.style.fontSize= "5pt";
-        b.textContent = data.File.split("{{'Chat/'.$chall->Id.'/'.$chall->Chat->Id.'/'}}")[1];
-        div2.appendChild(i);
-        div2.appendChild(b);
-        innerDiv3.appendChild(div2);
-      }
-      
-    }
-    innerDiv2.appendChild(innerDiv3);
-    var innerDiv4 = document.createElement("div");
-    if (uId != data.ResiverId)
-      innerDiv4.className = "p-0 text-right";
-    else
-      innerDiv4.className = "text-left";
-    
-    if (uId != data.ResiverId) 
-    {
-      var ion = document.createElement("i");
-      ion.className = "fa";
-      if (data.Seen)
-       {
-        ion.classList.add("fa-check-double");
-        ion.classList.add("px-1","text-3b407a");
-      }
-       else 
-        ion.classList.add("fa-check");
+        innerDiv2.classList.add("col-md-6","col-8","row");
+        var innerDiv3 = document.createElement("div");
+        innerDiv3.className = "col-md-12 text-right";
+        innerDiv3.style.wordBreak = "break-word";
+        if (preSender != data.SenderId)
+        {
+          var h6 = document.createElement("b");
+          h6.textContent = data.Sender;
+          innerDiv3.appendChild(h6);
+        }
 
-      innerDiv4.appendChild(ion);
-    }
-    var label = document.createElement("label");
-    label.className = "fw-bolder number";
-    label.textContent = data.Time;
-    innerDiv4.appendChild(label);
-    innerDiv2.appendChild(innerDiv4);
-    div.appendChild(innerDiv2);
-    chatBox.appendChild(div);
-    msgtxt.value='';
-    fileprev_del.click();
-    preSender=data.SenderId;
-    chatBox.scrollTo( chatBox.scrollHeight, chatBox.scrollHeight);
+        if(data.Parent)
+        {
+          var parentDiv=document.createElement('div');
+          parentDiv.classList.add("col-md-12","text-right","Parent");
+          var parentDiv2=document.createElement('div');
+          var msg=msgs.filter(function(item){if(item.Id==data.Parent) return item;});
+          if(msg.length)
+          {
+            if(msg[0].Body)
+            {
+            var body=msg[0].Body.replace("\n"," ").substring(0,20);;
+            if(msg[0].Body.replace("\n"," ").length>20)
+            body+='...';
+            }
+            var file=msg[0].File;
+            var sn=msg[0].SenderName??msg[0].Sender;
+            body=(body)?body:((file.includes('_voice__'))?"پیام صوتی":'رسانه');
+            parentDiv2.innerHTML="<b>"+sn+"</b><p>"+body+"</p>";
+            parentDiv.appendChild(parentDiv2);
+            innerDiv3.appendChild(parentDiv);
+          }
+          
+          
+        }
 
+
+        if (data.Body) 
+        {
+          var p = document.createElement("p");
+          p.innerHTML = data.Body.replace("\n","<br>");
+          innerDiv3.appendChild(p);
+          if (data.File) 
+          {
+              var button = document.createElement("button");
+              button.className = "pull-left fa fa-download btn ";
+              if(sending)
+              {
+                button.disabled=true;
+                button.classList.add('disabled');
+              }
+              
+              button.addEventListener("click",function() {
+                          window.open(data.File,'_blank');
+                        });
+              innerDiv3.appendChild(button);
+            
+          }
+        }
+        else 
+        {
+          if(data.File.includes('_voice__'))
+          { 
+            const divContainer = document.createElement("div");
+            divContainer.classList.add("d-flex","gap-2","m-0","py-1");
+
+            const AudioPlayer = document.createElement("audio");
+            AudioPlayer.classList.add("d-none");
+            AudioPlayer.id = "player"+data.chatId;
+            AudioPlayer.src = data.File;
+
+            AudioPlayer.addEventListener("timeupdate", function() {
+              const duration = AudioPlayer.duration;
+              const currentTime = AudioPlayer.currentTime;
+              const progress = (currentTime / duration) * 100;
+              document.getElementById('played'+data.chatId).style.width = progress + "%";
+              if(progressUpdate)
+              document.getElementById('progress'+data.chatId).value = AudioPlayer.currentTime ;
+              else
+              progressUpdate=1;
+            });
+            AudioPlayer.addEventListener("play", function() {
+            document.getElementById('playericon'+data.chatId).classList.add('fa-pause');
+                document.getElementById('playericon'+data.chatId).classList.remove('fa-play');
+            });
+            AudioPlayer.addEventListener("pause", function() {
+            document.getElementById('playericon'+data.chatId).classList.remove('fa-pause');
+                document.getElementById('playericon'+data.chatId).classList.add('fa-play');
+            });
+            AudioPlayer.addEventListener("end", function() {
+            document.getElementById('playericon'+data.chatId).classList.remove('fa-pause');
+                document.getElementById('playericon'+data.chatId).classList.add('fa-play');
+                document.getElementById('progress'+data.chatId).value = 0 ;
+            });
+
+                    
+            const wavePlayerContainer = document.createElement("div");
+            wavePlayerContainer.classList.add("bg-light","d-flex","justify-content-center","waveplayer");
+
+            const waveContainer = document.createElement("div");
+            waveContainer.className = "wave";
+            waveContainer.id = "wave"+data.chatId;
+
+            const playedContainer = document.createElement("div");
+            playedContainer.className = "played";
+            playedContainer.id = "played"+data.chatId;
+
+            const progressInput = document.createElement("input");
+            progressInput.type = "range";
+            progressInput.value = "0";
+            progressInput.step = "0.1";
+            progressInput.onchange = function() {
+              changeCurrentTime(this.value,data.chatId);
+            };
+            progressInput.className = "progress";
+            progressInput.id = "progress"+data.chatId;
+
+            waveContainer.appendChild(playedContainer);
+            waveContainer.appendChild(progressInput);
+
+            wavePlayerContainer.appendChild(waveContainer);
+
+            const playButton = document.createElement("div");
+            playButton.classList.add("circle", "btn", "btn-dark", "bg-dark", "m-auto");
+            if(sending)
+              {
+                playButton.disabled=true;
+                playButton.classList.add('disabled');
+              }
+            playButton.onclick =function() {
+              playAudio(data.chatId);
+            };
+
+            const playIcon = document.createElement("i");
+            playIcon.classList.add("fa", "fa-play");
+            playIcon.id = "playericon"+data.chatId;
+
+            playButton.appendChild(playIcon);
+
+            
+
+            //divContainer.appendChild(deleteButton);
+            divContainer.appendChild(AudioPlayer);
+            divContainer.appendChild(wavePlayerContainer);
+            divContainer.appendChild(playButton);
+
+            innerDiv3.appendChild(divContainer);
+          }
+          else if(data.File.includes('_movie__'))
+          {    
+            const videoDiv = document.createElement("div");
+            videoDiv.className = "videofile";
+            videoDiv.id = "videoDiv"+data.chatId;
+            videoDiv.style.backgroundColor = "#fff";
+
+            const img = document.createElement("img");
+            img.style.cursor = "pointer";
+            img.src = "{{asset('img/details/play.png')}}";
+            img.alt = "Image";
+            img.width = 70;
+            img.height = 70;
+            if(sending)
+              {
+                img.disabled=true;
+                img.classList.add('disabled');
+              }
+            img.onclick =function() {videoPlay(data.chatId)};
+
+            videoDiv.appendChild(img);
+
+            const video = document.createElement("video");
+            video.controls = true;
+            video.poster = "{{asset('img/Logored.png')}}";
+            video.classList.add("videoplayer","d-none");
+            video.id = "Vplayer"+data.chatId;
+
+            const source = document.createElement("source");
+            source.id = "VSource"+data.chatId;
+            source.setAttribute("data-src", data.File);
+            source.type = "video/"+data.File.split('.').pop();
+
+
+            video.appendChild(source);
+
+          // innerDiv2.appendChild(videoPlayer);
+            innerDiv3.appendChild(videoDiv);
+            innerDiv3.appendChild(video);
+          }
+          else if(data.File.includes('_image__'))
+          {    
+            const divElement = document.createElement("div");
+            divElement.classList.add("picfile");
+            divElement.style.backgroundImage ='url('+data.File+')';
+
+            const linkElement = document.createElement("a");
+            linkElement.href = data.File;
+            linkElement.target = "_blank";
+            linkElement.download = data.File.split("{{'Chat/'.$chall->Id.'/'.$chall->ChatId.'/'}}")[1];
+
+            const imgElement = document.createElement("img");
+            imgElement.src = "{{asset('img/details/download.png')}}";
+            imgElement.alt = "FirstClassChallImage";
+            imgElement.width = 70;
+            imgElement.height = 70;
+            if(sending)
+              {
+                imgElement.disabled=true;
+                imgElement.classList.add('disabled');
+              }
+            linkElement.appendChild(imgElement);
+            divElement.appendChild(linkElement);
+            
+            innerDiv3.appendChild(divElement);
+          }
+          else
+          {
+            var div2 = document.createElement("div");
+            div2.classList.add('d-flex','gap-1');
+            div2.style.cursor = "pointer";
+            div2.style.wordBreak = "break-word";
+            div2.style.padding = "10px";
+            if(sending)
+              {
+                div2.disabled=true;
+                div2.classList.add('disabled');
+              }
+            div2.addEventListener("click",function() {
+                          window.open(data.File,'_blank');
+                        });
+            var i = document.createElement("i");
+            i.className = "fa fa-2x fa-file fa-regular";
+            var b = document.createElement("b");
+            b.dir = "ltr";
+            b.style.fontSize= "5pt";
+            b.textContent = data.File.split("{{'Chat/'.$chall->Id.'/'.$chall->ChatId.'/'}}")[1];
+            div2.appendChild(i);
+            div2.appendChild(b);
+            innerDiv3.appendChild(div2);
+          }
+          
+        }
+        innerDiv2.appendChild(innerDiv3);
+        var innerDiv4 = document.createElement("div");
+        if (uId != data.ResiverId)
+          innerDiv4.className = "p-0 text-right";
+        else
+          innerDiv4.className = "text-left";
+        
+        if (uId != data.ResiverId) 
+        {
+          var ion = document.createElement("i");
+          ion.className = "fa";
+          if(sending)
+          {           
+            ion.classList.add("fa-spinner");
+          }
+          else
+          {
+            if (parseInt(data.Seen))
+            {
+              ion.classList.add("fa-check-double");
+              ion.classList.add("px-1","text-3b407a");
+            }
+            else 
+              ion.classList.add("fa-check");
+          }
+          
+
+          innerDiv4.appendChild(ion);
+        }
+        var label = document.createElement("label");
+        label.className = "fw-bolder number";
+        label.textContent = data.Time;
+        innerDiv4.appendChild(label);
+        innerDiv2.appendChild(innerDiv4);
+        div.appendChild(innerDiv2);
+        
+        var divtools  = document.createElement("div");
+        divtools .classList.add("tools","d-none", "d-flex","flex-wrap-reverse", "gap-2", "h-100", "my-auto", "p-1");
+        divtools .id="divtools_"+data.chatId;
+        if(sending)
+        {
+            /*var cancelDiv = document.createElement("div");
+            cancelDiv.classList.add("d-flex", "gap-1");
+            cancelDiv.onclick = function() {
+              div.remove();
+            };
+            cancelDiv.onmouseover = function() {
+              document.getElementById("cancelDiv" + data.chatId).classList.remove("d-none");
+            };
+            cancelDiv.onmouseout = function() {
+              document.getElementById("cancelDiv" + data.chatId).classList.add("d-none");
+            };
+
+            var cancelIcon = document.createElement("i");
+            cancelIcon.classList.add("fa", "fa-close");
+            cancelDiv.appendChild(cancelIcon);
+
+            var cancelTextDiv = document.createElement("div");
+            cancelTextDiv.id = "divcancel" + data.chatId;
+            cancelTextDiv.classList.add("toolsDiv", "d-none");
+            cancelTextDiv.innerHTML = "لغو ارسال";
+            cancelDiv.appendChild(cancelTextDiv);
+
+            divtools .appendChild(cancelDiv);*/
+        }
+        else
+        {
+          if (uId == data.SenderId)
+          {
+              var deleteDiv = document.createElement("div");
+              deleteDiv.classList.add("d-flex", "gap-1");
+              if (uId == data.ResiverId) 
+              deleteDiv.classList.add("flex-row-reverse");
+              deleteDiv.onclick = function() {
+                removemsg(data.chatId);
+              };
+              /*deleteDiv.onmouseover = function() {
+                document.getElementById("divtrash" + data.chatId).classList.remove("d-none");
+              };
+              deleteDiv.onmouseout = function() {
+                document.getElementById("divtrash" + data.chatId).classList.add("d-none");
+              };*/
+              
+              var trashIcon = document.createElement("i");
+              trashIcon.classList.add("fa", "fa-trash");
+              deleteDiv.appendChild(trashIcon);
+
+              var deleteTextDiv = document.createElement("div");
+              deleteTextDiv.id = "divtrash" + data.chatId;
+              deleteTextDiv.classList.add("toolsDiv", "d-none");
+              deleteTextDiv.innerHTML = "حذف";
+              deleteDiv.appendChild(deleteTextDiv);
+
+              divtools.appendChild(deleteDiv);
+
+            if (data.Body) 
+            {
+              var editDiv = document.createElement("div");
+              editDiv.classList.add("d-flex", "gap-1");
+              if (uId == data.ResiverId)
+                editDiv.classList.add("flex-row-reverse");
+              editDiv.onclick = function() {
+                editmsg(data.chatId);
+              };
+              /*editDiv.onmouseover = function() {
+                document.getElementById("divpencil" + data.chatId).classList.remove("d-none");
+              };
+              editDiv.onmouseout = function() {
+                document.getElementById("divpencil" + data.chatId).classList.add("d-none");
+              };*/
+              
+              var pencilIcon = document.createElement("i");
+              pencilIcon.classList.add("fa", "fa-pencil");
+              editDiv.appendChild(pencilIcon);
+              
+              var editTextDiv = document.createElement("div");
+              editTextDiv.id = "divpencil" + data.chatId;
+              editTextDiv.classList.add("toolsDiv", "d-none");
+              editTextDiv.innerHTML = "ویرایش";
+              editDiv.appendChild(editTextDiv);
+
+              divtools.appendChild(editDiv);
+              
+              
+            }
+          }
+          
+          if(data.Body)
+          {
+            var copyDiv = document.createElement("div");
+              copyDiv.classList.add("d-flex", "gap-1");
+              if (uId == data.ResiverId)
+                copyDiv.classList.add("flex-row-reverse");
+              copyDiv.onclick = function() {
+                copymsg(data.chatId);
+              };
+              /*copyDiv.onmouseover = function() {
+                document.getElementById("divcopy" + data.chatId).classList.remove("d-none");
+              };
+              copyDiv.onmouseout = function() {
+                document.getElementById("divcopy" + data.chatId).classList.add("d-none");
+              };*/
+              
+              var copyIcon = document.createElement("i");
+              copyIcon.classList.add("fa", "fa-copy");
+              copyDiv.appendChild(copyIcon);
+              
+              var copyTextDiv = document.createElement("div");
+              copyTextDiv.id = "divcopy" + data.chatId;
+              copyTextDiv.classList.add("toolsDiv", "d-none");
+              copyTextDiv.innerHTML = "کپی";
+              copyDiv.appendChild(copyTextDiv);
+
+              divtools.appendChild(copyDiv);
+          }
+          var replyDiv = document.createElement("div");
+          replyDiv.classList.add("d-flex", "gap-1");
+          if (uId == data.ResiverId) 
+          replyDiv.classList.add("flex-row-reverse");
+          replyDiv.onclick = function() {
+            replymsg(data.chatId);
+          };
+         /* replyDiv.onmouseover = function() {
+            document.getElementById("divreply" + data.chatId).classList.remove("d-none");
+          };
+          replyDiv.onmouseout = function() {
+            document.getElementById("divreply" + data.chatId).classList.add("d-none");
+          };*/
+
+          var replyIcon = document.createElement("i");
+          replyIcon.classList.add("fa", "fa-reply");
+          replyDiv.appendChild(replyIcon);
+
+          var replyTextDiv = document.createElement("div");
+          replyTextDiv.id = "divreply" + data.chatId;
+          replyTextDiv.classList.add("toolsDiv", "d-none");
+          replyTextDiv.innerHTML = "پاسخ";
+          replyDiv.appendChild(replyTextDiv);
+
+          divtools .appendChild(replyDiv);
+
+          
+        }
+
+        div.appendChild(divtools);
+        chatBox.appendChild(div);
+        msgtxt.value='';
+        fileprev_del.click();
+        chatBox.scrollTo( chatBox.scrollHeight, chatBox.scrollHeight);
+        if(!sending)
+        {
+        preSender=data.SenderId;
+        data.msg.Date2=data.Date2;
+        data.msg.SenderName=data.Sender;
+        data.msg.ResiverName=data.Resiver;
+        data.msg.Time=data.Time;
+        msgs.push(data.msg);
+        }
+        
+        setMenu([div]);
    }
-</script>
-@if(!$chall->Chat->Closed)
+   function showAllmessages(messages)
+   {
+    msgs=[];
+    var options = { day: "2-digit", month: "long" };
+    var preDate=0;
+    messages.forEach(function(data){
+      
+       var date = new Date(data.Date);
+       data.Time = new Date(data.Date).toLocaleDateString("fa-IR", { hour: '2-digit', minute: '2-digit',second:'2-digit' }).split(',')[1];
+       data.Date2 = date.toLocaleDateString("fa-IR", options);
+       if(data.Date2==new Date().toLocaleDateString("fa-IR", options))
+       data.Date2="امروز";
+        
+        if(!dates.includes(data.Date2))
+        {
+          var datechat=document.createElement("h6");
+          datechat.textContent=data.Date2;
+          datechat.classList.add("datechat");
+          chatBox.appendChild(datechat);
+          dates.push(data.Date2);
+        }
+        
+        var div=document.createElement("div");
+        div.id="msg_"+data.Id;
+        div.className = "col-md-12 d-flex";
+        if (uId == data.Resiver)
+        div.classList.add("flex-row-reverse");
+        if (preSender != data.Sender)
+        div.classList.add("mt-2");
+        /*var innerDiv1 = document.createElement("div");
+        innerDiv1.style.textAlign = "left";*/
+        var img = document.createElement("img");
+        img.src = "{{ asset('img/user.png') }}";
+        img.className = "img-circle";
+
+        if (preSender == data.Sender && preDate==data.Date2)
+          img.classList.add("opacity-0");
+        if (uId != data.Resiver)
+        img.classList.add("senderImg"); 
+
+        //innerDiv1.appendChild(img);
+        div.appendChild(img);
+      
+      
+      var trig = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      trig.setAttribute("width","10");
+      trig.setAttribute("height","10");
+      
+          
+        if (preSender != data.Sender ||  (preSender == data.Sender && preDate!=data.Date2))
+        {
+          var polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          if (uId != data.Resiver) 
+          {
+          trig.classList.add("STriangle");
+            polygon.setAttribute('points',"0,0 0,10 10,0");
+            polygon.setAttribute('fill',"#fff");
+          }      
+          else
+          {
+            trig.classList.add("RTriangle");
+            polygon.setAttribute('points',"0,0 10,0 10,10");
+            polygon.setAttribute('fill',"#FEF3D2");
+          }
+          trig.appendChild(polygon);
+        }
+        
+        div.appendChild(trig);
+
+        var innerDiv2 = document.createElement("div");
+        if (uId != data.Resiver) 
+          if (preSender == data.Sender)
+            innerDiv2.classList.add("sender","preSender");
+          else
+            innerDiv2.classList.add("sender");
+        else
+          if (preSender == data.Sender)
+            innerDiv2.classList.add("resiver","preResiver");
+          else
+            innerDiv2.classList.add("resiver");
+        
+        innerDiv2.classList.add("col-md-6","col-8","row");
+        var innerDiv3 = document.createElement("div");
+        innerDiv3.className = "col-md-12 text-right";
+        innerDiv3.style.wordBreak = "break-word";
+        if (preSender != data.Sender)
+        {
+          var h6 = document.createElement("b");
+          h6.textContent = data.SenderName;
+          innerDiv3.appendChild(h6);
+        }
+        if(data.Parent)
+        {
+          var parentDiv=document.createElement('div');
+          parentDiv.classList.add("col-md-12","text-right","Parent");
+          var parentDiv2=document.createElement('div');
+          var msg=messages.filter(function(item){if(item.Id==data.Parent) return item;});
+          if(msg.length)
+          {
+            if(msg[0].Body)
+            {
+              var body=msg[0].Body.replace("\n"," ").substring(0,20);
+              if(msg[0].Body.replace("\n"," ").length>20)
+              body+='...';
+            }
+              var file=msg[0].File;
+            var sn=msg[0].SenderName;
+            body=(body)?body:((file.includes('_voice__'))?"پیام صوتی":'رسانه');
+            parentDiv2.innerHTML="<b>"+sn+"</b><p>"+body+"</p>";
+            parentDiv.appendChild(parentDiv2);
+            innerDiv3.appendChild(parentDiv);
+          }
+          
+          
+        }
+        if (data.Body) 
+        {
+          var p = document.createElement("p");
+          p.innerHTML = data.Body.replace("\n","<br>");
+          innerDiv3.appendChild(p);
+          if (data.File) 
+          {
+              var button = document.createElement("button");
+              button.className = "pull-left fa fa-download btn ";
+              button.addEventListener("click",function() {
+                          window.open(data.File,'_blank');
+                        });
+              innerDiv3.appendChild(button);
+            
+          }
+        }
+        else 
+        {
+          if(data.File.includes('_voice__'))
+          { 
+            const divContainer = document.createElement("div");
+            divContainer.classList.add("d-flex","gap-2","m-0","py-1");
+
+            const AudioPlayer = document.createElement("audio");
+            AudioPlayer.classList.add("d-none");
+            AudioPlayer.id = "player"+data.Id;
+            AudioPlayer.src = data.File;
+
+            AudioPlayer.addEventListener("timeupdate", function() {
+              const duration = AudioPlayer.duration;
+              const currentTime = AudioPlayer.currentTime;
+              const progress = (currentTime / duration) * 100;
+              document.getElementById('played'+data.Id).style.width = progress + "%";
+              if(progressUpdate)
+              document.getElementById('progress'+data.Id).value = AudioPlayer.currentTime ;
+              else
+              progressUpdate=1;
+            });
+            AudioPlayer.addEventListener("play", function() {
+            document.getElementById('playericon'+data.Id).classList.add('fa-pause');
+                document.getElementById('playericon'+data.Id).classList.remove('fa-play');
+            });
+            AudioPlayer.addEventListener("pause", function() {
+            document.getElementById('playericon'+data.Id).classList.remove('fa-pause');
+                document.getElementById('playericon'+data.Id).classList.add('fa-play');
+            });
+            AudioPlayer.addEventListener("end", function() {
+            document.getElementById('playericon'+data.Id).classList.remove('fa-pause');
+                document.getElementById('playericon'+data.Id).classList.add('fa-play');
+                document.getElementById('progress'+data.Id).value = 0 ;
+            });
+
+                    
+            const wavePlayerContainer = document.createElement("div");
+            wavePlayerContainer.classList.add("bg-light","d-flex","justify-content-center","waveplayer");
+
+            const waveContainer = document.createElement("div");
+            waveContainer.className = "wave";
+            waveContainer.id = "wave"+data.Id;
+
+            const playedContainer = document.createElement("div");
+            playedContainer.className = "played";
+            playedContainer.id = "played"+data.Id;
+
+            const progressInput = document.createElement("input");
+            progressInput.type = "range";
+            progressInput.value = "0";
+            progressInput.step = "0.1";
+            progressInput.onchange = function() {
+              changeCurrentTime(this.value,data.Id);
+            };
+            progressInput.className = "progress";
+            progressInput.id = "progress"+data.Id;
+
+            waveContainer.appendChild(playedContainer);
+            waveContainer.appendChild(progressInput);
+
+            wavePlayerContainer.appendChild(waveContainer);
+
+            const playButton = document.createElement("div");
+            playButton.classList.add("circle", "btn", "btn-dark", "bg-dark", "m-auto");
+            playButton.onclick =function() {
+              playAudio(data.Id);
+            };
+
+            const playIcon = document.createElement("i");
+            playIcon.classList.add("fa", "fa-play");
+            playIcon.id = "playericon"+data.Id;
+
+            playButton.appendChild(playIcon);
+
+            
+
+            //divContainer.appendChild(deleteButton);
+            divContainer.appendChild(AudioPlayer);
+            divContainer.appendChild(wavePlayerContainer);
+            divContainer.appendChild(playButton);
+
+            innerDiv3.appendChild(divContainer);
+          }
+          else if(data.File.includes('_movie__'))
+          {    
+            const videoDiv = document.createElement("div");
+            videoDiv.className = "videofile";
+            videoDiv.id = "videoDiv"+data.Id;
+            videoDiv.style.backgroundColor = "#fff";
+
+            const img = document.createElement("img");
+            img.style.cursor = "pointer";
+            img.src = "{{asset('img/details/play.png')}}";
+            img.alt = "Image";
+            img.width = 70;
+            img.height = 70;
+            img.onclick =function() {videoPlay(data.Id)};
+
+            videoDiv.appendChild(img);
+
+            const video = document.createElement("video");
+            video.controls = true;
+            video.poster = "{{asset('img/Logored.png')}}";
+            video.classList.add("videoplayer","d-none");
+            video.id = "Vplayer"+data.Id;
+
+            const source = document.createElement("source");
+            source.id = "VSource"+data.Id;
+            source.setAttribute("data-src", data.File);
+            source.type = "video/"+data.File.split('.').pop();
+
+
+            video.appendChild(source);
+
+          // innerDiv2.appendChild(videoPlayer);
+            innerDiv3.appendChild(videoDiv);
+            innerDiv3.appendChild(video);
+          }
+          else if(data.File.includes('_image__'))
+          {    
+            const divElement = document.createElement("div");
+            divElement.classList.add("picfile");
+            divElement.style.backgroundImage ='url('+data.File+')';
+
+            const linkElement = document.createElement("a");
+            linkElement.href = data.File;
+            linkElement.target = "_blank";
+            linkElement.download = data.File.split("{{'Chat/'.$chall->Id.'/'.$chall->ChatId.'/'}}")[1];
+
+            const imgElement = document.createElement("img");
+            imgElement.src = "{{asset('img/details/download.png')}}";
+            imgElement.alt = "FirstClassChallImage";
+            imgElement.width = 70;
+            imgElement.height = 70;
+
+            linkElement.appendChild(imgElement);
+            divElement.appendChild(linkElement);
+            
+            innerDiv3.appendChild(divElement);
+          }
+          else
+          {
+            var div2 = document.createElement("div");
+            div2.classList.add('d-flex','gap-1');
+            div2.style.cursor = "pointer";
+            div2.style.wordBreak = "break-word";
+            div2.style.padding = "10px";
+            div2.addEventListener("click",function() {
+                          window.open(data.File,'_blank');
+                        });
+            var i = document.createElement("i");
+            i.className = "fa fa-2x fa-file fa-regular";
+            var b = document.createElement("b");
+            b.dir = "ltr";
+            b.style.fontSize= "5pt";
+            b.textContent = data.File.split("{{'Chat/'.$chall->Id.'/'.$chall->ChatId.'/'}}")[1];
+            div2.appendChild(i);
+            div2.appendChild(b);
+            innerDiv3.appendChild(div2);
+          }
+          
+        }
+        innerDiv2.appendChild(innerDiv3);
+        var innerDiv4 = document.createElement("div");
+        if (uId != data.Resiver)
+          innerDiv4.className = "p-0 text-right";
+        else
+          innerDiv4.className = "text-left";
+        
+        if (uId != data.Resiver) 
+        {
+          var ion = document.createElement("i");
+          ion.className = "fa";
+          if (parseInt(data.Seen))
+          {
+            ion.classList.add("fa-check-double");
+            ion.classList.add("px-1","text-3b407a");
+          }
+          else 
+            ion.classList.add("fa-check");
+
+          innerDiv4.appendChild(ion);
+        }
+        var label = document.createElement("label");
+        label.className = "fw-bolder number";
+        label.textContent = data.Time;
+        innerDiv4.appendChild(label);
+        innerDiv2.appendChild(innerDiv4);
+        div.appendChild(innerDiv2);
+
+        var divtools  = document.createElement("div");
+        divtools .classList.add("tools","d-none", "d-flex","flex-wrap-reverse", "gap-2", "h-100", "my-auto", "p-1");
+        divtools .id="divtools_"+data.Id;
+        if (uId == data.Sender)
+        {
+          
+          if (new Date(data.Date).setHours(new Date(data.Date).getHours() + 24) >= new Date()) 
+          {
+            var deleteDiv = document.createElement("div");
+            deleteDiv.classList.add("d-flex", "gap-1");
+            if (uId == data.Resiver) 
+            deleteDiv.classList.add("flex-row-reverse");
+            deleteDiv.onclick = function() {
+              removemsg(data.Id);
+            };
+            /*deleteDiv.onmouseover = function() {
+              document.getElementById("divtrash" + data.Id).classList.remove("d-none");
+            };
+            deleteDiv.onmouseout = function() {
+              document.getElementById("divtrash" + data.Id).classList.add("d-none");
+            };*/
+            
+            var trashIcon = document.createElement("i");
+            trashIcon.classList.add("fa", "fa-trash");
+            deleteDiv.appendChild(trashIcon);
+
+            var deleteTextDiv = document.createElement("div");
+            deleteTextDiv.id = "divtrash" + data.Id;
+            deleteTextDiv.classList.add("toolsDiv", "d-none");
+            deleteTextDiv.innerHTML = "حذف";
+            deleteDiv.appendChild(deleteTextDiv);
+
+            divtools.appendChild(deleteDiv);
+          }
+          if (new Date(data.Date).setHours(new Date(data.Date).getHours() + 24) >= new Date() && data.Body) 
+          {
+            var editDiv = document.createElement("div");
+            editDiv.classList.add("d-flex", "gap-1");
+            if (uId == data.Resiver)
+              editDiv.classList.add("flex-row-reverse");
+            editDiv.onclick = function() {
+              editmsg(data.Id);
+            };
+            /*editDiv.onmouseover = function() {
+              document.getElementById("divpencil" + data.Id).classList.remove("d-none");
+            };
+            editDiv.onmouseout = function() {
+              document.getElementById("divpencil" + data.Id).classList.add("d-none");
+            };*/
+            
+            var pencilIcon = document.createElement("i");
+            pencilIcon.classList.add("fa", "fa-pencil");
+            editDiv.appendChild(pencilIcon);
+            
+            var editTextDiv = document.createElement("div");
+            editTextDiv.id = "divpencil" + data.Id;
+            editTextDiv.classList.add("toolsDiv", "d-none");
+            editTextDiv.innerHTML = "ویرایش";
+            editDiv.appendChild(editTextDiv);
+
+            divtools.appendChild(editDiv);
+          }
+        }
+        
+        if(data.Body)
+          {
+            var copyDiv = document.createElement("div");
+            copyDiv.classList.add("d-flex", "gap-1");
+            if (uId == data.Resiver)
+              copyDiv.classList.add("flex-row-reverse");
+            copyDiv.onclick = function() {
+              copymsg(data.Id);
+            };
+            /*copyDiv.onmouseover = function() {
+              document.getElementById("divcopy" + data.Id).classList.remove("d-none");
+            };
+            copyDiv.onmouseout = function() {
+              document.getElementById("divcopy" + data.Id).classList.add("d-none");
+            };*/
+            
+            var copyIcon = document.createElement("i");
+            copyIcon.classList.add("fa", "fa-copy");
+            copyDiv.appendChild(copyIcon);
+            
+            var copyTextDiv = document.createElement("div");
+            copyTextDiv.id = "divcopy" + data.Id;
+            copyTextDiv.classList.add("toolsDiv", "d-none");
+            copyTextDiv.innerHTML = "کپی";
+            copyDiv.appendChild(copyTextDiv);
+
+            divtools.appendChild(copyDiv);
+          }
+        var replyDiv = document.createElement("div");
+        replyDiv.classList.add("d-flex", "gap-1");
+        if (uId == data.Resiver) 
+        replyDiv.classList.add("flex-row-reverse");
+        replyDiv.onclick = function() {
+          replymsg(data.Id);
+        };
+        /*replyDiv.onmouseover = function() {
+          document.getElementById("divreply" + data.Id).classList.remove("d-none");
+        };
+        replyDiv.onmouseout = function() {
+          document.getElementById("divreply" + data.Id).classList.add("d-none");
+        };*/
+
+        var replyIcon = document.createElement("i");
+        replyIcon.classList.add("fa", "fa-reply");
+        replyDiv.appendChild(replyIcon);
+
+        var replyTextDiv = document.createElement("div");
+        replyTextDiv.id = "divreply" + data.Id;
+        replyTextDiv.classList.add("toolsDiv", "d-none");
+        replyTextDiv.innerHTML = "پاسخ";
+        replyDiv.appendChild(replyTextDiv);
+
+        divtools .appendChild(replyDiv);
+
+        div.appendChild(divtools);
+
+        chatBox.appendChild(div);
+        msgtxt.value='';
+        fileprev_del.click();
+        preSender=data.Sender;
+        preDate=data.Date2;
+        chatBox.scrollTo( chatBox.scrollHeight, chatBox.scrollHeight);
+        msgs.push(data);
+
+    });
+   
+    setMenu(document.querySelectorAll('div[id^="msg_"]'));
+        
+   }
+@if(!$chall->Closed)
 @if(!$chall->Expired)
-<script>
   const ably2 = new Ably.Realtime.Promise('{{env('ABLY_KEY')}}');
     ably2.connection.once('connected');
   /* Rsive Message Channel*/
     var channel1 = ably2.channels.get('Challenge-Chat-Messages.'+ChatId+'_'+uId);
     channel1.subscribe('ChatMessages', function(data)
      {
-      axios.post('{{route("chat.read",[$chall->Chat->Id])}}',{Resiver:'{{auth()->user()->Id}}'});      
+      axios.post('{{route("chat.read",[$chall->ChatId])}}',{Chall:'{{$chall->Id}}',Sender:'{{$chall->ChatResiver}}',Resiver:'{{session('User')->Id}}'});      
         showmessages(JSON.parse(data.data));
         document.getElementById('chataudio').play();
                    
@@ -1397,7 +2638,10 @@ function stopRecording(thisButton)
       document.querySelectorAll('.sendbox').forEach(itm=>{
         itm.remove();
       }); 
-      
+            
+      document.querySelectorAll('.tools').forEach(itm=>{
+        itm.remove();
+      }); 
       const div = document.createElement("div");
       div.classList.add("text-center");
       div.style = "";
@@ -1409,10 +2653,55 @@ function stopRecording(thisButton)
       div.appendChild(p);
       chats.appendChild(div);
     });
-</script>
+
+      /* Change Message Channel*/
+      var channel4 = ably2.channels.get('Challenge-Chat-Change.'+ChatId);
+    channel4.subscribe('ChatChange', function(data)
+     {
+      axios.post('{{route("chat.all",[$chall->ChatId])}}') .then(response =>
+      {
+        chatBox.innerHTML='';
+        dates=[];
+        preSender=0;
+        showAllmessages(response.data.msgs);  
+      });      
+                         
+        
+    });
+    setMenu(document.querySelectorAll('div[id^="msg_"]'));
+
 @endif
 @endif
-<script>
+  function setMenu(divmessagess)
+  {
+     divmessagess.forEach(element => {
+      element.addEventListener("contextmenu", function(event) {
+        event.preventDefault();
+        var show=0;
+        if(element.querySelector('.tools').classList.contains('d-none'))
+        show=1;
+        const tools=document.querySelectorAll('div[id^="divtools_"]');
+          tools.forEach(elm => {
+            elm.classList.add('d-none');
+          });
+          if(show)
+          element.querySelector('.tools').classList.remove('d-none');
+      });
+      /*element.addEventListener("click", function(event) {
+        event.preventDefault();
+        var show=0;
+        if(element.querySelector('.tools').classList.contains('d-none'))
+        show=1;
+        const tools=document.querySelectorAll('div[id^="divtools_"]');
+          tools.forEach(elm => {
+            elm.classList.add('d-none');
+          });
+          if(show)
+          element.querySelector('.tools').classList.remove('d-none');
+      });*/
+    });
+  }
+ 
     const elements = document.querySelectorAll('.sender');
     elements.forEach(element => {
 
@@ -1445,9 +2734,9 @@ function stopRecording(thisButton)
         
       });
     });
-    document.addEventListener("click", function() {
+   /* document.addEventListener("click", function() {
       if(document.getElementById("contextMenu"))
             document.getElementById("contextMenu").remove();
-    });
+    });*/
 </script>
 @endsection
