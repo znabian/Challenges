@@ -244,7 +244,7 @@ document.addEventListener("keypress", function(event) {
            Swal.close();
             Swal.fire({
               title:" کاربر گرامی",
-              html:"مشکلی پیش آمده است لطفا مجددا تلاش کنید<p><small> <br>  "+error.stack+"</small></p>",
+              html:"مشکلی پیش آمده است لطفا مجدد تلاش کنید",
               confirmButtonText: 'بله',
               icon: "error"
               });

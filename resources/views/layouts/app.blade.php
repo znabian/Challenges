@@ -74,7 +74,7 @@
                 z-index: 2; */
                 position: fixed;
                 width: calc(46vw - 10vw);
-                bottom: 15px;
+                bottom: -5px;
                 right: calc(46vw - 15vw);
                 z-index: 2;
             }
@@ -173,7 +173,11 @@
                 top: 15%;
             }
            @media (min-width: 764px)
-            {                
+            { 
+                .menu2 img
+                {
+                    height: 97.835px;
+                }               
                 body
                 {
                 /* width: 51%; */
@@ -480,7 +484,7 @@
                                   title: 'خطا',                        
                                   confirmButtonText: 'بله',
                                   //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                                  html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+                                  html:"مشکل پیش آمده دوباره تلاش کن",
 
                               });
                   });
@@ -515,6 +519,7 @@
                     @elseif($errors->any())
                     Swal.fire({
                                 icon: 'error',
+                                confirmButtonText: 'بله',
                                 title: 'خطا',
                                 text:"<?php foreach ($errors->all() as $error) echo $error;?>"
                             });

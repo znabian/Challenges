@@ -1,5 +1,5 @@
 
-  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width:100%;" height="97.835" viewBox="0 0 336.311 97.835">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width:100%;margin-top:5%" height="97.835" viewBox="0 0 336.311 97.835">
 <style>
 @font-face {
   font-family: 'PEYDA-BLACK';
@@ -23,9 +23,9 @@ font-weight: bolder;
     <g transform="matrix(1, 0, 0, 1, 1.84, 541.95)" filter="url(#Path_3128)">
       <path id="Path_3128-2" data-name="Path 3128" d="M706.008,474.043h84.5c15.968,0,28.913,11.38,28.913,25.417h0c0,14.038-12.945,25.418-28.913,25.418H530.02c-15.968,0-28.914-11.38-28.914-25.418h0c0-14.038,12.945-25.417,28.914-25.417h83.148s85.621-.1,92.84,0Z" transform="translate(-492.11 -468)" fill="#f3f3f3f7"/>
     </g>
-    <text id="چالش" transform="translate(158.006 587.997)" fill="#393939" font-size="8" font-family="'PEYDA-BLACK'" font-weight="500"><tspan x="0" y="0">چالش</tspan></text>
+    <text id="کف بازار" transform="translate(158.006 587.997)" fill="#393939" font-size="8" font-family="'PEYDA-BLACK'" font-weight="500"><tspan x="0" y="0">کف بازار</tspan></text>
     <text id="خروج" transform="translate(76.006 587.997)" fill="#242424" font-size="8" font-family="'PEYDA-BLACK'" font-weight="500"><tspan x="2" y="0">خروج</tspan></text>
-    <text id="تاریخچه" transform="translate(244.006 587.997)" fill="#242424" font-size="8" font-family="'PEYDA-BLACK'" font-weight="500"><tspan x="0" y="0">تاریخچه</tspan></text>
+    <text id="بازارچه" transform="translate(244.006 587.997)" fill="#242424" font-size="8" font-family="'PEYDA-BLACK'" font-weight="500"><tspan x="0" y="0">بازارچه</tspan></text>
     <path id="history_FILL0_wght400_GRAD0_opsz24" d="M127.883-824.234a7.656,7.656,0,0,1-5.266-2,7.6,7.6,0,0,1-2.573-5h1.8a5.856,5.856,0,0,0,2.026,3.766,5.946,5.946,0,0,0,4.018,1.489,5.915,5.915,0,0,0,4.347-1.785,5.915,5.915,0,0,0,1.785-4.347,5.916,5.916,0,0,0-1.785-4.347,5.915,5.915,0,0,0-4.347-1.785,5.913,5.913,0,0,0-2.825.7,6.512,6.512,0,0,0-2.212,1.927h2.409v1.752H120v-5.255h1.752v2.058a7.649,7.649,0,0,1,2.726-2.168,7.819,7.819,0,0,1,3.4-.766,7.625,7.625,0,0,1,3.077.624,8.014,8.014,0,0,1,2.5,1.686,8.014,8.014,0,0,1,1.686,2.5,7.627,7.627,0,0,1,.624,3.077,7.627,7.627,0,0,1-.624,3.077,8.014,8.014,0,0,1-1.686,2.5,8.014,8.014,0,0,1-2.5,1.686,7.625,7.625,0,0,1-3.077.611Zm2.453-4.2-3.328-3.328v-4.73h1.752v4.029l2.8,2.8Z" transform="translate(129.391 1400.497)" fill="none" stroke="#393939" stroke-width="0.75"/>
    <g id="Group_1188" data-name="Group 1188" transform="translate(-123.681 237.968)">
       <g id="_335_Bubble_chat_comment" data-name="335, Bubble, chat, comment" transform="translate(203.216 320.95)">

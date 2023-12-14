@@ -186,7 +186,7 @@
         }
         .content2
         {
-            height:69vh!important;
+            height:67vh!important;
         }
         .card-body
         {
@@ -195,7 +195,7 @@
     </style>
 @endsection
 @section('title')  
- چالش های امروز
+ کف بازار
 @endsection
 @section('content')  
 
@@ -203,13 +203,15 @@
     <div class="gap-3 gap-md-4 h-auto justify-content-center row w-100 m-auto">
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card col-5 mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
+            <div class="card col-5 mt-2 p-md-3  @if($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body d-grid gap-1 text-center">
                     <div class="">
                         @if($item['Done'])
                             <i class="fa fa-check pull-left status" ></i>
-                            @else
-                            <i class="fa fa-close pull-left status"></i>
+                        @elseif($item['Pay'])
+                            <i class="fa fa-coins pull-left status" ></i>
+                        @else
+                            <i class="fa fa-close pull-left status opacity-0"></i>
                         @endif
                     </div>
                         

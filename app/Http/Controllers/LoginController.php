@@ -54,8 +54,13 @@ class LoginController extends Controller
                      $q['FullName']= $q['Name'].' '. $q['Family'];
                      if($q['BirthDay'])
                      {
-                         list($y,$m,$d)=explode('-',$q['BirthDay']);
-                        $q['Age']=(jdate(now())->format('Y'))-$y;
+                        try {
+                            list($y,$m,$d)=explode('-',$q['BirthDay']);
+                            $q['Age']=(jdate(now())->format('Y'))-$y;
+                        } catch (\Throwable $th) {
+                            $q['Age']=8;
+                        }
+                         
                      }
                      else
                      $q['Age']=8;
@@ -214,7 +219,7 @@ class LoginController extends Controller
              $pass=Collection::make($data['data']);
              $LoginPass=$pass->map(function($q){
                 if(!is_numeric($q['Pass']) && $q['Perm']!=4)
-                     $q->Pass=null;
+                     $q['Pass']=null;
                 return (object)$q;
             })->whereNotNull('Pass');
             if(!$LoginPass->first())

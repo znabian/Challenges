@@ -1158,7 +1158,7 @@
                         title: 'پیام ارسال نشد',                        
                         confirmButtonText: 'بله',
                         //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                         html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+                         html:"مشکل پیش آمده دوباره تلاش کن",
 
                     });
          });
@@ -1443,7 +1443,7 @@
                         title: 'پیام ویرایش نشد',                        
                         confirmButtonText: 'بله',
                         //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                         html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+                         html:"مشکل پیش آمده دوباره تلاش کن",
 
                     });
          });
@@ -1524,7 +1524,7 @@
                                       title: 'پیام حذف نشد',                        
                                       confirmButtonText: 'بله',
                                       //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                                      html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+                                      html:"مشکل پیش آمده دوباره تلاش کن",
 
                                   });
                       });
@@ -1629,7 +1629,7 @@
                         title: 'پیام ارسال نشد',                        
                         confirmButtonText: 'بله',
                         //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                         html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+                         html:"مشکل پیش آمده دوباره تلاش کن",
 
                     });
          });

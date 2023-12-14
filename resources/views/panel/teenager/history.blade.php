@@ -120,8 +120,8 @@
                 }
         /* } */
         .imgicon {
-            width: 75px;
-            height: 80px;
+            width: 60px;
+            height: 70px;
             border-radius: 11px;
             /* transform: scaleX(-1); */
             z-index: 1;
@@ -186,23 +186,24 @@
     </style>
 @endsection
 @section('title')  
-تاریخچه چالش ها
+بازارچه
 @endsection
 @section('content')   
 <div id="content2" class="content2">             
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card mt-2 p-md-3" onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
+            <div class="card mt-2 p-md-3 @if($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body">
                     <div class="row d-flex">
                         <div class="col-2 m-auto mx-1" style="padding-right:5px !important;" >                                
-                            @if($item['Options']??0)                   
+                            {{-- @if($item['Options']??0)                   
                             <img src="{{asset('img/home/quiz.png')}}" class="imgicon" alt="{{$item['Type']}}">
                             @elseif(in_array($item['Type']??'text',['image','audio','text','movie']))                              
                             <img src="{{asset('img/home/'.$item['Type'].'.png')}}" class="imgicon" alt="{{$item['Type']}}">
                             @else
                             <img src="{{asset('img/home/text.png')}}" class="imgicon" alt="{{$item['Type']}}">
-                            @endif
+                            @endif --}}
+                            <img src="{{asset('img/child/challenge.png')}}" class="imgicon" alt="{{$item['Type']}}">
                             <span class="circleImg"></span>
                         </div>
                         <div class="col d-flex flex-column pt-0" style="border-right: 2px solid #edc587;margin-right: 16px;">
@@ -211,8 +212,10 @@
                                 <i class="fa fa-check pull-left status" ></i>
                                 @elseif($item['Expired'])
                                 <i class="fa fa-exclamation pull-left status" ></i>
+                                @elseif($item['Pay'])
+                                <i class="fa fa-coins pull-left status" ></i>
                                 @else
-                                <i class="fa fa-close pull-left status"></i>
+                                <i class="fa fa-close opacity-0 pull-left status"></i>
                                 @endif
                             </div>
                             <div class="d-flex gap-2 flex-column mx-4" style="margin-right:0.25rem!important;">                                

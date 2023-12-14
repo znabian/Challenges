@@ -51,7 +51,7 @@ video
 .earth {
     max-width: 12rem!important;
     /* max-width: 150%!important; */
-    height: 161px;
+    height: 170px;
     /* top: -118px; */
     /* max-width: 1009px; */
     /* rotate: 342deg; */
@@ -333,16 +333,16 @@ video
 @endsection
 @section('content')   
 
-    <div class="col-12 overflow-x-hidden overflow-y px-3 position-relative" style="height: 88vh">
-      <div class="col-12 d-flex justify-content-around pb-1">
-        <span class="small" style="font-family: 'Peyda'">تاریخ چالش:</span>
-        <div class="d-flex gap-2 small">
+    <div class="col-12 overflow-x-hidden overflow-y px-3 position-relative" style="height: 74vh">
+      <div class="col-12 d-flex px-2 pb-1">
+        <span class="col small" style="font-family: 'Peyda'">تاریخ چالش:</span>
+        <div class="d-flex gap-2 small" style="margin-left:-5px">
           <div class="d-flex flex-row-reverse gap-1 small">
-            <i class="fa fa-calendar-minus fa-regular"></i>
+            <i class="fa opacity-75 fa-calendar-minus fa-regular"></i>
             <span class="text-danger">{{jdate($chall->ExpiredAt)->format('y/m/d')}}</span>
           </div>
           <div class="d-flex flex-row-reverse gap-1 small">
-            <i class="fa fa-calendar-plus fa-regular"></i>
+            <i class="fa opacity-75 fa-calendar-plus fa-regular"></i>
             <span>{{jdate($chall->Date)->format('y/m/d')}}</span>
           </div>
         </div>
@@ -433,11 +433,12 @@ video
       @endif
 
     </div>
-      <div class="position-relative row px-3 ">
-        <div class="bottom-0 card justify-content-center mx-auto overflow-hidden position-fixed rounded-5 col-12 col-md-5"  style="z-index: 350;font-size: 9pt;height:40px">
-          <div class="align-items-center card-body d-flex gap-3 justify-content-center" style="">
+      <div class="position-relative row px-3 justify-content-center mx-auto">
+        <div id="payCard" class=" card justify-content-center  mx-auto overflow-hidden position-fixed rounded-4 col-11 col-md-5 @if($chall->Pay) bg-success text-white @endif"  style="bottom:-10px;z-index: 350;font-size: 9pt;height:40px">
+          
+          <div id="unpay" class=" @if($chall->Pay) d-none @endif align-items-center card-body d-flex gap-3 justify-content-center" style="">
 
-            @if(!$chall->Pay)      
+               
               @php
               $spd= date_diff(date_create(session('User')->CallTime),now())->format("%R%a");
               $f=$spd-$chall->Level;
@@ -445,26 +446,44 @@ video
               if($price>50000)
               $price=50000;
             @endphp
+            @if($chall->Auto)
+            <i class="fa fa-arrow-left-long text-danger"></i>
+            <span class="">پاداش چالش:</span>
+              <b class="">{{number_format(60000-$price)}}</b>
+              <span class="">تومان</span>
+              <button  onclick="buyChall(1)" class="align-items-center btn btn-success col-3 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13.283" height="9.66" viewBox="0 0 13.283 9.66">
+                  <path id="payments_FILL0_wght400_GRAD0_opsz24" d="M47.849-794.566a1.747,1.747,0,0,1-1.283-.528,1.747,1.747,0,0,1-.528-1.283,1.747,1.747,0,0,1,.528-1.283,1.747,1.747,0,0,1,1.283-.528,1.747,1.747,0,0,1,1.283.528,1.747,1.747,0,0,1,.528,1.283,1.747,1.747,0,0,1-.528,1.283A1.747,1.747,0,0,1,47.849-794.566Zm-4.226,1.811a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853v-4.83a1.163,1.163,0,0,1,.355-.853,1.163,1.163,0,0,1,.853-.355h8.453a1.163,1.163,0,0,1,.853.355,1.163,1.163,0,0,1,.355.853v4.83a1.163,1.163,0,0,1-.355.853,1.163,1.163,0,0,1-.853.355Zm1.208-1.208h6.038a1.163,1.163,0,0,1,.355-.853,1.163,1.163,0,0,1,.853-.355v-2.415a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853H44.83a1.163,1.163,0,0,1-.355.853,1.163,1.163,0,0,1-.853.355v2.415a1.163,1.163,0,0,1,.853.355A1.163,1.163,0,0,1,44.83-793.962Zm6.641,3.623H41.208a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853v-6.641h1.208v6.641H51.471Zm-7.849-3.623v0Z" transform="translate(-40 800)" fill="#fff"/>
+                </svg>              
+                  دریافت
+              </button>
+            @else
             <i class="fa fa-arrow-left-long text-danger"></i>
             <span class="">قیمت چالش:</span>
               <b class="">{{number_format($price)}}</b>
               <span class="">تومان</span>
-              <button  onclick="buyChall()" class="align-items-center btn btn-success col-4 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;">
+              <button  onclick="buyChall()" class="align-items-center btn btn-success col-3 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13.283" height="9.66" viewBox="0 0 13.283 9.66">
                   <path id="payments_FILL0_wght400_GRAD0_opsz24" d="M47.849-794.566a1.747,1.747,0,0,1-1.283-.528,1.747,1.747,0,0,1-.528-1.283,1.747,1.747,0,0,1,.528-1.283,1.747,1.747,0,0,1,1.283-.528,1.747,1.747,0,0,1,1.283.528,1.747,1.747,0,0,1,.528,1.283,1.747,1.747,0,0,1-.528,1.283A1.747,1.747,0,0,1,47.849-794.566Zm-4.226,1.811a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853v-4.83a1.163,1.163,0,0,1,.355-.853,1.163,1.163,0,0,1,.853-.355h8.453a1.163,1.163,0,0,1,.853.355,1.163,1.163,0,0,1,.355.853v4.83a1.163,1.163,0,0,1-.355.853,1.163,1.163,0,0,1-.853.355Zm1.208-1.208h6.038a1.163,1.163,0,0,1,.355-.853,1.163,1.163,0,0,1,.853-.355v-2.415a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853H44.83a1.163,1.163,0,0,1-.355.853,1.163,1.163,0,0,1-.853.355v2.415a1.163,1.163,0,0,1,.853.355A1.163,1.163,0,0,1,44.83-793.962Zm6.641,3.623H41.208a1.163,1.163,0,0,1-.853-.355,1.163,1.163,0,0,1-.355-.853v-6.641h1.208v6.641H51.471Zm-7.849-3.623v0Z" transform="translate(-40 800)" fill="#fff"/>
                 </svg>              
                   خرید
               </button>
-              @else
-              <i class="fa fa-arrow-left-long text-success"></i>
+            @endif
+          </div>
+          <div id="pay" class=" @if(!$chall->Pay) d-none @endif  align-items-center card-body d-flex gap-3 justify-content-center" style="">
+
+              <i class="fa fa-arrow-left-long text-success-subtle"></i>
               <span class="">قیمت چالش:</span>
                 <b class=""></b>
                 <span class=""></span>
-                <span class="align-items-center col-4 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;border: 1px solid #939393;color: #000;">
+                <span class="align-items-center col-4 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;">
                     <i class="fa fa-money-bills"></i>
+                    @if(!$chall->Pay)
+                    {{number_format($price)}}تومان 
+                    @else
                     {{number_format($chall->Pay)}}تومان 
+                    @endif
                 </span>
-              @endif
           </div>
         </div>
       </div>
@@ -548,9 +567,9 @@ video
     @endif
         <script>
           @if(!$chall->Pay)
-          function buyChall()
+          function buyChall(auto=0)
           {
-            axios.post('{{route("chall.buy")}}', {chall:'{{$chall->Id}}',expired:'{{$chall->Expired}}',expiredAt:'{{$chall->ExpiredAt}}',Price:'{{$price}}',day:'{{$chall->Expire}}'})
+            axios.post('{{route("chall.buy")}}', {chall:'{{$chall->Id}}',expired:'{{$chall->Expired}}',expiredAt:'{{$chall->ExpiredAt}}',Price:'{{$price}}',day:'{{$chall->Expire}}',auto:auto})
                   .then(response => { 
                     if(response.data.success)
                     {
@@ -559,7 +578,11 @@ video
                                   confirmButtonText: 'بله',
                                   html:response.data.msg,
                               });
-                              location.reload();
+                        document.getElementById('unpay').classList.add('d-none');
+                        document.getElementById('pay').classList.remove('d-none');
+                        document.getElementById('chat').classList.remove('d-none');
+                        document.getElementById('payCard').classList.add('bg-success','text-white');
+                        user_wallet.innerHTML=response.data.wallet;
                     }
                         
                     else
@@ -576,7 +599,7 @@ video
                                   title: 'خطا',                        
                                   confirmButtonText: 'بله',
                                   //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                                  html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+                                  html:"مشکل پیش آمده دوباره تلاش کن",
 
                               });
                   });
@@ -628,7 +651,7 @@ video
                                   title: 'خطا',                        
                                   confirmButtonText: 'بله',
                                   //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                                  html:"مشکل پیش آمده دوباره تلاش کن<p><small> <br>  "+error.stack+"</small></p>",
+                                  html:"مشکل پیش آمده دوباره تلاش کن",
 
                               });
                   });

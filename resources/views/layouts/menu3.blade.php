@@ -124,27 +124,27 @@
         @endif      
   </svg>
 </div>
-<div class="d-flex justify-content-center m-auto menu2">
+<div class="d-flex justify-content-center menu2">
   @if(\Route::currentRouteName()=="home")
-  <img usemap="#image-map" src="{{asset('img/home.svg')}}" alt="" class="">
+  <img usemap="#image-map" src="{{asset('img/home.png')}}" alt=""  class="w-100" >
   @elseif(\Route::currentRouteName()=="history")
-  <img usemap="#image-map" src="{{asset('img/history.svg')}}" alt="" class="">
+  <img usemap="#image-map" src="{{asset('img/history.png')}}" alt=""  class="w-100" >
   @else
-  <img usemap="#image-map" src="{{asset('img/menu.svg')}}" alt="" class="">
+  <img usemap="#image-map" src="{{asset('img/menu.png')}}" alt=""  class="w-100"  style="@if(session('User')->Age>12) margin-bottom:0% @else margin-bottom:2% @endif " >
   @endif
 <map name="image-map">
    @if(\Route::currentRouteName()=="home")
    <area  alt="logout" title="خروج" href="javascript:logout();" coords="60,37,108,86" shape="rect">
-   <area  alt="home" title="چالش های امروز" href="{{route('home')}}" coords="141,56,195,85" shape="rect">
-  <area  alt="history" title="تاریخچه چالش ها" href="{{route('history')}}" coords="232,37,277,86" shape="rect">
+   <area  alt="home" title="کف بازار" href="{{route('home')}}" coords="141,56,195,85" shape="rect">
+  <area  alt="history" title="بازارچه" href="{{route('history')}}" coords="232,37,277,86" shape="rect">
   @elseif(\Route::currentRouteName()=="history")
   <area  alt="logout" title="خروج" href="javascript:logout();" coords="60,37,108,86" shape="rect">
-  <area  alt="home" title="چالش های امروز" href="{{route('home')}}" coords="195,37,149,87" shape="rect">
-  <area  alt="history" title="تاریخچه چالش ها" href="{{route('history')}}" coords="232,58,280,86" shape="rect"> 
+  <area  alt="home" title="کف بازار" href="{{route('home')}}" coords="195,37,149,87" shape="rect">
+  <area  alt="history" title="بازارچه" href="{{route('history')}}" coords="232,58,280,86" shape="rect"> 
   @else
   <area  alt="logout" title="خروج" href="javascript:logout();" coords="60,5,112,57" shape="rect">
-  <area  alt="home" title="چالش های امروز" href="{{route('home')}}" coords="137,5,189,58" shape="rect">
-  <area  alt="history" title="تاریخچه چالش ها" href="{{route('history')}}" coords="282,57,228,6" shape="rect">
+  <area  alt="home" title="کف بازار" href="{{route('home')}}" coords="137,5,189,58" shape="rect">
+  <area  alt="history" title="بازارچه" href="{{route('history')}}" coords="282,57,228,6" shape="rect">
   @endif
 </map>
 </div>

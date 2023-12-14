@@ -48,8 +48,8 @@ class ChatController extends Controller
 
         if(!$chall->ChatId)
         {
-            $chall->ChatId=$this->getData('insertGetId',['sender'=>$user->Id,'resiver'=>$user->SupportId??$user->SellerId,'cuid'=>$chall->Id],'chat',1)[0]; 
-            $chall->ChatResiver=$user->SupportId??$user->SellerId; 
+            $chall->ChatId=$this->getData('insertGetId',['sender'=>$user->Id,'resiver'=>$user->SellerId??$user->SupportId,'cuid'=>$chall->Id],'chat',1)[0]; 
+            $chall->ChatResiver=$user->SellerId??$user->SupportId; 
         }
 
         if(!$chall->Closed)
@@ -119,7 +119,7 @@ class ChatController extends Controller
             $date2="امروز";
             else
             $date2=jdate($msg->Date)->format('d F');
-            $def=$this->getData('select',['sid'=>$user->SupportId??$user->SellerId],'automsg',1) ;
+            $def=$this->getData('select',['sid'=>$user->SellerId??$user->SupportId],'automsg',1) ;
             if($def->count())
             {
                 $def=(object)$def->first();
@@ -304,8 +304,8 @@ class ChatController extends Controller
 
         if(!$chall->ChatId)
         {
-            $chall->ChatId=$this->getData('insertGetId',['sender'=>$user->Id,'resiver'=>$user->SupportId??$user->SellerId,'cuid'=>$chall->Id],'chat',1)[0]; 
-            $chall->ChatResiver=$user->SupportId??$user->SellerId; 
+            $chall->ChatId=$this->getData('insertGetId',['sender'=>$user->Id,'resiver'=>$user->SellerId??$user->SupportId,'cuid'=>$chall->Id],'chat',1)[0]; 
+            $chall->ChatResiver=$user->SellerId??$user->SupportId; 
         }
         $Body="پاسخ این سوال  ".$req->answer." است";
         if($chall->MyAnswer==$Body)
