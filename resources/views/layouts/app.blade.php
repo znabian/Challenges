@@ -15,8 +15,62 @@
         {{-- <link rel="stylesheet" href="{{ asset('css/font.css') }}"> --}}
         <link rel="stylesheet" href="{{ asset('css/style.css') }}"> 
         <link rel="stylesheet" href="{{ asset('fontawesome-6.4.2/css/all.css') }}">
+		<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
         <!-- Styles -->
         <style>
+            .menu2 nav
+            {
+                background-color: #f3f3f3;
+                width: 100%;
+                border-radius: 19px;
+                height: 60px;
+                box-shadow: 0px 2px 6px -2px #000;
+            }
+            .menu2 .fa {
+                font-size: 12pt;
+            }
+		.menu2 a {
+            color: #393939;
+            padding: 12px;
+                font-size: 7pt;
+        }
+		.menu2 li {
+                display: grid;
+                justify-items: center;
+                gap: 5px;
+            }
+            .menu2 a.active {
+            border-radius: 50px;
+            border: 1px solid transparent;
+            background: #f3f3f3;
+            bottom: 33px;
+            position: relative;
+            width: 65px;
+            height: 65px;
+            display: grid;
+            align-items: center;
+            box-shadow: 0px 2px 7px -3px #000;
+        }
+            .mobile-hide,.mobile-show
+            {
+                display: none;
+            }
+            @media (max-width:519px)
+            {
+                
+                .mobile-show
+                {
+                    display: initial!important;
+                }
+            }
+            @media (min-width:520px)
+            {
+                
+                .mobile-hide
+                {
+                    display: initial!important;
+                }
+            }
             .navicon {
                 margin-top: 11px;
                 background-color: #4c4c4c;
@@ -519,8 +573,8 @@
                     @elseif($errors->any())
                     Swal.fire({
                                 icon: 'error',
-                                confirmButtonText: 'بله',
                                 title: 'خطا',
+								confirmButtonText: 'بله',
                                 text:"<?php foreach ($errors->all() as $error) echo $error;?>"
                             });
                     @endif

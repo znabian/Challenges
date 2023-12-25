@@ -159,7 +159,7 @@
         }
         .menu2
         {
-            bottom: -12px!important;
+            /* bottom: -12px!important; */
         }
         
         .content2
@@ -212,7 +212,7 @@
     </div>
     @endif
 </div>
-   @include('layouts.menu3') 
+   @include('layouts.menu4') 
 @endsection
 @section('script')
     <script>

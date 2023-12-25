@@ -158,7 +158,7 @@
         }
         .menu2
         {
-            bottom: 0px!important;
+            /*bottom: 0px!important;*/
         }
     </style>
 @endsection
@@ -212,7 +212,7 @@
         <p class="text-center text-center noinfo">پیامی یافت نشد</p>
     @endif
 </div>
-   @include('layouts.menu3') 
+   @include('layouts.menu4') 
 @endsection
 @section('script')
     <script>

@@ -551,7 +551,7 @@
    
      @if($chall->Closed)
 <div class="text-center " style="">
-  <p class="alert border-top">{{session('User')->FullName}}  چت این چالش بسته شده </p>
+  <p class="alert border-top">{{session('User')->FullName}}  از این چالش {{number_format($chall->Money)}} تومان به دست اوردی</p>
 </div>
 @elseif($chall->Expired)
 <div class="text-center " style="">
