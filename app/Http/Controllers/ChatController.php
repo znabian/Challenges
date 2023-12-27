@@ -37,11 +37,11 @@ class ChatController extends Controller
         if(date('Y-m-d',strtotime($chall->Date))>date('Y-m-d'))
         abort(404);
 
-        if(!$chall->ChatId && $chall->Expired)
+        /*if(!$chall->ChatId && $chall->Expired)
         {
             session()->flash('error','زمان تحویل این چالش گذشته است');
             return back();
-        }
+        }*/
         $this->getData('update',['uid'=>$user->Id,'link'=>"/chat/".$chall->Id],'seen',"Notifs"); 
        if(!session('Notifs')->count())
            session()->forget('Notifs');        
@@ -296,8 +296,8 @@ class ChatController extends Controller
 
         if(date('Y-m-d',strtotime($chall->Date))>date('Y-m-d'))
         return response()->json(['success'=>0,'msg'=>"چالشی پیدا نکردم"]);
-        if(!$chall->ChatId && $chall->Expired)
-        return response()->json(['success'=>0,'msg'=>"زمان چالشت تموم شده"]);
+       /* if(!$chall->ChatId && $chall->Expired)
+        return response()->json(['success'=>0,'msg'=>"زمان چالشت تموم شده"]);*/
         
         if($chall->Closed??0)
         return response()->json(['success'=>0,'msg'=>"چالشت بسته شده"]);
@@ -440,11 +440,11 @@ class ChatController extends Controller
         abort(404);
         if(date('Y-m-d',strtotime($chall->Date))>date('Y-m-d'))
         abort(404);
-        if(!$chall->Chat()->exists() && $chall->Expired)
+        /*if(!$chall->Chat()->exists() && $chall->Expired)
         {
             session()->flash('error','زمان تحویل این چالش گذشته است');
             return back();
-        }
+        }*/
         
         DB::table('ReminderTbl')->where([
             'UserId'=>auth()->user()->Id,

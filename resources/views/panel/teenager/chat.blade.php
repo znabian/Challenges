@@ -552,10 +552,10 @@
 <div class="text-center " style="">
   <p class="alert border-top">{{session('User')->FullName}}  از این چالش {{number_format($chall->Money)}} تومان به دست اوردی</p>
 </div>
-@elseif($chall->Expired)
+{{-- @elseif($chall->Expired)
 <div class="text-center " style="">
   <p class="alert border-top">{{session('User')->FullName}}  زمان تحویل این چالش گذشته </p>
-</div>
+</div> --}}
 @else
 <div class="position-relative text-center d-none" id="ReplyConter">
   <div class="d-flex p-2 replydiv">

@@ -420,7 +420,7 @@
               @foreach ($answers as $index=>$opt)
                 @if($index!='ans')
                 <label for="" class="col-6 d-inline-flex gap-1">
-                  @if($chall->Closed??0 || $chall->Expired) 
+                  @if($chall->Closed??0 ) 
                   <i @if($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) class="fa fa-circle-check fa-regular my-auto " @else class="fa fa-circle fa-regular my-auto"  @endif ></i>
                   @else 
                   <input type="radio" name="Answer" id="answer" @if($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) checked  @endif  value="{{$opt}}">                  
@@ -625,7 +625,7 @@
             const closed={{$chall->Closed??0}};
             var useranswer=document.querySelector('input[type=radio]:checked');              
 
-            if(Expired || closed)
+            if(closed)
             Swal.fire({
                 icon: 'error',
                 title: 'توجه',                
