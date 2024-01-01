@@ -51,4 +51,13 @@ class EventController extends Controller
         $channel->publish('ChatClose',json_encode($a));
         return true;
     }
+    public function PrivateMessage($message,$userId,$title="موسسه سرخ",$param=[]) 
+    { 
+        $a=new privateEvent($message,$userId,$title,$param);
+
+        $client = new  AblyRest($this->ABLY_KEY);
+        $channel = $client->channels->get('FC-Messages.'.$userId);
+        $channel->publish('FCMyMessages', json_encode($a->broadcastWith()));
+        return true;
+    }
 }

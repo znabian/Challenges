@@ -2608,7 +2608,6 @@
         
    }
 @if(!$chall->Closed)
-@if(!$chall->Expired)
   const ably2 = new Ably.Realtime.Promise('{{env('ABLY_KEY')}}');
     ably2.connection.once('connected');
   /* Rsive Message Channel*/
@@ -2669,7 +2668,6 @@
     });
     setMenu(document.querySelectorAll('div[id^="msg_"]'));
 
-@endif
 @endif
   function setMenu(divmessagess)
   {

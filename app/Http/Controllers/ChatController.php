@@ -136,6 +136,11 @@ class ChatController extends Controller
                 }
             }
             $EventController->ChallengeChat($req->ChatId,$chatId,$msg->Resiver,$msg->Sender,$msg->Body??null,$path,$msg->SenderName,$msg->ResiverName,jdate($msg->Date)->format('Y-m-d H:i:s'),$date2,jdate($msg->Date)->format('H:i:s'),$logo,$msg->Parent);
+            $challs=(session('Challs'));
+            $challs=$challs->merge((session('Histories')));
+            $chall=(object)$challs->where('Id',$req->ChallId)->first();
+            
+            $EventController->PrivateMessage(" یک پیام جدید در چالش ".$chall->Title." از ".$msg->SenderName." دریافت شد ",$msg->Resiver,'چالش های فرست کلاس',$req->ChallId);
             return response()->json(['success'=>1,'chatId'=>$chatId,'Body'=>$msg->Body,'Parent'=>$msg->Parent,'File'=>$path,'Sender'=>$msg->SenderName,'Logo'=>$logo,'Date'=>jdate($msg->Date)->format('Y-m-d H:i:s'),'Date2'=>$date2,"Time"=>jdate($msg->Date)->format('H:i:s'),'ResiverId'=>$msg->Resiver,'SenderId'=>$msg->Sender,'msg'=>$msg]);
     }
     public function All_chat($chat,Request $req)
