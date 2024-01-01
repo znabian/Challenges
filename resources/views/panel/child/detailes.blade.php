@@ -373,10 +373,70 @@
           </h2>
       </div>
       <div class="ChallFile px-3">
+        @if($chall->Link)
+        <div id="carouselExample" class="carousel slide" data-bs-interval="false" >
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <div class="col-12 d-flex gap-2 justify-content-center mt-3">
+                @if($chall->Type=='movie')
+                <div class="col-12 position-relative">
+                  <video  poster="{{asset('img/cover.png')}}" class="videoRes embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
+                  <source data-src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" type="video/mp4">
+                </video>
+                <span class="playicon"></span>
+                </div>
+                
+                @elseif($chall->Type=='audio')
+                <audio class="d-none" id="sounds" controlsList="nodownload" controls src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" >
+                </audio>
+                @include('panel.audioplayer') 
+                @elseif($chall->Type=='image')
+                <div class="picfile" style="background-image: url({{$chall->File}})">
+                  <a href="{{$chall->File}}" target="_blank" download>
+                    <img src="{{asset('img/details/download.png')}}" alt="Image" width="70" height="70">
+                    </a>
+                </div>
+                @endif
+              </div>
+            <div class="carousel-caption  bottom-0">
+              <p>پیوست 1</p>
+            </div>
+            </div>
+            @foreach(explode(';;',$chall->Link) as $id=>$link)
+            <div class="carousel-item ">
+              <div class="col-12 d-flex gap-2 justify-content-center mt-3">
+                <div class="col-12 position-relative">
+                  <video  poster="{{asset('img/cover.png')}}" class="videoRes embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
+                  <source data-src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$link)}}" type="video/mp4">
+                </video>
+                <span class="playicon"></span>
+                </div>
+              </div>
+              <div class="carousel-caption  bottom-0">
+                <p>پیوست {{$id+2}}</p>
+              </div>
+            </div>
+            @endforeach
+
+
+            
+            
+            
+          </div>
+          <button class="carousel-control-prev" onclick="playpause();" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="fa fa-2x fa-circle-arrow-left " aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" onclick="playpause();" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="fa fa-2x fa-circle-arrow-right " aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+       @else
         <div class="col-12 d-flex gap-2 justify-content-center mt-3">
           @if($chall->Type=='movie')
           <div class="col-12 position-relative">
-            <video id="videoRes" poster="{{asset('img/cover.png')}}" class="embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
+            <video  poster="{{asset('img/cover.png')}}" class="videoRes embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
             <source data-src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" type="video/mp4">
           </video>
           <span class="playicon"></span>
@@ -394,6 +454,7 @@
           </div>
           @endif
         </div>
+        @endif
       </div>
       <div class="col-12 mt-4 px-3">
         @if($chall->Body)
@@ -511,6 +572,8 @@
     </div> --}}
     @endsection
     @section('script')
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
     @if($chall->Type=='audio')
     <script>
         const audioPlayer=document.getElementById('sounds');
@@ -686,10 +749,13 @@
         <script>
           $(document).ready(function()
           {
-            if(document.getElementById('videoRes'))
+            if(document.querySelector('.videoRes'))
             {
                 $('.playicon').click(function ()
                   {
+                    var videoRes=this.parentElement.querySelector('.videoRes');
+                    if($('.carousel-caption').length)
+                    this.parentElement.parentElement.parentElement.querySelector('.carousel-caption').classList.add('text-3b407a');
                     if(!videoRes.src)
                     {      
                       videoRes.src = videoRes.children[0].getAttribute('data-src');
@@ -700,28 +766,45 @@
                       videoRes.play();
                       videoRes.classList.remove('blurEffect');
                       $('.playicon').hide();
+                      if($('.carousel-caption').length)
+                      $('.carousel-caption').hide();
                     }
                   });
-    
-                $('#videoRes').on('ended',function(){
-                    $(this).addClass('blurEffect');
-                    this.removeAttribute("controls");
-                  $('.playicon').show();
+                
+                document.querySelectorAll('.videoRes').forEach((itm)=>{
+                  itm.addEventListener("pause", function(){
+                       $('.playicon').show();
+                       if($('.carousel-caption').length)
+                       $('.carousel-caption').show();
+                      itm.classList.add('blurEffect');
+                      itm.removeAttribute("controls");
+                    });
+                  itm.addEventListener("ended", function(){
+                    itm.addClass('blurEffect');
+                        itm.removeAttribute("controls");
+                      $('.playicon').show();
+                      if($('.carousel-caption').length)
+                      $('.carousel-caption').show();
+                    });
+                    itm.addEventListener("play", function(){
+                      itm.setAttribute("controls", "controls");
+                      itm.classList.remove('blurEffect');
+                      $('.playicon').hide();
+                      if($('.carousel-caption').length)
+                      $('.carousel-caption').hide();
+
+                    });
                 });
-                $('#videoRes').on('play',function(){
-                  videoRes.setAttribute("controls", "controls");
-                  videoRes.classList.remove('blurEffect');
-                  $('.playicon').hide();
-                });
-              videoRes.addEventListener("pause", pausePlaying);
             
             }
     });
-    function pausePlaying()
-     {
-        $('.playicon').show();
-          videoRes.classList.add('blurEffect');
-          videoRes.removeAttribute("controls");
-      }
+        function playpause()
+        {
+          if($('.carousel-caption').length)
+          $('.carousel-caption').show();
+         document.querySelectorAll('.videoRes').forEach((itm)=>{
+            itm.pause();
+          });
+        }
     </script>
     @endsection
