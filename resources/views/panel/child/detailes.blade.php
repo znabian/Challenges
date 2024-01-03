@@ -242,12 +242,14 @@
     /* border: 9px solid white; */
     border-radius: 15px;
     padding: 5px;
-    box-shadow: 0px 3px 5px 0px #c5c5c5;
+    box-shadow: 0px 3px 5px 0px #c5c5c5;    
+    position: relative;
+    /* overflow-x: hidden; */
 }
-#wave {
+.wave {
     width: 95%;
-    /* height: 59px; */
-    background-image: url('{{asset("img/player/wave.jpg")}}');
+    height: 59px;
+    /* background-image: url('{{asset("img/player/wave.jpg")}}'); */
     background-size: 28px;
     background-position: center;
     background-repeat-y: no-repeat;
@@ -255,18 +257,41 @@
     /* border: 9px solid white; */
     /* border-radius: 15px; */
     background-color: #fefefe94;
+    position: absolute;
+    bottom: 0;
+    border-radius: 15px;
 }
-#played {
+.unplayed
+{
+    background-image: url('{{asset("img/player/wave.png")}}');
+    left: 0;
+    background-position: 1px center;
+    width: 95%;
+    height: 59px;
+    background-size: 28px;
+    background-repeat-y: no-repeat;
+    background-blend-mode: screen;
+    background-color: #fefefe94;
+    position: absolute;
+    bottom: 0;
+    border-radius: 15px;
+}
+.played {
     width: 0%;
-    float: left;
+    /* float: left; */
     height: -webkit-fill-available;
-    background-image: url('{{asset("img/player/wave.jpg")}}');
+    background-image: url('{{asset("img/player/wave.png")}}');
     background-size: 28px;
     background-position: left;
     background-repeat-y: no-repeat;
     /* border: 9px solid white; */
     /* border-radius: 15px; */
     /* background-color: red; */
+    position: absolute;
+    left: 0;
+    /* height: 57px; */
+    bottom: 4%;
+    margin-left: 0;
 }
 .circleplay {
                 width: 54px;
@@ -284,7 +309,7 @@
                 box-shadow: 0px 3px 5px 0px #c5c5c5;
                 cursor: pointer;
             }
-            #progress
+            .progress
              {
                 width: 101%;
                 margin-bottom: -40px;
@@ -292,6 +317,9 @@
                 direction: ltr;
                 opacity: 0; 
                 cursor: pointer;
+                position: absolute;
+                bottom: 100%;
+                z-index: 1;
             }
           .backimg 
            {
@@ -340,6 +368,13 @@
   @endif
   cursor: pointer; 
 }
+.audio-caption
+{
+  position: static;
+  padding: 0;
+  color: #3b407a;
+  text-align: center!important;
+}
 </style>
 @endsection
 @section('content')   
@@ -376,6 +411,7 @@
         @if($chall->Link)
         <div id="carouselExample" class="carousel slide" data-bs-interval="false" >
           <div class="carousel-inner">
+            @if($chall->File)
             <div class="carousel-item active">
               <div class="col-12 d-flex gap-2 justify-content-center mt-3">
                 @if($chall->Type=='movie')
@@ -398,22 +434,40 @@
                 </div>
                 @endif
               </div>
-            <div class="carousel-caption  bottom-0">
+            <div class="carousel-caption @if($chall->Type=='audio') audio-caption @endif bottom-0">
               <p>پیوست 1</p>
             </div>
             </div>
-            @foreach(explode(';;',$chall->Link) as $id=>$link)
-            <div class="carousel-item ">
+            @endif
+            @foreach(json_decode($chall->Link) as $id=>$link)
+            <div class="carousel-item  @if(!$chall->File && $loop->first) active @endif ">
               <div class="col-12 d-flex gap-2 justify-content-center mt-3">
+                @if($link->Type=='movie')
                 <div class="col-12 position-relative">
                   <video  poster="{{asset('img/cover.png')}}" class="videoRes embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
-                  <source data-src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$link)}}" type="video/mp4">
+                  <source data-src="{{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}}" type="video/mp4">
                 </video>
                 <span class="playicon"></span>
                 </div>
+                
+                @elseif($link->Type=='audio')
+                <audio class="d-none" id="sounds" controlsList="nodownload" controls src="{{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}}" >
+                </audio>
+                @include('panel.audioplayer') 
+                @elseif($link->Type=='image')
+                <div class="picfile" style="background-image: url({{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}})">
+                  <a href="{{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}}" target="_blank" download>
+                    <img src="{{asset('img/details/download.png')}}" alt="Image" width="70" height="70">
+                    </a>
+                </div>
+                @endif
               </div>
-              <div class="carousel-caption  bottom-0">
+              <div class="carousel-caption @if($link->Type=='audio') audio-caption @endif bottom-0">
+                @if($chall->File) 
                 <p>پیوست {{$id+2}}</p>
+                @else           
+                <p>پیوست {{$id+1}}</p>
+                @endif
               </div>
             </div>
             @endforeach
@@ -423,12 +477,12 @@
             
             
           </div>
-          <button class="carousel-control-prev" onclick="playpause();" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-            <span class="fa fa-2x fa-circle-arrow-left " aria-hidden="true"></span>
+          {{-- <button class="carousel-control-prev" onclick="playpause();" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="fa fa-2x fa-circle-arrow-left text-dark " aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
-          </button>
+          </button> --}}
           <button class="carousel-control-next" onclick="playpause();" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-            <span class="fa fa-2x fa-circle-arrow-right " aria-hidden="true"></span>
+            <span class="fa fa-2x fa-circle-arrow-right text-dark" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
         </div>
@@ -574,74 +628,79 @@
     @section('script')
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-    @if($chall->Type=='audio')
-    <script>
-        const audioPlayer=document.getElementById('sounds');
-        const progressBar = document.getElementById('progress');
-        var progressUpdate=1;
-      function playAudio()
+  
+ <script>
+    var progressUpdate=1;
+    function playAudio(obj)
+    {
+      audioPlayer=obj.parentElement.querySelector('audio');
+      progressBar= obj.parentElement.querySelector('.progress');
+      playericon= obj.parentElement.querySelector('.playericon');
+      if(audioPlayer.error)
       {
-        if(audioPlayer.error)
-        {
-          playericon.classList.remove('fa-play','fa-pause');
-          playericon.classList.add('fa-warning');
-          Swal.fire({
-                      icon: 'error',
-                      title: 'خطا',                        
-                      confirmButtonText: 'بله',
-                      text:"{{session('User')->FullName}} \n  متاسفم فایلش پیدا نشد  \n شاید حذف شده "
+        playericon.classList.remove('fa-play','fa-pause');
+        playericon.classList.add('fa-warning');
+        Swal.fire({
+                    icon: 'error',
+                    title: 'خطا',                        
+                    confirmButtonText: 'بله',
+                    text:"{{session('User')->FullName}} \n  متاسفم فایلش پیدا نشد  \n شاید حذف شده "
 
-                  });
-          return 0;
-          
-        }
-        if (audioPlayer.paused) 
-        {
-            progressBar.max=audioPlayer.duration;
-            audioPlayer.play();
-            playericon.classList.remove('fa-play');
-            playericon.classList.add('fa-pause');
-            
-        } 
-        else {
-            audioPlayer.pause();
-            playericon.classList.remove('fa-pause');
-            playericon.classList.add('fa-play');
-          }
-      }
-      function changeCurrentTime(value)
-      {
-        audioPlayer.pause();
-        progressUpdate=0;
-        audioPlayer.currentTime=value
-        audioPlayer.play();
-      }
-      audioPlayer.addEventListener("timeupdate", function() {
-          const duration = audioPlayer.duration;
-          const currentTime = audioPlayer.currentTime;
-          const progress = (currentTime / duration) * 100;
-          played.style.width = progress + "%";
-          if(progressUpdate)
-          progressBar.value = audioPlayer.currentTime ;
-          else
-          progressUpdate=1;
-        });
-      audioPlayer.addEventListener("play", function() {
-        playericon.classList.add('fa-pause');
-            playericon.classList.remove('fa-play');
-        });
-      audioPlayer.addEventListener("pause", function() {
-        playericon.classList.remove('fa-pause');
-            playericon.classList.add('fa-play');
-        });
-      audioPlayer.addEventListener("end", function() {
-        playericon.classList.remove('fa-pause');
-            playericon.classList.add('fa-play');
-          progressBar.value = 0 ;
-        });
+                });
+        return 0;
         
-    </script>
-    @endif
+      }
+      if (audioPlayer.paused) 
+      {
+          progressBar.max=audioPlayer.duration;
+          audioPlayer.play();
+          playericon.classList.remove('fa-play');
+          playericon.classList.add('fa-pause');
+      } 
+      else {
+          audioPlayer.pause();
+          playericon.classList.remove('fa-pause');
+          playericon.classList.add('fa-play');
+        }
+    }
+    function changeCurrentTime(value,obj)
+    {
+      audioPlayer=obj.parentElement.parentElement.parentElement.querySelector('audio');
+      progressBar= obj.parentElement.parentElement.querySelector('.progress');
+      
+      audioPlayer.pause();
+      progressUpdate=0;
+      audioPlayer.currentTime=value
+      audioPlayer.play();
+    }
+    document.querySelectorAll('audio').forEach(itm=>{
+      itm.addEventListener("timeupdate", function() {
+        const duration = itm.duration;
+        const currentTime = itm.currentTime;
+        const progress = (currentTime / duration) * 100;
+        itm.parentElement.querySelector('.played').style.width = progress + "%";
+        if(progressUpdate)
+        itm.parentElement.querySelector('.progress').value = itm.currentTime ;
+        else
+        progressUpdate=1;
+      });
+      itm.addEventListener("play", function() {
+        itm.parentElement.querySelector('.playericon').classList.add('fa-pause');
+        itm.parentElement.querySelector('.playericon').classList.remove('fa-play');
+        });
+      itm.addEventListener("pause", function() {
+        itm.parentElement.querySelector('.playericon').classList.remove('fa-pause');
+        itm.parentElement.querySelector('.playericon').classList.add('fa-play');
+        });
+      itm.addEventListener("end", function() {
+      itm.parentElement.querySelector('.playericon').classList.remove('fa-pause');
+      itm.parentElement.querySelector('.playericon').classList.add('fa-play');
+      itm.parentElement.querySelector('.progress').value = 0 ;
+      });
+    });
+
+  
+</script>
         <script>
           @if(!$chall->Pay)
           function buyChall(auto=0)
