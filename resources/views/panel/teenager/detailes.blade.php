@@ -519,12 +519,14 @@ video
                   $answers=json_decode($chall->Options??'[]');
               @endphp
             @if($answers)
-            <p class="row text-center">
+            <p class="row text-center" id="optionsBox">
               @foreach ($answers as $index=>$opt)
                 @if($index!='ans')
                 <label for="" class="col-6 d-inline-flex gap-1">
                   @if($chall->Closed??0 ) 
                   <i @if($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) class="fa fa-circle-check fa-regular my-auto " @else class="fa fa-circle fa-regular my-auto"  @endif ></i>
+                  @elseif(!$chall->Pay) 
+                  <i  class="fa fa-circle fa-regular my-auto"  ></i>
                   @else 
                   <input type="radio" name="Answer" id="answer" @if($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) checked  @endif  value="{{$opt}}">                  
                   @endif
@@ -533,7 +535,7 @@ video
                 @endif  
               @endforeach  
               <div class="d-flex justify-content-center">
-                <button onclick="setAnswer()" class="btn btn-master  @if(($chall->Closed??0) ) d-none @endif">ثبت پاسخ</button>
+                <button onclick="setAnswer(this)" class="btn btn-master  @if(($chall->Pay??0)<0 || ($chall->Closed??0) ) d-none @endif ">ثبت پاسخ</button>
               </div>                
                 
             </p>
@@ -693,6 +695,7 @@ video
     </script>
     
         <script>
+          var payed={{$chall->Pay??0}};
           @if(!$chall->Pay)
           function buyChall(auto=0)
           {
@@ -710,6 +713,18 @@ video
                         document.getElementById('chat').classList.remove('d-none');
                         document.getElementById('payCard').classList.add('bg-success','text-white');
                         user_wallet.innerHTML=response.data.wallet;
+                        @if($answers)
+                          @php
+                            $out='';
+                            foreach ($answers as $index=>$opt)
+                            {
+                              if($index!='ans')
+                              $out.='<label for="" class="col-6 d-inline-flex gap-1"><input type="radio" name="Answer" id="answer"  value="'.$opt.'">'.$num[$index].') '.$opt.'</label>';
+                            }
+                            echo "optionsBox.innerHTML='$out';";
+                          @endphp
+                        @endif
+                        payed=1;
                     }
                         
                     else
@@ -732,19 +747,33 @@ video
                   });
           }
           @endif
-          function setAnswer()
+          function setAnswer(btn)
           {
+            btn.disabled=true;
             const Expired={{$chall->Expired}};
             const closed={{$chall->Closed??0}};
             var useranswer=document.querySelector('input[type=radio]:checked');              
 
             if(closed)
-            Swal.fire({
-                icon: 'error',
-                title: 'توجه',                
-                confirmButtonText: 'بله',
-                text:"{{session('User')->FullName}} \n زمان ارسال پاسخ این چالش گذشته "
-            });
+            {
+              btn.disabled=false;
+              Swal.fire({
+                  icon: 'error',
+                  title: 'توجه',                
+                  confirmButtonText: 'بله',
+                  text:"{{session('User')->FullName}} \n زمان ارسال پاسخ این چالش گذشته "
+              });
+            }
+            else if(!payed)
+            {
+              btn.disabled=false;
+              Swal.fire({
+                  icon: 'error',
+                  title: 'توجه',                
+                  confirmButtonText: 'بله',
+                  text:"{{session('User')->FullName}} \n اول باید چالش رو بخری"
+              });
+            }
             else
             {
               if(useranswer)
@@ -759,11 +788,20 @@ video
                 axios.post('{{route("chall.answer")}}', {chall:'{{$chall->Id}}',answer:useranswer.value})
                   .then(response => { 
                     if(response.data.success)
+                    {
                         Swal.fire({
-                                  icon: 'success',                      
+                                  icon: (response.data.success==1)?'success':'error',                      
                                   confirmButtonText: 'بله',
                                   html:response.data.msg,
                               });
+                              btn.classList.add('d-none');                               
+
+                              optionsBox.querySelectorAll('input').forEach(itm=>{itm.disabled=true;})
+
+                              if(response.data.wallet)
+                              user_wallet.innerHTML=response.data.wallet;
+                      
+                    }
                     else
                         Swal.fire({
                                   icon: 'error',                      
@@ -792,6 +830,7 @@ video
                 text:"{{session('User')->FullName}} \n یه گزینه انتخاب کن "
                  });
               }
+              btn.disabled=false;
             }
               
           }

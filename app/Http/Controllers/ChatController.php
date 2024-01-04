@@ -48,7 +48,7 @@ class ChatController extends Controller
 
         if(!$chall->ChatId)
         {
-            $chall->ChatId=$this->getData('insertGetId',['sender'=>$user->Id,'resiver'=>$user->SellerId??$user->SupportId,'cuid'=>$chall->Id],'chat',1)[0]; 
+            $chall->ChatId=$this->getData('createchat',['sender'=>$user->Id,'resiver'=>$user->SellerId??$user->SupportId,'cuid'=>$chall->Id],'chat',1)[0]; 
             $chall->ChatResiver=$user->SellerId??$user->SupportId; 
         }
 
@@ -87,8 +87,8 @@ class ChatController extends Controller
                      mkdir('uploads/Chat/'.$req->ChallId);
                     if(!is_dir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId))
                      mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId);
-                   // $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
-                    $file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
+                    $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
+                    //$file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
                      $path=route('home').'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/'.$fileName;
             }
             elseif ($req->hasFile('voice'))
@@ -105,8 +105,8 @@ class ChatController extends Controller
                      mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId);
                     if(!is_dir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio'))
                      mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio');
-                     //$file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
-                     $file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
+                     $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
+                     //$file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
                     $path=route('home').'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/'.$fileName;
             }
             else
@@ -291,6 +291,7 @@ class ChatController extends Controller
         $user=session('User');
         $panel=new PanelController();
         $panel->getData('update',['uid'=>$user->Id,'cid'=>$req->chall],'details',"Chall"); 
+        $wallet=$panel->MyWallet($user->Id)->getData()->wallet??'-';
         
         $chall=session('Chall');
         if(session('Chall')->where('Id',$req->chall)->count()==0)
@@ -309,7 +310,7 @@ class ChatController extends Controller
 
         if(!$chall->ChatId)
         {
-            $chall->ChatId=$this->getData('insertGetId',['sender'=>$user->Id,'resiver'=>$user->SellerId??$user->SupportId,'cuid'=>$chall->Id],'chat',1)[0]; 
+            $chall->ChatId=$this->getData('createchat',['sender'=>$user->Id,'resiver'=>$user->SellerId??$user->SupportId,'cuid'=>$chall->Id],'chat',1)[0]; 
             $chall->ChatResiver=$user->SellerId??$user->SupportId; 
         }
         $Body="پاسخ این سوال  ".$req->answer." است";
@@ -325,18 +326,26 @@ class ChatController extends Controller
         }
         else
         $msg=$chats->where("Body",'like',"%$Body%")->first();
-
-        $this->getData('update',['id'=>$chall->Id,'answer'=>$msg->Id],'setAnswer');
+        $answers=json_decode($chall->Options??'[]');   
+        $correct=($req->answer==$answers->ans);  
+        $f= date_diff(date_create(explode(' ',$chall->ExpiredAt)[0]),date_create(date('Y-m-d')))->format("%R%a");
+        $price=60000-(($f>2)?$f-1:0)*10000;
+        if($price<10000)
+        $price=10000;      
+        $this->getData('update',['id'=>$chall->Id,'answer'=>$msg->Id,'correct'=>$correct,'ChatId'=>$chall->ChatId,'Price'=>$price],'setAnswer');
         
-            $logo=asset('dist/img/Logored.png');                    
+        
+            /*$logo=asset('dist/img/Logored.png');                    
             $EventController=new EventController();
             if(jdate($msg->Date)->format('Y-m-d')==jdate()->format('Y-m-d'))
             $date2="امروز";
             else
             $date2=jdate($msg->Date)->format('d F');
-            $EventController->ChallengeChat($chall->ChatId,$msg->Id,$msg->Resiver,$msg->Sender,$msg->Body??null,'',$msg->SenderName,$msg->ResiverName,jdate($msg->Date)->format('Y-m-d H:i:s'),$date2,jdate($msg->Date)->format('H:i:s'),$logo);
-
-        return response()->json(['success'=>1,'msg'=>"جوابت ثبت شد"]);
+            $EventController->ChallengeChat($chall->ChatId,$msg->Id,$msg->Resiver,$msg->Sender,$msg->Body??null,'',$msg->SenderName,$msg->ResiverName,jdate($msg->Date)->format('Y-m-d H:i:s'),$date2,jdate($msg->Date)->format('H:i:s'),$logo);*/
+        if($correct)
+        return response()->json(['success'=>1,'wallet'=>$wallet+$price,'msg'=>session('User')->FullName." آفرین! جواب درست رو انتخاب کردی و ".number_format($price)." تومان پاداش گرفتی"]);
+        else
+        return response()->json(['success'=>2,'wallet'=>$wallet,'msg'=>session('User')->FullName." عزیز! جوابت اشتباه بود و پاداش  ".number_format($price)." تومانی رو از دست دادی"]);
     }
     
     public function getData($type,$param,$function,$sName=null)
@@ -347,6 +356,8 @@ class ChatController extends Controller
         $url="http://85.208.255.101/API/updateOrInserApi_jwt.php";
         elseif($type=="insertGetId")
         $url="http://85.208.255.101/API/insertGetIdApi_jwt.php";
+        elseif($type=="createchat")
+       	$url="http://85.208.255.101/API/CreateChat_jwt.php";
         else
         $url="http://85.208.255.101/API/selectApi_jwt.php";
         switch ($function) {
@@ -359,8 +370,12 @@ class ChatController extends Controller
                 $update="update InterviewChallMsgTbl set Seen=1 where Resiver=".$param['resiver']." and ChatId=".$param['cid']." and Seen=0 ";
                 break;
             case 'chat':
-                $select="INSERT INTO InterviewChallChatTbl (ChallUserId, Sender, Resiver) VALUES (".$param['cuid'].", ".$param['sender'].", ".$param['resiver'].")";
-                $update="";
+                /*$select="INSERT INTO InterviewChallChatTbl (ChallUserId, Sender, Resiver) VALUES (".$param['cuid'].", ".$param['sender'].", ".$param['resiver'].")";
+                $update="";*/
+					$select=" SELECT Id FROM InterviewChallChatTbl  WHERE  Sender = ".$param['sender']." AND Resiver = ".$param['resiver']." AND ChallUserId = ".$param['cuid'];
+            $update="INSERT INTO InterviewChallChatTbl (ChallUserId, Sender, Resiver) VALUES (".$param['cuid'].", ".$param['sender'].", ".$param['resiver'].");";
+
+				
                 break;
             case 'Readmsg':
                 $select="select * from ReminderTbl where UserId=".$param['resiver']." and Seen=0 order By Date desc";
@@ -386,7 +401,14 @@ class ChatController extends Controller
                 break;
             case 'setAnswer':
                 $select="select * from InterviewChallUserTbl where Id=".$param['id'];
-                $update="update InterviewChallUserTbl set Answer=".$param['answer']." where Id=".$param['id'];
+                $update="";
+
+                if($param['correct'])
+                $update="update  InterviewChallUserTbl set Price=".$param['Price'].",Done=1 where Id=".$param['id'].";";
+
+                $update.=";update InterviewChallChatTbl set Closed=1 where Id=".$param['ChatId'];
+                $update.=";update InterviewChallUserTbl set Answer=".$param['answer']." where Id=".$param['id'];
+               
                 break;
             case 'editmsg':
                 $select="select ms.*,
@@ -494,8 +516,8 @@ class ChatController extends Controller
                      mkdir('uploads/Chat/'.$req->ChallId);
                     if(!is_dir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId))
                      mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId);
-                   // $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
-                    $file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
+                   $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
+                    // $file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
                      $path=route('home').'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/'.$fileName;
             }
             elseif ($req->hasFile('voice'))
@@ -512,8 +534,8 @@ class ChatController extends Controller
                      mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId);
                     if(!is_dir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio'))
                      mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio');
-                     //$file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
-                     $file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
+                     $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
+                   //  $file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
                     $path=route('home').'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/'.$fileName;
             }
             else
