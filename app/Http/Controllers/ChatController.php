@@ -56,13 +56,14 @@ class ChatController extends Controller
         $this->getData('update',['resiver'=>$user->Id,'cid'=>$chall->ChatId],'read'); 
        
         $chats=$this->getData('select',['cid'=>$chall->ChatId],'msg',1); 
+        $quiz=$this->getData('select',[],'faq',1); 
         
         $EventController=new EventController();
         $EventController->ChallengeChatSeen($chall->ChatId,$chall->ChatResiver);
         if($user->Age<12)
-        return view('panel.child.chat',compact('chall','chats'));
+        return view('panel.child.chat',compact('chall','chats','quiz'));
         else
-        return view('panel.teenager.chat',compact('chall','chats'));
+        return view('panel.teenager.chat',compact('chall','chats','quiz'));
     }
     public function send_message(Request $req)
     {
@@ -347,6 +348,70 @@ class ChatController extends Controller
         else
         return response()->json(['success'=>2,'wallet'=>$wallet,'msg'=>session('User')->FullName." عزیز! جوابت اشتباه بود و پاداش  ".number_format($price)." تومانی رو از دست دادی"]);
     }
+    public function send_quiz(Request $req)
+    {
+        $user=session('User');
+        if($req->hasFile('file'))
+            {
+                $file=$req->file('file');
+                $fileName=$req->Resiver . '_'.$req->Sender;
+                if(Str::contains($file->getClientMimeType(),'video'))
+                $fileName.='_movie__'; 
+                if(Str::contains($file->getClientMimeType(),'image'))
+                $fileName.='_image__'; 
+                else
+                $fileName.='_file__'; 
+
+                $fileName.=time() ."_FirsclassChallenge.{$file->getClientOriginalExtension()}";
+                    if(!is_dir('uploads'))
+                        mkdir('uploads');
+                    if(!is_dir('uploads/Chat'))
+                        mkdir('uploads/Chat');
+                    if(!is_dir('uploads/Chat/'.$req->ChallId))
+                     mkdir('uploads/Chat/'.$req->ChallId);
+                    if(!is_dir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId))
+                     mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId);
+                    $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
+                    //$file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/',$fileName);
+                     $path=route('home').'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/'.$fileName;
+            }
+            elseif ($req->hasFile('voice'))
+            {
+                $file=$req->file('voice');
+                    $fileName=$req->Resiver . '_'.$req->Sender.'_voice__'.time() ."_FirsclassChallenge.{$file->getClientOriginalExtension()}"; //$file->extension()
+                    if(!is_dir('uploads'))
+                        mkdir('uploads');
+                    if(!is_dir('uploads/Chat'))
+                        mkdir('uploads/Chat');
+                    if(!is_dir('uploads/Chat/'.$req->ChallId))
+                     mkdir('uploads/Chat/'.$req->ChallId);
+                    if(!is_dir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId))
+                     mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId);
+                    if(!is_dir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio'))
+                     mkdir('uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio');
+                     $file->move(base_path().'/../uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
+                     //$file->move(public_path().'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/',$fileName);
+                    $path=route('home').'/uploads/Chat/'.$req->ChallId.'/'.$req->ChatId.'/Audio/'.$fileName;
+            }
+            else
+            $path='';
+            $chatId=$this->getData('insertGetId',['ChatId'=>$req->ChatId,'Sender'=>$req->Sender,'Resiver'=>$req->Resiver,'Body'=>$req->Body??null,'File'=>$path,"Seen"=>1,'Parent'=>$req->Parent??null],'sendmsg',1)[0];
+            
+            $chatId=$this->getData('insertGetId',['ChatId'=>$req->ChatId,'Sender'=>$req->Resiver,'Resiver'=>$req->Sender,'Body'=>$req->Answer??'پیام شما دریافت شد و پس از بررسی توسط کارشناس به شما اطلاع داده خواهد شد','File'=>null,"Seen"=>0,'Parent'=>$chatId],'sendmsg',1)[0];
+           
+            $EventController=new EventController();
+        
+            $EventController->ChallengeChatChange($req->ChatId);
+            if($path)
+            {
+                $challs=(session('Challs'));
+                $challs=$challs->merge((session('Histories')));
+                $chall=(object)$challs->where('Id',$req->ChallId)->first();
+                $EventController->PrivateMessage(" یک پیام جدید در چالش ".$chall->Title." از ".$user->FullName." دریافت شد ",$req->Resiver,'چالش های فرست کلاس',$req->ChallId);            
+            }
+
+            return response()->json(['success'=>1]);
+    }
     
     public function getData($type,$param,$function,$sName=null)
     {
@@ -386,12 +451,12 @@ class ChatController extends Controller
                 (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.Sender) as SenderName,
                 (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.Resiver) as ResiverName
                 from InterviewChallMsgTbl as ms where ChatId=".$param['cid']." and Active=1 order By Date";
-                $update="";
+                $update="update InterviewChallMsgTbl set Seen=1 where Resiver=".session('User')->Id." and ChatId=".$param['cid'];
                 break;
             case 'sendmsg':
                 $p=(($param['Parent'])?",Parent":"");
                 $param['Parent']=(($param['Parent'])?",".$param['Parent']:"");
-                $select="INSERT INTO InterviewChallMsgTbl (ChatId, Sender, Resiver,Body,[File],Seen $p) VALUES (".$param['ChatId'].", ".$param['Sender'].", ".$param['Resiver'].",N'".$param['Body']."','".($param['File']??'')."',0".($param['Parent']).")";
+                $select="INSERT INTO InterviewChallMsgTbl (ChatId, Sender, Resiver,Body,[File],Seen $p) VALUES (".$param['ChatId'].", ".$param['Sender'].", ".$param['Resiver'].",N'".$param['Body']."','".($param['File']??'')."',".$param['Seen'].($param['Parent']).")";
                 $update="";
                 break;
             case 'Getmsg':
@@ -426,6 +491,10 @@ class ChatController extends Controller
                 break;
             case 'automsg':
                 $select="select top 1 * from InterviewChatConfigTbl where SupportId=".$param['sid']." and Active=1 ";
+                $update="";
+                break;
+            case 'faq':
+                $select="select Id,Ask,Answer from FaqTbl where Type=2 and Active=1";
                 $update="";
                 break;
             

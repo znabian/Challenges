@@ -563,7 +563,7 @@
     <p class="col" id="replyTxt"></p>        
   </div>
 </div>
-<div class="col-md-9 d-flex  mx-auto sendbox">
+{{-- <div class="col-md-9 d-flex  mx-auto sendbox">
   <div class="d-flex chatbox-rightbtn" >
   <button class="btn fa fa-paperclip" onclick="emojiBox.classList.add('d-none');fileatt.click()"></button>
   <button class="btn fa fa-regular fa-smile-beam" onclick="emojiBox.classList.toggle('d-none');"></button>
@@ -573,7 +573,22 @@
   <div class="d-flex flex-row-reverse chatbox-leftbtn" >
     <button class="fa fa-paper-plane btn " id="btnSMSG" onclick="sendmsg(this)"></button>
     <button class="fa fa-check-circle btn d-none" id="btnEMSG" onclick="updatemsg(this)"></button>
-    {{-- <button class="btn  fa fa-file fa-regular" style="border: none;" onclick="fileatt.click()"></button> --}}
+    <input type="file" name="" id="fileatt" onchange="showprewview(this);" class="d-none" accept="">
+  </div>
+</div> --}}
+<div class="col-md-9 d-flex  mx-auto sendbox">
+  <div class="d-flex chatbox-rightbtn" >
+  <button class="btn fa fa-paperclip" onclick="fileatt.click()"></button>
+  <button class="btn fa fa-microphone" onclick="delvoice();recordVoice.show()"></button>
+  </div>
+  <select id="msgtxt" class="col-md-9 form-control">
+    <option value="">یک گزینه انتخاب کنید</option>
+    @foreach($quiz as $q)
+    <option value="{{$q['Id']}}">{{$q['Ask']}}</option>
+    @endforeach
+  </select>
+  <div class="d-flex flex-row-reverse chatbox-leftbtn" >
+    <button class="fa fa-paper-plane btn " id="btnSMSG" onclick="sendquiz(this)"></button>
     <input type="file" name="" id="fileatt" onchange="showprewview(this);" class="d-none" accept="">
   </div>
 </div>
@@ -701,8 +716,8 @@
     
   </div>
   <div class="box-footer mt-2">
-    <textarea name="" id="msg2" rows="2" class="form-control" style="font-size: 9pt;border-radius: 10px;resize: none;" placeholder="متن پیام"></textarea>
-    <button class="btn btn-primary mt-2 pull-left" onclick="sendmsg(this,1)">ارسال</button>
+    <textarea name="" id="msg2" rows="2" class="d-none form-control" style="font-size: 9pt;border-radius: 10px;resize: none;" placeholder="متن پیام"></textarea>
+    <button class="btn btn-primary mt-2 pull-left" onclick="sendquiz(this,1)">ارسال</button>
   </div>
 </dialog>
 <dialog id="recordVoice" style="height: unset">
@@ -762,6 +777,7 @@
 @section('script')
 <script>
   var replyId=0;
+  var quiz={!! json_encode($quiz)!!};
   var msgs=[];
   getMsgs({!!$chats->toJson()!!});
   $(chatBox).ready(function()
@@ -1010,10 +1026,12 @@
 
     recording=0;
     // Stop the recording 
+    if(window.mediaRecorder)
     window.mediaRecorder.stop(); 
 
     // Stop all the tracks in the 
     // received media stream 
+    if(window.mediaStream)
     window.mediaStream.getTracks() 
     .forEach((track) => { 
       track.stop(); 
@@ -1071,7 +1089,7 @@
     {
       obj.disabled=true;
       obj.classList.add('disabled');
-      emojiBox.classList.add('d-none');
+     // emojiBox.classList.add('d-none');
       var file=document.getElementById('playerRecord').src;
       if(file)
       {
@@ -1104,7 +1122,8 @@
           obj.classList.remove('disabled');
           showmessages(data,1);
                     
-        axios.post('{{route("chat.send")}}', upformData, {
+       // axios.post('{{route("chat.send")}}', upformData, {
+        axios.post('{{route("chat.send.quiz")}}', upformData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
@@ -1113,8 +1132,8 @@
           recordVoice.close();
           msg_no.remove();
           URL.revokeObjectURL(document.getElementById('playerRecord'));          
-          rmReply();
-           showmessages(response.data);
+          //rmReply();
+          // showmessages(response.data);
            obj.classList.remove('disabled');
             obj.disabled=false;
           })
@@ -1150,7 +1169,7 @@
 
             
             
-            rmReply();
+            //rmReply();
             obj.disabled=false;
             obj.classList.remove('disabled');
             Swal.fire({
@@ -1531,6 +1550,113 @@
                 }
             });
       
+      
+    }
+    function sendquiz(obj,msgBox=0)
+    {
+      obj.disabled=true;
+      obj.classList.add('disabled');
+      var file=fileatt.files;
+      if(msgBox)
+      var msg=0;
+      else
+      var msg=msgtxt.value;
+      msgtxt.value='';
+      quiz.forEach(itm=>{if(itm.Id==msg){msg=itm;}});
+      if(msg || file.length>0)
+      {
+        var upformData = new FormData(document.getElementById('frm3'));
+        if(file.length)
+        upformData.append('file', file[0]);
+        if(msg)
+        {
+          upformData.append('Body', msg.Ask);
+           upformData.append('Answer', msg.Answer);
+        }
+        
+
+        upformData.append('ChatId', '{{$chall->ChatId}}');
+        upformData.append('ChallId', '{{$chall->Id}}');
+        upformData.append('Resiver', '{{$chall->ChatResiver}}');
+        upformData.append('Sender', '{{session('User')->Id}}');
+        
+        var data={Body:msg.Ask,
+            Date:"",Date2:"",
+            File:"",
+            Logo:"{{ asset('img/user.png') }}",
+            Parent:replyId??null,
+            ResiverId:"{{$chall->ChatResiver}}",
+            Sender:"{{session('User')->FullName}}",
+            SenderId:"{{session('User')->Id}}",
+            Time:"",chatId:"no"};
+          if(file.length)
+            data.File= "file";
+            var date = new Date();
+            data.Time = new Date().toLocaleDateString("fa-IR", { hour: '2-digit', minute: '2-digit',second:'2-digit' }).split(',')[1];
+            data.Date = date.toLocaleDateString("fa-IR", { day: "2-digit", month: "long" });
+            data.Date2="امروز";
+            showmessages(data,1);
+
+        axios.post('{{route("chat.send.quiz")}}', upformData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+        }).then(response => {
+            msg_no.remove();
+            obj.disabled=false;
+            obj.classList.remove('disabled');
+          })
+        .catch(error => {
+            console.log(error); 
+            cnomsg=document.querySelectorAll('#msg_abort').length;
+            msg_no.querySelector('.fa-spinner').classList.add("fa-circle-exclamation","text-danger"); 
+            msg_no.querySelector('.fa-spinner').classList.remove("fa-spinner"); 
+            
+            var cancelDiv = document.createElement("div");
+            cancelDiv.classList.add("d-flex", "gap-1");
+            cancelDiv.onclick = function() {
+             document.getElementById('msg_abort'+cnomsg).remove();
+            };
+            /*cancelDiv.onmouseover = function() {
+              document.getElementById("cancelDivno").classList.remove("d-none");
+            };
+            cancelDiv.onmouseout = function() {
+              document.getElementById("cancelDivno").classList.add("d-none");
+            };*/
+
+            var cancelIcon = document.createElement("i");
+            cancelIcon.classList.add("fa", "fa-trash");
+            cancelDiv.appendChild(cancelIcon);
+
+            var cancelTextDiv = document.createElement("div");
+            cancelTextDiv.id = "divcancelno" ;
+            cancelTextDiv.classList.add("toolsDiv", "d-none");
+            cancelTextDiv.innerHTML = "حذف";
+            cancelDiv.appendChild(cancelTextDiv);
+            divtools_no.innerHTML='';
+            divtools_no.appendChild(cancelDiv);
+            msg_no.id='msg_abort'+cnomsg;
+            divtools_no.id='divtools_abort'+cnomsg;
+            
+
+            //rmReply();
+            obj.disabled=false;
+            obj.classList.remove('disabled');
+            Swal.fire({
+                        icon: 'error',
+                        title: 'پیام ارسال نشد',                        
+                        confirmButtonText: 'بله',
+                        //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                         html:"مشکل پیش آمده دوباره تلاش کن",
+
+                    });
+         });
+         
+      }
+      else
+      {
+        obj.disabled=false;obj.classList.remove('disabled');msgtxt.focus();
+      }
       
     }
     function sendmsg(obj,msgBox=0)
@@ -2150,7 +2276,7 @@
         msgs.push(data.msg);
         }
         
-        setMenu([div]);
+        //setMenu([div]);
    }
    function showAllmessages(messages)
    {
@@ -2604,7 +2730,7 @@
 
     });
    
-    setMenu(document.querySelectorAll('div[id^="msg_"]'));
+    //setMenu(document.querySelectorAll('div[id^="msg_"]'));
         
    }
 @if(!$chall->Closed)
@@ -2666,7 +2792,7 @@
                          
         
     });
-    setMenu(document.querySelectorAll('div[id^="msg_"]'));
+    //setMenu(document.querySelectorAll('div[id^="msg_"]'));
 
 @endif
   function setMenu(divmessagess)

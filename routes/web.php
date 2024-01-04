@@ -39,6 +39,8 @@ Route::prefix('/chat')->group(function () {
     Route::post('/delete_message', [ChatController::class,'delete_message'])->name('chat.delete');
     Route::post('/close', [ChatController::class,'close_chat'])->name('chat.close');
     Route::post('/{chat}/Read', [ChatController::class,'read_chat'])->name('chat.read'); 
-    Route::post('/{chat}/All', [ChatController::class,'All_chat'])->name('chat.all');    
+    Route::post('/{chat}/All', [ChatController::class,'All_chat'])->name('chat.all');  
+   
+    Route::post('/send_quiz', [ChatController::class,'send_quiz'])->name('chat.send.quiz');  
     });
 });
