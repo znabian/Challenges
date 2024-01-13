@@ -99,7 +99,9 @@ class PanelController extends Controller
     }
     public function UpdatesChalls($uId,$exp)
     {   
-        $lvl=1+date_diff(date_create(explode(' ',session('User')->CallTime)[0]),date_create(date('Y-m-d')))->format("%R%a");
+        $lvl=date_diff(date_create(explode(' ',session('User')->CallTime)[0]),date_create(date('Y-m-d')))->format("%R%a");
+        if($lvl==0)
+         $lvl++;
         if($lvl)
         {
             $newchall=$this->getData('select',['uid'=>$uId,"lvl"=>$lvl],'newChalls',1);
@@ -130,7 +132,7 @@ class PanelController extends Controller
         $url="http://85.208.255.101/API/selectApi_jwt.php";
         switch ($function) {
             case 'index':
-                $select="select uc.Id,uc.Done,uc.Expired,uc.ExpiredAt,uc.UserId,uc.Answer,uc.Date,uc.Pay,isnull(uc.Price,0) as Money,c.Price,c.Auto,c.Expire,c.[File],c.[Link],c.Options,c.Type,c.Title,c.Body,c.Level,
+                $select="select uc.Id,uc.Done,uc.Status,uc.Expired,uc.ExpiredAt,uc.UserId,uc.Answer,uc.Date,uc.Pay,isnull(uc.Price,0) as Money,c.Price,c.Auto,c.Expire,c.[File],c.[Link],c.Options,c.Type,c.Title,c.Body,c.Level,
                  (select top 1 cc.Closed from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as Closed , 
                  (select top 1  cc.Resiver from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatResiver,
                  (select top 1  cc.Id from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatId,
@@ -139,7 +141,7 @@ class PanelController extends Controller
                 $update="update  InterviewChallUserTbl set Expired=1 where UserId=".$param['uid']." and Expired <> 1 and ExpiredAt <=GETDATE()";
                 break;
             case 'history':
-                $select="select uc.Id,uc.Done,uc.Expired,uc.ExpiredAt,uc.UserId,uc.Answer,uc.Date,uc.Pay,isnull(uc.Price,0) as Money,c.Price,c.Auto,c.Expire,c.[File],c.[Link],c.Options,c.Type,c.Title,c.Body,c.Level,
+                $select="select uc.Id,uc.Done,uc.Status,uc.Expired,uc.ExpiredAt,uc.UserId,uc.Answer,uc.Date,uc.Pay,isnull(uc.Price,0) as Money,c.Price,c.Auto,c.Expire,c.[File],c.[Link],c.Options,c.Type,c.Title,c.Body,c.Level,
                  (select  top 1 cc.Closed from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1  order by cc.Id) as Closed ,
                  (select  top 1 cc.Resiver from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatResiver,
                  (select  top 1 cc.Id from InterviewChallChatTbl as cc      where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatId,
@@ -148,7 +150,7 @@ class PanelController extends Controller
                 $update="update  InterviewChallUserTbl set Expired=1 where UserId=".$param['uid']." and Expired <> 1 and ExpiredAt <=GETDATE()";        
                 break;
             case 'details':
-                $select="select top 1 uc.Id,uc.Done,uc.Expired,uc.ExpiredAt,uc.UserId,uc.Answer,uc.Date,uc.Pay,isnull(uc.Price,0) as Money,c.Price,c.Auto,c.Expire,c.[File],c.[Link],c.Options,c.Type,c.Title,c.Body,c.Level, 
+                $select="select top 1 uc.Id,uc.Done,uc.Status,uc.Expired,uc.ExpiredAt,uc.UserId,uc.Answer,uc.Date,uc.Pay,isnull(uc.Price,0) as Money,c.Price,c.Auto,c.Expire,c.[File],c.[Link],c.Options,c.Type,c.Title,c.Body,c.Level, 
                 (select top 1  cc.Closed from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1  order by cc.Id) as Closed ,
                 (select top 1  cc.Resiver from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id ) as ChatResiver,
                 (select top 1  cc.Id from InterviewChallChatTbl as cc     where cc.ChallUserId=uc.Id and cc.Active=1  order by cc.Id) as ChatId,

@@ -189,7 +189,7 @@
 <div id="content2" class="content2">             
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card mt-2 p-md-3 @if($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
+            <div class="card mt-2 p-md-3 @if($item['Status']==5) bg-danger-subtle @elseif($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body">
                     <div class="row d-flex">
                         <div class="col-2 m-auto mx-1" style="padding-right:5px !important;" >                                
@@ -205,7 +205,9 @@
                         </div>
                         <div class="col d-flex flex-column pt-0" style="border-right: 2px solid #edc587;margin-right: 16px;">
                             <div class="" style="margin-left: -2px;margin-top: -2px;">
-                                @if($item['Done'])
+                                @if($item['Status']==5)
+                                <i class="fa fa-close pull-left status "></i>
+                                @elseif($item['Done'])
                                 <i class="fa fa-check pull-left status" ></i>
                                 @elseif($item['Expired'])
                                 <i class="fa fa-exclamation pull-left status" ></i>

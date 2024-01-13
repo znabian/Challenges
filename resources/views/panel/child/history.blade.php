@@ -83,7 +83,8 @@
             i.status.fa-close
             {                
                 /* color: #ffa1a3; */
-                background-color: #727272!important;
+                /*background-color: #727272!important;*/
+                background-color: #E91E63!important;
             }
             i.status.fa-check
             {                
@@ -191,21 +192,37 @@
         {
         padding: 9pt;
         }
+        select#filterChalls {
+            font-size: 9pt;
+            font-family: 'Peyda';
+        }
     </style>
 @endsection
 @section('title')  
 بازارچه
 @endsection
+@section('subtitle')  
+<h6>
+    <select id="filterChalls" onchange="showList(this.value)" class="bg-body-secondary form-control text-center">
+        <option value="card">همه </option> 
+        <option value="Doned">انجام شده </option> 
+        <option value="Payed">انجام نشده </option>
+        <option value="Other">شرکت نکرده </option>
+    </select>
+</h6>
+@endsection
 @section('content')  
 
 <div id="content2" class="content2" >             
-    <div class="gap-3 gap-md-4  justify-content-center row w-100 m-auto">
+    <div id="PayChallsList" class="gap-3 gap-md-4  justify-content-center row w-100 m-auto">
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card col-5 mt-2 p-md-3 @if($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
+            <div class="card col-5 mt-2 p-md-3 @if($item['Status']==5) bg-danger-subtle Doned @elseif($item['Done']) bg-success-subtle Doned @elseif($item['Pay']) Payed @else Other @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body d-grid gap-1 text-center">
                     <div class="">
-                        @if($item['Done'])
+                        @if($item['Status']==5)
+                            <i class="fa fa-close pull-left status "></i>
+                        @elseif($item['Done'])
                             <i class="fa fa-check pull-left status" ></i>
                         @elseif($item['Pay'])
                             <i class="fa fa-coins pull-left status" ></i>
@@ -242,7 +259,7 @@
             
     @else        
     <div>
-        <p class="noinfo text-center">چالشی یافت نشد</p>
+        <p id="pNochall" class="noinfo text-center">چالشی یافت نشد</p>
     </div>
     @endif
 
@@ -250,4 +267,31 @@
 </div>
 
 @include('layouts.menu4')          
+@endsection
+@section('script')
+<script>
+     filterChalls.querySelectorAll('option').forEach(itm=>{
+    itm.text=itm.text+" ("+PayChallsList.querySelectorAll('.card.'+itm.value).length+")";
+  });
+    function showList(value)
+  {
+    if(PayChallsList.querySelector('#pNochall'))
+    PayChallsList.querySelector('#pNochall').remove();
+
+    PayChallsList.querySelectorAll('.card').forEach(item=>{item.classList.add('d-none')});
+    PayChallsList.querySelectorAll('.card.'+value).forEach(item=>{item.classList.remove('d-none')});
+    if(PayChallsList.querySelectorAll('.card.'+value).length<1)
+    {
+      if(!PayChallsList.querySelector('#nochalls'))
+      {
+        var pNochall=document.createElement('p');
+        pNochall.className="noinfo text-center";
+        pNochall.innerHTML="چالشی یافت نشد";
+        pNochall.id='pNochall';
+        PayChallsList.appendChild(pNochall);
+      }
+      
+    }
+  }
+</script>
 @endsection

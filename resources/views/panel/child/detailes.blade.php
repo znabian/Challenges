@@ -176,6 +176,11 @@
              {
              opacity:0!important;
             }
+            .backimg {
+                background-position: left 50vh!important;
+                background-size: 17vw!important;
+                background-attachment: scroll!important;
+            }
         }
 
 .picfile {
@@ -407,7 +412,10 @@
             {{$chall->Title}}
           </h2>
       </div>
-      <div class="ChallFile px-3">
+      <div class="ChallFile px-3">        
+        @php
+            $chall->File=strtr($chall->File,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/','http://dl4.erfankhoshnazar.com/'=>'https://www.kakheroshd.ir:448/RedCastleFileManager/']);            
+        @endphp
         @if($chall->Link)
         <div id="carouselExample" class="carousel slide" data-bs-interval="false" >
           <div class="carousel-inner">
@@ -417,13 +425,13 @@
                 @if($chall->Type=='movie')
                 <div class="col-12 position-relative">
                   <video  poster="{{asset('img/cover.png')}}" class="videoRes embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
-                  <source data-src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" type="video/mp4">
+                  <source data-src="{{$chall->File}}" type="video/mp4">
                 </video>
                 <span class="playicon"></span>
                 </div>
                 
                 @elseif($chall->Type=='audio')
-                <audio class="d-none" id="sounds" controlsList="nodownload" controls src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" >
+                <audio class="d-none sounds" controlsList="nodownload" controls src="{{$chall->File}}" >
                 </audio>
                 @include('panel.audioplayer') 
                 @elseif($chall->Type=='image')
@@ -440,23 +448,26 @@
             </div>
             @endif
             @foreach(json_decode($chall->Link) as $id=>$link)
+            @php
+            $link->Link=strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/','http://dl4.erfankhoshnazar.com/'=>'https://www.kakheroshd.ir:448/RedCastleFileManager/']);
+            @endphp
             <div class="carousel-item  @if(!$chall->File && $loop->first) active @endif ">
               <div class="col-12 d-flex gap-2 justify-content-center mt-3">
                 @if($link->Type=='movie')
                 <div class="col-12 position-relative">
                   <video  poster="{{asset('img/cover.png')}}" class="videoRes embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
-                  <source data-src="{{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}}" type="video/mp4">
+                  <source data-src="{{$link->Link}}" type="video/mp4">
                 </video>
                 <span class="playicon"></span>
                 </div>
                 
                 @elseif($link->Type=='audio')
-                <audio class="d-none" id="sounds" controlsList="nodownload" controls src="{{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}}" >
+                <audio class="d-none sounds" controlsList="nodownload" controls src="{{$link->Link}}" >
                 </audio>
                 @include('panel.audioplayer') 
                 @elseif($link->Type=='image')
-                <div class="picfile" style="background-image: url({{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}})">
-                  <a href="{{strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/'])}}" target="_blank" download>
+                <div class="picfile" style="background-image: url({{$link->Link}})">
+                  <a href="{{$link->Link}}" target="_blank" download>
                     <img src="{{asset('img/details/download.png')}}" alt="Image" width="70" height="70">
                     </a>
                 </div>
@@ -481,23 +492,25 @@
             <span class="fa fa-2x fa-circle-arrow-left text-dark " aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button> --}}
+          @if(count(json_decode($chall->Link))>1 || $chall->File && count(json_decode($chall->Link))>0)
           <button class="carousel-control-next" onclick="playpause();" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
             <span class="fa fa-2x fa-circle-arrow-right text-dark" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
+          @endif
         </div>
        @else
         <div class="col-12 d-flex gap-2 justify-content-center mt-3">
           @if($chall->Type=='movie')
           <div class="col-12 position-relative">
             <video  poster="{{asset('img/cover.png')}}" class="videoRes embed-responsive-16by9 picfile" oncontextmenu="return false;"  controlsList="nodownload"  >
-            <source data-src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" type="video/mp4">
+            <source data-src="{{$chall->File}}" type="video/mp4">
           </video>
           <span class="playicon"></span>
           </div>
           
           @elseif($chall->Type=='audio')
-          <audio class="d-none" id="sounds" controlsList="nodownload" controls src="{{str_replace('http://85.208.255.101:8012/','https://www.kakheroshd.ir:448/',$chall->File)}}" >
+          <audio class="d-none sounds" controlsList="nodownload" controls src="{{$chall->File}}" >
           </audio>
           @include('panel.audioplayer') 
           @elseif($chall->Type=='image')
@@ -531,12 +544,12 @@
                   $answers=json_decode($chall->Options??'[]');
               @endphp
             @if($answers)
-            <p class="row text-center" id="optionsBox">
+            <p class="row small" id="optionsBox">
               @foreach ($answers as $index=>$opt)
                 @if($index!='ans')
-                <label for="" class="col-6 d-inline-flex gap-1">
+                <label for="" class="col-12 gap-1">
                   @if($chall->Closed??0 ) 
-                  <i @if($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) class="fa fa-circle-check fa-regular my-auto " @else class="fa fa-circle fa-regular my-auto"  @endif ></i>
+                  <i class="fa  fa-regular my-auto @if($answers->ans==$opt || ($answers->ans==$opt && $chall->MyAnswer==("پاسخ این سوال  ".$opt." است"))) fa-circle-check @elseif($chall->MyAnswer==("پاسخ این سوال  ".$opt." است")) fa-circle-xmark  @else fa-circle @endif " ></i>
                   @elseif(!$chall->Pay) 
                   <i  class="fa fa-circle fa-regular my-auto"  ></i>
                   @else 
@@ -633,59 +646,63 @@
   
  <script>
     var progressUpdate=1;
-    function playAudio(obj)
-    {
-      audioPlayer=obj.parentElement.querySelector('audio');
-      progressBar= obj.parentElement.querySelector('.progress');
-      playericon= obj.parentElement.querySelector('.playericon');
-      if(audioPlayer.error)
+        @if($answers)
+        document.getElementById('chat').classList.add('d-none');
+        @endif
+      function playAudio(obj)
       {
-        playericon.classList.remove('fa-play','fa-pause');
-        playericon.classList.add('fa-warning');
-        Swal.fire({
-                    icon: 'error',
-                    title: 'خطا',                        
-                    confirmButtonText: 'بله',
-                    text:"{{session('User')->FullName}} \n  متاسفم فایلش پیدا نشد  \n شاید حذف شده "
+        audioPlayer=obj.parentElement.querySelector('audio');
+        progressBar= obj.parentElement.querySelector('.progress');
+        playericon= obj.parentElement.querySelector('.playericon');
+        if(audioPlayer.error)
+        {
+          playericon.classList.remove('fa-play','fa-pause');
+          playericon.classList.add('fa-warning');
+          Swal.fire({
+                      icon: 'error',
+                      title: 'خطا',                        
+                      confirmButtonText: 'بله',
+                      text:"{{session('User')->FullName}} \n  متاسفم فایلش پیدا نشد  \n شاید حذف شده "
 
-                });
-        return 0;
-        
-      }
-      if (audioPlayer.paused) 
-      {
-          progressBar.max=audioPlayer.duration;
-          audioPlayer.play();
-          playericon.classList.remove('fa-play');
-          playericon.classList.add('fa-pause');
-      } 
-      else {
-          audioPlayer.pause();
-          playericon.classList.remove('fa-pause');
-          playericon.classList.add('fa-play');
+                  });
+          return 0;
+          
         }
-    }
-    function changeCurrentTime(value,obj)
-    {
-      audioPlayer=obj.parentElement.parentElement.parentElement.querySelector('audio');
+        if (audioPlayer.paused) 
+        {
+            progressBar.max=audioPlayer.duration;
+            audioPlayer.play();
+            playericon.classList.remove('fa-play');
+            playericon.classList.add('fa-pause');
+            
+        } 
+        else {
+            audioPlayer.pause();
+            playericon.classList.remove('fa-pause');
+            playericon.classList.add('fa-play');
+          }
+      }
+      function changeCurrentTime(value,obj)
+      {
+        audioPlayer=obj.parentElement.parentElement.parentElement.querySelector('audio');
       progressBar= obj.parentElement.parentElement.querySelector('.progress');
       
-      audioPlayer.pause();
-      progressUpdate=0;
-      audioPlayer.currentTime=value
-      audioPlayer.play();
-    }
-    document.querySelectorAll('audio').forEach(itm=>{
-      itm.addEventListener("timeupdate", function() {
-        const duration = itm.duration;
-        const currentTime = itm.currentTime;
-        const progress = (currentTime / duration) * 100;
-        itm.parentElement.querySelector('.played').style.width = progress + "%";
-        if(progressUpdate)
-        itm.parentElement.querySelector('.progress').value = itm.currentTime ;
-        else
-        progressUpdate=1;
-      });
+        audioPlayer.pause();
+        progressUpdate=0;
+        audioPlayer.currentTime=value
+        audioPlayer.play();
+      }
+      document.querySelectorAll('audio').forEach(itm=>{
+        itm.addEventListener("timeupdate", function() {
+          const duration = itm.duration;
+          const currentTime = itm.currentTime;
+          const progress = (currentTime / duration) * 100;
+          itm.parentElement.querySelector('.played').style.width = progress + "%";
+          if(progressUpdate)
+          itm.parentElement.querySelector('.progress').value = itm.currentTime ;
+          else
+          progressUpdate=1;
+        });
       itm.addEventListener("play", function() {
         itm.parentElement.querySelector('.playericon').classList.add('fa-pause');
         itm.parentElement.querySelector('.playericon').classList.remove('fa-play');
@@ -708,6 +725,13 @@
           @if(!$chall->Pay)
           function buyChall(auto=0)
           {
+            Swal.fire({
+                title:"صبر کن ...",
+                html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
+                icon:'info',
+                allowOutsideClick:false,
+                showConfirmButton:false,
+              });
             axios.post('{{route("chall.buy")}}', {chall:'{{$chall->Id}}',expired:'{{$chall->Expired}}',expiredAt:'{{$chall->ExpiredAt}}',Price:'{{$price}}',day:'{{$chall->Expire}}',auto:auto})
                   .then(response => { 
                     if(response.data.success)
@@ -719,7 +743,11 @@
                               });
                         document.getElementById('unpay').classList.add('d-none');
                         document.getElementById('pay').classList.remove('d-none');
+                        
+                        @if(!$answers)
                         document.getElementById('chat').classList.remove('d-none');
+                        @endif
+
                         document.getElementById('payCard').classList.add('bg-success','text-white');
                         user_wallet.innerHTML=response.data.wallet;
                         @if($answers)
@@ -728,7 +756,7 @@
                             foreach ($answers as $index=>$opt)
                             {
                               if($index!='ans')
-                              $out.='<label for="" class="col-6 d-inline-flex gap-1"><input type="radio" name="Answer" id="answer"  value="'.$opt.'">'.$num[$index].') '.$opt.'</label>';
+                              $out.='<label for="" class="col-12 gap-1"><input type="radio" class="mx-1" name="Answer" id="answer"  value="'.$opt.'">'.$num[$index].') '.$opt.'</label>';
                             }
                             echo "optionsBox.innerHTML='$out';";
                           @endphp
@@ -806,7 +834,34 @@
                               });
                               btn.classList.add('d-none');                               
 
-                              optionsBox.querySelectorAll('input').forEach(itm=>{itm.disabled=true;})
+                              var ans=useranswer.value;
+                              optionsBox.innerHTML='';
+                              var opt={!! json_encode($answers) !!};
+                              var num={'first':'الف','second':'ب','third':'ج','forth':'د','fifth':'ه','sixth':'و'};
+                              Object.keys(opt).forEach(itm=>{
+                                    if(itm!='ans')
+                                    {
+                                      const label = document.createElement("label");
+                                      label.classList.add("col-12", "gap-1");
+                                      const icon = document.createElement("i");
+                                      if(opt[itm]==opt.ans || (ans==opt[itm] && opt[itm]==opt.ans))
+                                      icon.classList.add("fa", "fa-circle-check", "fa-regular", "my-auto");
+                                      else if(ans==opt[itm])
+                                      icon.classList.add("fa", "fa-circle-xmark", "fa-regular", "my-auto");
+                                      else
+                                      icon.classList.add("fa", "fa-circle", "fa-regular", "my-auto");
+                                      label.appendChild(icon);
+                                      const span = document.createElement("span");
+                                      span.innerHTML = num[itm]+') '+opt[itm];
+                                      span.classList.add('mx-1') ;
+                                      label.appendChild(span);
+                                      optionsBox.appendChild(label);
+                                    }
+                                
+                                   } );
+                             
+                              
+                              //optionsBox.querySelectorAll('input').forEach(itm=>{itm.disabled=true;})
 
                               if(response.data.wallet)
                               user_wallet.innerHTML=response.data.wallet;
@@ -900,7 +955,11 @@
         {
           if($('.carousel-caption').length)
           $('.carousel-caption').show();
+          progressUpdate=0;
          document.querySelectorAll('.videoRes').forEach((itm)=>{
+            itm.pause();
+          });
+         document.querySelectorAll('audio').forEach((itm)=>{
             itm.pause();
           });
         }

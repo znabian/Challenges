@@ -85,6 +85,7 @@
             {                
                 /* color: #ffa1a3; */
                 /* background-color: #727272!important; */
+                background-color: #E91E63!important;
             }
             i.status.fa-check
             {                
@@ -203,10 +204,12 @@
     <div class="gap-3 gap-md-4 h-auto justify-content-center row w-100 m-auto">
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card col-5 mt-2 p-md-3  @if($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
+            <div class="card col-5 mt-2 p-md-3  @if($item['Status']==5) bg-danger-subtle @elseif($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body d-grid gap-1 text-center">
                     <div class="">
-                        @if($item['Done'])
+                        @if($item['Status']==5)
+                            <i class="fa fa-close pull-left status "></i>
+                        @elseif($item['Done'])
                             <i class="fa fa-check pull-left status" ></i>
                         @elseif($item['Pay'])
                             <i class="fa fa-coins pull-left status" ></i>

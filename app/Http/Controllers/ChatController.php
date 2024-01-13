@@ -469,10 +469,12 @@ class ChatController extends Controller
                 $update="";
 
                 if($param['correct'])
-                $update="update  InterviewChallUserTbl set Price=".$param['Price'].",Done=1 where Id=".$param['id'].";";
+                $update="update  InterviewChallUserTbl set Status=4,Price=".$param['Price']." where Id=".$param['id'].";";
+                else
+                $update="update  InterviewChallUserTbl set Status=5 where Id=".$param['id'].";";
 
                 $update.=";update InterviewChallChatTbl set Closed=1 where Id=".$param['ChatId'];
-                $update.=";update InterviewChallUserTbl set Answer=".$param['answer']." where Id=".$param['id'];
+                $update.=";update InterviewChallUserTbl set Done=1 ,Answer=".$param['answer']." where Id=".$param['id'];
                
                 break;
             case 'editmsg':
@@ -494,7 +496,7 @@ class ChatController extends Controller
                 $update="";
                 break;
             case 'faq':
-                $select="select Id,Ask,Answer from FaqTbl where Type=2 and Active=1";
+                $select="select Id,Ask,Answer from FaqTbl where Type=2 and Active=1 order By Id";
                 $update="";
                 break;
             

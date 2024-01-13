@@ -183,16 +183,30 @@
             {
                padding: 12px 15px;
             }
+            select#filterChalls {
+            font-size: 9pt;
+            font-family: 'Peyda';
+        }
     </style>
 @endsection
 @section('title')  
 بازارچه
 @endsection
+@section('subtitle')  
+<h6>
+    <select id="filterChalls" onchange="showList(this.value)" class="bg-body-secondary form-control text-center">
+        <option value="card">همه </option> 
+        <option value="Doned">انجام شده </option> 
+        <option value="Payed">انجام نشده </option>
+        <option value="Other">شرکت نکرده </option>
+    </select>
+</h6>
+@endsection
 @section('content')   
 <div id="content2" class="content2">             
      @if($challs->count())
             @foreach ($challs as $item) 
-            <div class="card mt-2 p-md-3 @if($item['Done']) bg-success-subtle @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
+            <div class="card mt-2 p-md-3 @if($item['Status']==5) bg-danger-subtle Doned @elseif($item['Done']) bg-success-subtle Doned @elseif($item['Pay']) Payed @else Other @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body">
                     <div class="row d-flex">
                         <div class="col-2 m-auto mx-1" style="padding-right:5px !important;" >                                
@@ -208,12 +222,14 @@
                         </div>
                         <div class="col d-flex flex-column pt-0" style="border-right: 2px solid #edc587;margin-right: 16px;">
                             <div class="" style="margin-left: -2px;margin-top: -2px;">
-                                @if($item['Done'])
+                                @if($item['Status']==5)
+                                <i class="fa fa-close pull-left status "></i>
+                                @elseif($item['Done'])
                                 <i class="fa fa-check pull-left status" ></i>
-                                @elseif($item['Expired'])
-                                <i class="fa fa-exclamation pull-left status" ></i>
                                 @elseif($item['Pay'])
                                 <i class="fa fa-coins pull-left status" ></i>
+                                @elseif($item['Expired'])
+                                <i class="fa fa-exclamation pull-left status" ></i>
                                 @else
                                 <i class="fa fa-close opacity-0 pull-left status"></i>
                                 @endif
@@ -245,9 +261,36 @@
             @endforeach
             
     @else
-        <p class="text-center noinfo">چالشی یافت نشد</p>
+        <p id="pNochall" class="text-center noinfo">چالشی یافت نشد</p>
     @endif
 </div>
 
 @include('layouts.menu4')          
+@endsection
+@section('script')
+<script>
+     filterChalls.querySelectorAll('option').forEach(itm=>{
+    itm.text=itm.text+" ("+content2.querySelectorAll('.card.'+itm.value).length+")";
+  });
+    function showList(value)
+  {
+    if(content2.querySelector('#pNochall'))
+    content2.querySelector('#pNochall').remove();
+
+    content2.querySelectorAll('.card').forEach(item=>{item.classList.add('d-none')});
+    content2.querySelectorAll('.card.'+value).forEach(item=>{item.classList.remove('d-none')});
+    if(content2.querySelectorAll('.card.'+value).length<1)
+    {
+      if(!content2.querySelector('#nochalls'))
+      {
+        var pNochall=document.createElement('p');
+        pNochall.className="noinfo text-center";
+        pNochall.innerHTML="چالشی یافت نشد";
+        pNochall.id='pNochall';
+        content2.appendChild(pNochall);
+      }
+      
+    }
+  }
+</script>
 @endsection
