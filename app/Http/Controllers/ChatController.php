@@ -395,14 +395,14 @@ class ChatController extends Controller
             }
             else
             $path='';
-            $chatId=$this->getData('insertGetId',['ChatId'=>$req->ChatId,'Sender'=>$req->Sender,'Resiver'=>$req->Resiver,'Body'=>$req->Body??null,'File'=>$path,"Seen"=>1,'Parent'=>$req->Parent??null],'sendmsg',1)[0];
+            $chatId=$this->getData('insertGetId',['ChatId'=>$req->ChatId,'Sender'=>$req->Sender,'Resiver'=>$req->Resiver,'Body'=>$req->Body??null,'File'=>$path,"Seen"=>(!$req->Answer)?0:1,'Parent'=>$req->Parent??null],'sendmsg',1)[0];
             
-            $chatId=$this->getData('insertGetId',['ChatId'=>$req->ChatId,'Sender'=>$req->Resiver,'Resiver'=>$req->Sender,'Body'=>$req->Answer??'پیام شما دریافت شد و پس از بررسی توسط کارشناس به شما اطلاع داده خواهد شد','File'=>null,"Seen"=>0,'Parent'=>$chatId],'sendmsg',1)[0];
+            $chatId=$this->getData('insertGetId',['ChatId'=>$req->ChatId,'Sender'=>$req->Resiver,'Resiver'=>$req->Sender,'Body'=>$req->Answer??'پیامت به دستم رسید یکم باید صبور باشی تا بررسی هام رو انجام بدم','File'=>null,"Seen"=>0,'Parent'=>$chatId],'sendmsg',1)[0];
            
             $EventController=new EventController();
         
             $EventController->ChallengeChatChange($req->ChatId);
-            if($path)
+            if($path || !$req->Answer)
             {
                 $challs=(session('Challs'));
                 $challs=$challs->merge((session('Histories')));

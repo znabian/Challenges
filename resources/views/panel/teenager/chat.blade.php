@@ -563,7 +563,8 @@
     <p class="col" id="replyTxt"></p>        
   </div>
 </div>
-{{-- <div class="col-md-9 d-flex  mx-auto sendbox">
+@if($chall->Level<=34)
+<div class="col-md-9 d-flex  mx-auto sendbox">
   <div class="d-flex chatbox-rightbtn" >
   <button class="btn fa fa-paperclip" onclick="emojiBox.classList.add('d-none');fileatt.click()"></button>
   <button class="btn fa fa-regular fa-smile-beam" onclick="emojiBox.classList.toggle('d-none');"></button>
@@ -575,13 +576,14 @@
     <button class="fa fa-check-circle btn d-none" id="btnEMSG" onclick="updatemsg(this)"></button>
     <input type="file" name="" id="fileatt" onchange="showprewview(this);" class="d-none" accept="">
   </div>
-</div> --}}
+</div>
+@else
 <div class="col-md-9 d-flex  mx-auto sendbox">
   <div class="d-flex chatbox-rightbtn" >
   <button class="btn fa fa-paperclip" onclick="fileatt.click()"></button>
   <button class="btn fa fa-microphone" onclick="delvoice();recordVoice.show()"></button>
   </div>
-  <select id="msgtxt" class="col-md-9 form-control">
+  <select id="msgtxt" class="col-md-9 form-control" style="font-size: 9pt;">
     <option value="">یک گزینه انتخاب کنید</option>
     @foreach($quiz as $q)
     <option value="{{$q['Id']}}">{{$q['Ask']}}</option>
@@ -592,6 +594,7 @@
     <input type="file" name="" id="fileatt" onchange="showprewview(this);" class="d-none" accept="">
   </div>
 </div>
+@endif
 @endif
 <div id="emojiBox" class="d-none">
   <div class="emoji">😉</div>
@@ -716,8 +719,8 @@
     
   </div>
   <div class="box-footer mt-2">
-    <textarea name="" id="msg2" rows="2" class="d-none form-control" style="font-size: 9pt;border-radius: 10px;resize: none;" placeholder="متن پیام"></textarea>
-    <button class="btn btn-primary mt-2 pull-left" onclick="sendquiz(this,1)">ارسال</button>
+    <textarea name="" id="msg2" rows="2" class="@if($chall->Level>34) d-none @endif form-control" style="font-size: 9pt;border-radius: 10px;resize: none;" placeholder="متن پیام"></textarea>
+    <button class="btn btn-primary mt-2 pull-left" @if($chall->Level<=34) onclick="sendmsg(this,1)" @else onclick="sendquiz(this,1)" @endif>ارسال</button>
   </div>
 </dialog>
 <dialog id="recordVoice" style="height: unset">
@@ -1089,7 +1092,9 @@
     {
       obj.disabled=true;
       obj.classList.add('disabled');
-     // emojiBox.classList.add('d-none');
+      @if($chall->Level<=34)
+      emojiBox.classList.add('d-none');
+      @endif
       var file=document.getElementById('playerRecord').src;
       if(file)
       {
@@ -1121,9 +1126,12 @@
           obj.disabled=false;
           obj.classList.remove('disabled');
           showmessages(data,1);
-                    
-       // axios.post('{{route("chat.send")}}', upformData, {
-        axios.post('{{route("chat.send.quiz")}}', upformData, {
+          @if($chall->Level<=34)
+          const url='{{route("chat.send")}}';
+          @else
+          const url='{{route("chat.send.quiz")}}';
+          @endif           
+        axios.post(url, upformData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
@@ -1132,8 +1140,10 @@
           recordVoice.close();
           msg_no.remove();
           URL.revokeObjectURL(document.getElementById('playerRecord'));          
-          //rmReply();
-          // showmessages(response.data);
+          @if($chall->Level<=34)
+          rmReply();
+          showmessages(response.data);
+          @endif
            obj.classList.remove('disabled');
             obj.disabled=false;
           })
@@ -1168,8 +1178,9 @@
             divtools_no.appendChild(cancelDiv);
 
             
-            
-            //rmReply();
+            @if($chall->Level<=34)
+            rmReply();
+            @endif
             obj.disabled=false;
             obj.classList.remove('disabled');
             Swal.fire({
@@ -2275,8 +2286,10 @@
         data.msg.Time=data.Time;
         msgs.push(data.msg);
         }
-        
-        //setMenu([div]);
+
+        @if($chall->Level<=34)
+        setMenu([div]);
+        @endif
    }
    function showAllmessages(messages)
    {
@@ -2729,9 +2742,9 @@
         msgs.push(data);
 
     });
-   
-    //setMenu(document.querySelectorAll('div[id^="msg_"]'));
-        
+    @if($chall->Level<=34)
+    setMenu(document.querySelectorAll('div[id^="msg_"]'));
+    @endif
    }
 @if(!$chall->Closed)
   const ably2 = new Ably.Realtime.Promise('{{env('ABLY_KEY')}}');
@@ -2792,7 +2805,9 @@
                          
         
     });
-    //setMenu(document.querySelectorAll('div[id^="msg_"]'));
+    @if($chall->Level<=34)
+    setMenu(document.querySelectorAll('div[id^="msg_"]'));
+    @endif
 
 @endif
   function setMenu(divmessagess)
