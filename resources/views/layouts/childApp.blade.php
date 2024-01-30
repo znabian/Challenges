@@ -544,6 +544,35 @@
                         @else
                         notif.classList.add('d-none');
                         @endif
+                    
+
+                       
+                        if (!localStorage.getItem('popupShown'))
+                            {
+                                var targetDate = new Date(2024, 0, 30,19,30);
+                                var currentDate = new Date();
+
+                                if (currentDate <= targetDate) 
+                                {
+                                    Swal.fire({
+                                        imageUrl: "{{asset('img/bootcamp.jpg')}}",
+                                        imageHeight: '100%',
+                                        background: '#020b4c',
+                                        padding:0,
+                                        imageAlt: "notif",
+                                        showCloseButton: true,
+                                        showConfirmButton: false,
+                                        focusCancel:false,
+                                        focusDeny:false,
+                                        focusConfirm:false,
+                                        allowOutsideClick:false,
+                                        });
+                                        document.querySelector('.swal2-image').addEventListener('click', function() {location.href='https://erfankhoshnazar.com/boot-camp/';});
+                                    localStorage.setItem('popupShown', true);
+                                }
+                            }
+                        
+
                     @endif
                    loader.remove();
                     content.classList.remove('d-none');
