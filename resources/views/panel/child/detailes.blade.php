@@ -646,7 +646,7 @@
   
  <script>
     var progressUpdate=1;
-        @if($answers)
+        @if($answers || $chall->Auto)
         document.getElementById('chat').classList.add('d-none');
         @endif
       function playAudio(obj)
@@ -744,7 +744,7 @@
                         document.getElementById('unpay').classList.add('d-none');
                         document.getElementById('pay').classList.remove('d-none');
                         
-                        @if(!$answers)
+                        @if(!$answers && !$chall->Auto)
                         document.getElementById('chat').classList.remove('d-none');
                         @endif
 
