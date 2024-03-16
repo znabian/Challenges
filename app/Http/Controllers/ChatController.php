@@ -416,15 +416,15 @@ class ChatController extends Controller
     public function getData($type,$param,$function,$sName=null)
     {
         if($type=="update")
-        $url="http://85.208.255.101/API/updateApi_jwt.php";
+        $url="http://185.116.161.39/API/updateApi_jwt.php";
         elseif($type=="updateinsert")
-        $url="http://85.208.255.101/API/updateOrInserApi_jwt.php";
+        $url="http://185.116.161.39/API/updateOrInserApi_jwt.php";
         elseif($type=="insertGetId")
-        $url="http://85.208.255.101/API/insertGetIdApi_jwt.php";
+        $url="http://185.116.161.39/API/insertGetIdApi_jwt.php";
         elseif($type=="createchat")
-       	$url="http://85.208.255.101/API/CreateChat_jwt.php";
+       	$url="http://185.116.161.39/API/CreateChat_jwt.php";
         else
-        $url="http://85.208.255.101/API/selectApi_jwt.php";
+        $url="http://185.116.161.39/API/selectApi_jwt.php";
         switch ($function) {
             case 'seen':
                 $select="select * from ReminderTbl where UserId=".$param['uid']." and Seen=0 order By Date desc";

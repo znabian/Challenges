@@ -396,7 +396,7 @@ video
       </div>
       <div class="position-relative ChallFile  z-1 px-3">
         @php
-        $chall->File=strtr($chall->File,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/','http://dl4.erfankhoshnazar.com/'=>'https://www.kakheroshd.ir:448/RedCastleFileManager/']);            
+        $chall->File=strtr($chall->File,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://185.116.161.39:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/','http://dl4.erfankhoshnazar.com/'=>'https://www.kakheroshd.ir:448/RedCastleFileManager/']);            
         @endphp
         @if($chall->Link)
         <div id="carouselExample" class="carousel slide" data-bs-interval="false" >
@@ -430,7 +430,7 @@ video
               @endif
             @foreach(json_decode($chall->Link) as $id=>$link)
             @php
-            $link->Link=strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/','http://dl4.erfankhoshnazar.com/'=>'https://www.kakheroshd.ir:448/RedCastleFileManager/']);
+            $link->Link=strtr($link->Link,['http://85.208.255.101:8012/'=>'https://www.kakheroshd.ir:448/','http://185.116.161.39:8012/'=>'https://www.kakheroshd.ir:448/','http://dl5.erfankhoshnazar.ir/'=>'https://www.kakheroshd.ir:448/','http://dl4.erfankhoshnazar.com/'=>'https://www.kakheroshd.ir:448/RedCastleFileManager/']);
             @endphp
             <div class="carousel-item @if(!$chall->File && $loop->first) active @endif ">
               <div class="col-12 d-flex gap-2 justify-content-center mt-3">

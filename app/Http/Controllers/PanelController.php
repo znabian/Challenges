@@ -125,11 +125,11 @@ class PanelController extends Controller
     public function getData($type,$param,$function,$sName=null)
     {
         if($type=="update")
-        $url="http://85.208.255.101/API/updateApi_jwt.php";
+        $url="http://185.116.161.39/API/updateApi_jwt.php";
         elseif($type=="insertGetId")
-        $url="http://85.208.255.101/API/insertGetIdApi_jwt.php";
+        $url="http://185.116.161.39/API/insertGetIdApi_jwt.php";
         else
-        $url="http://85.208.255.101/API/selectApi_jwt.php";
+        $url="http://185.116.161.39/API/selectApi_jwt.php";
         switch ($function) {
             case 'index':
                 $select="select uc.Id,uc.Done,uc.Status,uc.Expired,uc.ExpiredAt,uc.UserId,uc.Answer,uc.Date,uc.Pay,isnull(uc.Price,0) as Money,c.Price,c.Auto,c.Expire,c.[File],c.[Link],c.Options,c.Type,c.Title,c.Body,c.Level,

@@ -36,7 +36,8 @@ class LoginController extends Controller
          'Pass.required' => 'رمز  الزامی است.',
          'Pass.numeric' => 'رمز وارد شده صحیح نمی باشد'
          ]);
-        $url="http://85.208.255.101/API/selectApi_jwt.php";
+        // $url="http://85.208.255.101/API/selectApi_jwt.php";
+         $url="http://185.116.161.39/API/selectApi_jwt.php";
         $query="select Id,Name,Family,Phone,Father,SellerId,SupportId,Perm,BirthDay,CallTime,Pass,Active from UserTbl where Phone='".$valid['Phone']."'";
         $response = Http::withHeaders([
             'Content-Type' => 'application/x-www-form-urlencoded',           
@@ -82,7 +83,8 @@ class LoginController extends Controller
                                 $panel=new PanelController();
                                 $user->Wallet=$panel->MyWallet($user->Id)->getData()->wallet??'-';
                                 session(['User'=>$user]);
-                                $url="http://85.208.255.101/API/updateApi_jwt.php";
+                                //$url="http://85.208.255.101/API/updateApi_jwt.php";
+                                $url="http://185.116.161.39/API/updateApi_jwt.php";
                                 $query="select  *  from ReminderTbl where Seen=0 and UserId=".$user->Id;
                                 $query2="update  InterviewChallUserTbl set Expired=1 where UserId=".$user->Id." and Expired <> 1 and ExpiredAt <=GETDATE()";
                                 $response = Http::withHeaders([
@@ -205,7 +207,8 @@ class LoginController extends Controller
    }
    public function forget(Request $req)
    {
-    $url="http://85.208.255.101/API/selectApi_jwt.php";
+    //$url="http://85.208.255.101/API/selectApi_jwt.php";
+    $url="http://185.116.161.39/API/selectApi_jwt.php";
     $query="select Id,Name,Family,Phone,Father,SellerId,SupportId,Perm,Birthday,CallTime,Pass,Active from UserTbl where Phone='".$req->Phone."'";
     $response = Http::withHeaders([
         'Content-Type' => 'application/x-www-form-urlencoded',           
