@@ -14,6 +14,12 @@
     
     <div class="pull-left d-flex gap-2 px-2" style="margin-top: 2px;">
       
+      <a class="  @if(\Route::currentRouteName()=="chall.details" || \Route::currentRouteName()=="cloud.index") d-none @endif " href="{{route('cloud.index')}}" id="uploder" style="">
+      <i class="fa fa-folder fa-regular navicon"  style="height: 39px;padding-left: 3px;"></i>
+      </a>
+      <a class="  @if(\Route::currentRouteName()!="cloud.file.show") d-none @endif " onclick="helpcompress2.show()"  style="">
+      <i class="fa fa-question navicon"  style="height: 39px;padding-left: 3px;"></i>
+      </a>
       <a class="  @if(\Route::currentRouteName()!="chall.details" || !($chall->Pay??0)) d-none @endif " href="{{route('chat.index',[$chall->Id??0])}}" id="chat" style="">
       <i class="fa fa-comment-dots fa-regular navicon"  style="height: 39px;padding-left: 3px;"></i>
       </a>

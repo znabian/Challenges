@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CloudController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NotifController;
 use App\Http\Controllers\PanelController;
@@ -42,5 +43,15 @@ Route::prefix('/chat')->group(function () {
     Route::post('/{chat}/All', [ChatController::class,'All_chat'])->name('chat.all');  
    
     Route::post('/send_quiz', [ChatController::class,'send_quiz'])->name('chat.send.quiz');  
+    });
+    Route::prefix('/cloud')->group(function () {
+    Route::get('/index',[CloudController::class,'index'])->name('cloud.index');
+    Route::post('/create-folder', [CloudController::class,'create_folder'])->name('cloud.folder.new');
+    Route::get('/folders/{name}', [CloudController::class,'folder_show'])->name('cloud.file.show');
+    Route::post('/uplode', [CloudController::class,'create_file'])->name('cloud.file.new');
+    Route::post('/caption-edit', [CloudController::class,'caption_update'])->name('cloud.file.caption.edit');
+    Route::post('/delete-file', [CloudController::class,'file_delete'])->name('cloud.file.del');
+    Route::post('/move-file', [CloudController::class,'file_move'])->name('cloud.file.move');
+    //Route::post('/delete-folder', [CloudController::class,'delete_message'])->name('cloud.del.folder');
     });
 });
