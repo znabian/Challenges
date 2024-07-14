@@ -1126,12 +1126,19 @@
           recordVoice.close();
           obj.disabled=false;
           obj.classList.remove('disabled');
-          showmessages(data,1);
+          //showmessages(data,1);
           @if($chall->Level<=34)
             const url='{{route("chat.send")}}';
           @else
             const url='{{route("chat.send.quiz")}}';
           @endif
+          Swal.fire({
+                title:"منتظر بمون تا پیامت ارسال بشه",
+                html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
+                icon:'info',
+                allowOutsideClick:false,
+                showConfirmButton:false,
+              });   
         axios.post(url, upformData, {
         headers: {
             'Content-Type': 'multipart/form-data'
@@ -1139,11 +1146,11 @@
         })
         .then(response => { 
           recordVoice.close();
-          msg_no.remove();
+          //msg_no.remove();
           URL.revokeObjectURL(document.getElementById('playerRecord'));          
           @if($chall->Level<=34)
           rmReply();
-          showmessages(response.data);
+          //showmessages(response.data);
           @endif
            obj.classList.remove('disabled');
             obj.disabled=false;
@@ -1151,14 +1158,14 @@
         .catch(error => {
             console.log(error);
 
-            msg_no.querySelector('.fa-spinner').classList.add("fa-circle-exclamation","text-danger"); 
+            /*msg_no.querySelector('.fa-spinner').classList.add("fa-circle-exclamation","text-danger"); 
             msg_no.querySelector('.fa-spinner').classList.remove("fa-spinner"); 
             
             var cancelDiv = document.createElement("div");
             cancelDiv.classList.add("d-flex", "gap-1");
             cancelDiv.onclick = function() {
               msg_no.remove();
-            };
+            };*/
            /* cancelDiv.onmouseover = function() {
               document.getElementById("cancelDivno").classList.remove("d-none");
             };
@@ -1166,7 +1173,7 @@
               document.getElementById("cancelDivno").classList.add("d-none");
             };*/
 
-            var cancelIcon = document.createElement("i");
+            /*var cancelIcon = document.createElement("i");
             cancelIcon.classList.add("fa", "fa-trash");
             cancelDiv.appendChild(cancelIcon);
 
@@ -1176,9 +1183,9 @@
             cancelTextDiv.innerHTML = "حذف";
             cancelDiv.appendChild(cancelTextDiv);
             divtools_no.innerHTML='';
-            divtools_no.appendChild(cancelDiv);
+            divtools_no.appendChild(cancelDiv);*/
 
-            
+            recordVoice.show();
             @if($chall->Level<=34)
             rmReply();
             @endif
@@ -1607,20 +1614,26 @@
             data.Time = new Date().toLocaleDateString("fa-IR", { hour: '2-digit', minute: '2-digit',second:'2-digit' }).split(',')[1];
             data.Date = date.toLocaleDateString("fa-IR", { day: "2-digit", month: "long" });
             data.Date2="امروز";
-            showmessages(data,1);
-
+            //showmessages(data,1);
+            Swal.fire({
+                title:"منتظر بمون تا پیامت ارسال بشه",
+                html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
+                icon:'info',
+                allowOutsideClick:false,
+                showConfirmButton:false,
+              });   
         axios.post('{{route("chat.send.quiz")}}', upformData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
         }).then(response => {
-            msg_no.remove();
+           // msg_no.remove();
             obj.disabled=false;
             obj.classList.remove('disabled');
           })
         .catch(error => {
             console.log(error); 
-            cnomsg=document.querySelectorAll('#msg_abort').length;
+            /*cnomsg=document.querySelectorAll('#msg_abort').length;
             msg_no.querySelector('.fa-spinner').classList.add("fa-circle-exclamation","text-danger"); 
             msg_no.querySelector('.fa-spinner').classList.remove("fa-spinner"); 
             
@@ -1628,7 +1641,7 @@
             cancelDiv.classList.add("d-flex", "gap-1");
             cancelDiv.onclick = function() {
              document.getElementById('msg_abort'+cnomsg).remove();
-            };
+            };*/
             /*cancelDiv.onmouseover = function() {
               document.getElementById("cancelDivno").classList.remove("d-none");
             };
@@ -1636,7 +1649,7 @@
               document.getElementById("cancelDivno").classList.add("d-none");
             };*/
 
-            var cancelIcon = document.createElement("i");
+            /*var cancelIcon = document.createElement("i");
             cancelIcon.classList.add("fa", "fa-trash");
             cancelDiv.appendChild(cancelIcon);
 
@@ -1648,9 +1661,16 @@
             divtools_no.innerHTML='';
             divtools_no.appendChild(cancelDiv);
             msg_no.id='msg_abort'+cnomsg;
-            divtools_no.id='divtools_abort'+cnomsg;
+            divtools_no.id='divtools_abort'+cnomsg;*/
             
-
+            
+           
+            if(msgBox)
+            {
+              dialogFile.show();
+            }
+            else
+            msgtxt.value=msg.Id;
             //rmReply();
             obj.disabled=false;
             obj.classList.remove('disabled');
@@ -1713,22 +1733,28 @@
             data.Time = new Date().toLocaleDateString("fa-IR", { hour: '2-digit', minute: '2-digit',second:'2-digit' }).split(',')[1];
             data.Date = date.toLocaleDateString("fa-IR", { day: "2-digit", month: "long" });
             data.Date2="امروز";
-            showmessages(data,1);
-
+            //showmessages(data,1);
+            Swal.fire({
+                title:"منتظر بمون تا پیامت ارسال بشه",
+                html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
+                icon:'info',
+                allowOutsideClick:false,
+                showConfirmButton:false,
+              });   
         axios.post('{{route("chat.send")}}', upformData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
         }).then(response => { 
             rmReply();
-            msg_no.remove();
-           showmessages(response.data);
+           // msg_no.remove();
+           //showmessages(response.data);
             obj.disabled=false;
             obj.classList.remove('disabled');
           })
         .catch(error => {
-            console.log(error); 
-            cnomsg=document.querySelectorAll('#msg_abort').length;
+            console.log(error);
+            /*cnomsg=document.querySelectorAll('#msg_abort').length;
             msg_no.querySelector('.fa-spinner').classList.add("fa-circle-exclamation","text-danger"); 
             msg_no.querySelector('.fa-spinner').classList.remove("fa-spinner"); 
             
@@ -1736,7 +1762,7 @@
             cancelDiv.classList.add("d-flex", "gap-1");
             cancelDiv.onclick = function() {
              document.getElementById('msg_abort'+cnomsg).remove();
-            };
+            };*/
             /*cancelDiv.onmouseover = function() {
               document.getElementById("cancelDivno").classList.remove("d-none");
             };
@@ -1744,7 +1770,7 @@
               document.getElementById("cancelDivno").classList.add("d-none");
             };*/
 
-            var cancelIcon = document.createElement("i");
+            /*var cancelIcon = document.createElement("i");
             cancelIcon.classList.add("fa", "fa-trash");
             cancelDiv.appendChild(cancelIcon);
 
@@ -1756,10 +1782,17 @@
             divtools_no.innerHTML='';
             divtools_no.appendChild(cancelDiv);
             msg_no.id='msg_abort'+cnomsg;
-            divtools_no.id='divtools_abort'+cnomsg;
+            divtools_no.id='divtools_abort'+cnomsg;*/
             
 
             rmReply();
+            if(msgBox)
+            {
+              msg2.value=msg;
+              dialogFile.show();
+            }
+            else
+            msgtxt.value=msg;
             obj.disabled=false;
             obj.classList.remove('disabled');
             Swal.fire({
@@ -2742,6 +2775,7 @@
         msgs.push(data);
 
     });
+    Swal.close();
     @if($chall->Level<=34)
     setMenu(document.querySelectorAll('div[id^="msg_"]'));
     @endif    
