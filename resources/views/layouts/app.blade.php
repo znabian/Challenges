@@ -654,7 +654,7 @@
                 axios.post('{{route("notif.reg")}}',{data:data.data});  
               shownotifList(JSON.parse(data.data)); 
               @else
-                if({{(\Route::currentRouteName()!="chat.index")?1:0}} || ({{(\Route::currentRouteName()=="chat.index")?1:0 }} && {{$chall->Id??0}}!=d.ChatId))  
+                if(({{(\Route::currentRouteName()!="chat.index")?1:0}} && ({{(\Route::currentRouteName()!="direct.index")?1:0}})) || ({{(\Route::currentRouteName()=="chat.index")?1:0 }} && {{$chall->Id??0}}!=d.ChatId))  
                 {  
                 shownotif(JSON.parse(data.data));    
                 axios.post('{{route("notif.reg")}}',{data:data.data});                      
@@ -678,6 +678,10 @@
                     if(data.url=='chall')
                     {
                      window.location.href='{{route("home")}}';
+                    }
+                    else if(data.url=='message')
+                    { 
+                        window.location.href='{{route("home")}}/message';
                     }
                     else
                     { 

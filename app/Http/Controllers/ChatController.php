@@ -142,8 +142,7 @@ class ChatController extends Controller
             $chall=(object)$challs->where('Id',$req->ChallId)->first();
             
             $EventController->PrivateMessage(" یک پیام جدید در چالش ".$chall->Title." از ".$msg->SenderName." دریافت شد ",$msg->Resiver,'چالش های فرست کلاس',$req->ChallId);
-            
-            $EventController->ChallengeChatChange($req->ChatId);
+			$EventController->ChallengeChatChange($req->ChatId);
             return response()->json(['success'=>1,'chatId'=>$chatId,'Body'=>$msg->Body,'Parent'=>$msg->Parent,'File'=>$path,'Sender'=>$msg->SenderName,'Logo'=>$logo,'Date'=>jdate($msg->Date)->format('Y-m-d H:i:s'),'Date2'=>$date2,"Time"=>jdate($msg->Date)->format('H:i:s'),'ResiverId'=>$msg->Resiver,'SenderId'=>$msg->Sender,'msg'=>$msg]);
     }
     public function All_chat($chat,Request $req)
@@ -501,6 +500,43 @@ class ChatController extends Controller
                 $select="select Id,Ask,Answer from FaqTbl where Type=2 and Active=1 order By Id";
                 $update="";
                 break;
+				
+            case 'read_direct':
+                $select="select * from ReminderTbl where UserId=".$param['resiver']." and Seen=0 order By Date desc";
+                $update="update ChatTbl set [Read]=1 where ReceiverId=".$param['resiver']." and [Read]=0 ";
+                break;
+            case 'msg_direct':
+                $select="select ms.*,
+                (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.SenderId) as SenderName,
+                (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.ReceiverId) as ResiverName
+                from ChatTbl as ms where (ReceiverId=".$param['uid']." or SenderId=".$param['uid'].") and Active=1 order By Date";
+                $update="update ChatTbl set [Read]=1 where ReceiverId=".$param['uid'];
+                break;
+            case 'sendmsg_direct':
+                $p=(($param['Parent'])?",Parent":"");
+                $param['Parent']=(($param['Parent'])?",".$param['Parent']:"");
+                $select="INSERT INTO ChatTbl (SenderId, ReceiverId,ExpertId,[Message],[File],[Read] $p) VALUES (".$param['Sender'].", ".$param['Resiver'].", ".$param['ExpertId'].",N'".$param['Body']."','".($param['File']??'')."',".$param['Seen'].($param['Parent']).")";
+                $update="";
+                break;
+            case 'Getmsg_direct':
+                $select="select ms.*,(select concat(u.Name,N' ',u.Family) as FullName from UserTbl as u where u.Id=ms.Sender) as SenderName,
+                (select concat(u.Name,N' ',u.Family) as FullName from UserTbl as u where u.Id=ms.ReceiverId) as ResiverName from ChatTbl as ms where Id=".$param['cmid'];
+                $update="";
+                break;
+            case 'editmsg_direct':
+                $select="select ms.*,
+                (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.SenderId) as SenderName,
+                (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.ReceiverId) as ResiverName
+                from ChatTbl as ms where (ReceiverId=".$param['uid']." or SenderId=".$param['uid'].") and Active=1 order By Date";
+                $update="update ChatTbl set  Message=N'".$param['Body']."' where Id=".$param['Id']." and SenderId=".$param['uid'];
+                break;
+            case 'delmsg_direct':
+                $select="select ms.*,
+                (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.SenderId) as SenderName,
+                (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.ReceiverId) as ResiverName
+                from ChatTbl as ms where (ReceiverId=".$param['uid']." or SenderId=".$param['uid'].") and Active=1 order By Date";
+                $update="update ChatTbl set  Active=0 where Id=".$param['Id']." and SenderId=".$param['uid'];
+                break;
             
             default:
                 # code...
@@ -531,6 +567,120 @@ class ChatController extends Controller
 
             }
             return true;
+    }
+	
+
+    public function Direct_index()
+    {   
+        $user=session('User'); 
+        
+        $this->getData('update',['uid'=>$user->Id,'link'=>"/message"],'seen',"Notifs"); 
+       if(!session('Notifs')->count())
+           session()->forget('Notifs');        
+
+        
+        $this->getData('update',['resiver'=>$user->Id],'read_direct'); 
+       
+        $chats=$this->getData('select',['uid'=>$user->Id],'msg_direct',1); 
+        $EventController=new EventController();
+        $EventController->DirectChatSeen($user->Id);
+        if($user->Age<12)
+        return view('panel.direct.chat_child',compact('chats','user'));
+        else
+        return view('panel.direct.chat',compact('chats','user'));
+    }
+    public function Direct_send_message(Request $req)
+    {
+        $user=session('User');
+        if($req->hasFile('file'))
+            {
+                $file=$req->file('file');
+                if(Str::contains($file->getClientMimeType(),'video'))
+                $fileName='_movie__'; 
+                elseif(Str::contains($file->getClientMimeType(),'image'))
+                $fileName='_image__'; 
+                else
+                $fileName='_file__'; 
+
+                $fileName.=time() ."_FCDirect.{$file->getClientOriginalExtension()}";
+                    if(!is_dir('uploads'))
+                        mkdir('uploads');
+                    if(!is_dir('uploads/Direct'))
+                        mkdir('uploads/Direct');
+                    if(!is_dir('uploads/Direct/user_'.$req->Sender))
+                     mkdir('uploads/Direct/user_'.$req->Sender);
+                    $file->move(base_path().'/../uploads/Direct/user_'.$req->Sender.'/',$fileName);
+                    //$file->move(public_path().'/uploads/Direct/user_'.$req->Sender.'/',$fileName);
+                     $path=route('home').'/uploads/Direct/user_'.$req->Sender.'/'.$fileName;
+            }
+            elseif ($req->hasFile('voice'))
+            {
+                $file=$req->file('voice');
+                    $fileName='_voice__'.time() ."_FCDirect.{$file->getClientOriginalExtension()}"; //$file->extension()
+                    if(!is_dir('uploads'))
+                    mkdir('uploads');
+                    if(!is_dir('uploads/Direct'))
+                        mkdir('uploads/Direct');
+                    if(!is_dir('uploads/Direct/user_'.$req->Sender))
+                    mkdir('uploads/Direct/user_'.$req->Sender);
+                    if(!is_dir('uploads/Direct/user_'.$req->Sender.'/Audio'))
+                    mkdir('uploads/Direct/user_'.$req->Sender.'/Audio');
+                     $file->move(base_path().'/../uploads/Direct/user_'.$req->Sender.'/Audio/',$fileName);
+                     //$file->move(public_path().'/uploads/Direct/user_'.$req->Sender.'/Audio/',$fileName);
+                    $path=route('home').'/uploads/Direct/user_'.$req->Sender.'/Audio/'.$fileName;
+            }
+            else
+            $path='';
+            $chat=$this->getData('insertGetId',['Sender'=>$req->Sender,'Resiver'=>$req->Resiver,'ExpertId'=>$req->SellerId,'Body'=>$req->Body??null,'File'=>$path,"Seen"=>0,'Parent'=>$req->Parent??null],'sendmsg_direct',0);
+            /*$msg=(object)$this->getData('select',['cmid'=>$chatId],'Getmsg_direct',1)[0];
+            $logo=asset('dist/img/Logored.png');               
+            if(jdate($msg->Date)->format('Y-m-d')==jdate()->format('Y-m-d'))
+            $date2="امروز";
+            else
+            $date2=jdate($msg->Date)->format('d F');*/
+            $EventController=new EventController();
+            $EventController->DirectChatChanges($req->Sender);
+            return response()->json(['success'=>$chat]);
+    }
+    public function Direct_All_chat($Resiver,Request $req)
+    {
+        $msgs=$this->getData('select',['uid'=>$Resiver],'msg_direct',1); 
+        /*$EventController=new EventController();
+        $EventController->DirectChatSeen($Resiver);*/
+        return response()->json(['success'=>1,'msgs'=>$msgs]);
+    }
+    public function Direct_edit_message(Request $req)
+    {
+        $this->getData('update',['Id'=>$req->Id,'Body'=>$req->Body??null,'uid'=>$req->SenderId],'editmsg_direct',0);
+                  
+        $EventController=new EventController();
+        
+        $EventController->DirectChatChanges($req->SenderId);
+        return response()->json(['success'=>1]);
+    }
+    public function Direct_delete_message(Request $req)
+    {
+       $this->getData('update',['Id'=>$req->Id,'uid'=>$req->SenderId],'delmsg_direct',0);
+                    
+        $EventController=new EventController();
+        $EventController->DirectChatChanges($req->SenderId);
+        
+        return response()->json(['success'=>1]);
+        
+       
+    }
+    public function Direct_read_chat($chat,Request $req)
+    {
+        $user=session('User'); 
+        $this->getData('update',['resiver'=>$req->Resiver,'cid'=>$chat],'read'); 
+       
+        $this->getData('update',['uid'=>$user->Id,'link'=>"chat/".$req->Chall],'seen',"Notifs"); 
+       if(!session('Notifs')->count())
+           session()->forget('Notifs');       
+
+        $EventController=new EventController();
+        $EventController->ChallengeChatSeen($chat,$req->Sender);
+         return response()->json(['success'=>1]);
     }
 
     /** SQl Server */

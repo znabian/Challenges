@@ -5,6 +5,8 @@ use Ably\AblyRest;
 use App\Events\ChatChange;
 use App\Events\chatEvent;
 use App\Events\closeEvent;
+use App\Events\DirectChatChange;
+use App\Events\DirectSeen;
 use App\Events\privateEvent;
 use App\Events\publicEvent;
 use App\Events\seenEvent;
@@ -58,6 +60,23 @@ class EventController extends Controller
         $client = new  AblyRest($this->ABLY_KEY);
         $channel = $client->channels->get('FC-Messages.'.$userId);
         $channel->publish('FCMyMessages', json_encode($a->broadcastWith()));
+        return true;
+    }
+    public function DirectChatSeen($UID) 
+    {
+        $a=new DirectSeen($UID,8);
+
+        $client = new  AblyRest($this->ABLY_KEY);
+        $channel = $client->channels->get('Direct-Chat-Seen.8_'.$UID);
+        $channel->publish('DirectChatSeen',json_encode($a->broadcastWith()));
+        return true;
+    }
+    public function DirectChatChanges($SenderId) 
+    {
+        $a=new DirectChatChange($SenderId);
+        $client = new  AblyRest($this->ABLY_KEY);
+        $channel = $client->channels->get('DirectChat-Change-'.$SenderId);
+        $channel->publish('DirectChatChange',json_encode($a->broadcastWith()));
         return true;
     }
 }

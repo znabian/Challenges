@@ -54,4 +54,14 @@ Route::prefix('/chat')->group(function () {
     Route::post('/move-file', [CloudController::class,'file_move'])->name('cloud.file.move');
     //Route::post('/delete-folder', [CloudController::class,'delete_message'])->name('cloud.del.folder');
     });
+
+    Route::prefix('/message')->group(function () {
+        Route::get('/',[ChatController::class,'Direct_index'])->name('direct.index');
+        Route::post('/send_message', [ChatController::class,'Direct_send_message'])->name('direct.send');
+        Route::post('/edit_message', [ChatController::class,'Direct_edit_message'])->name('direct.update');
+        Route::post('/delete_message', [ChatController::class,'Direct_delete_message'])->name('direct.delete');
+        Route::post('/Read', [ChatController::class,'Direct_read_chat'])->name('direct.read'); 
+        Route::post('/{Resiver}/All', [ChatController::class,'Direct_All_chat'])->name('direct.all');  
+       
+        });
 });

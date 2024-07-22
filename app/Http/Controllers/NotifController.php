@@ -34,6 +34,10 @@ class NotifController extends Controller
         {
             $data->url=route("home");
         }
+        elseif($data->url=='message')
+        { 
+            $data->url="/message";
+        }
         else
         { 
             $data->url="/chat/".$data->ChatId;
