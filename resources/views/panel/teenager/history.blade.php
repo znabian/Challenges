@@ -187,6 +187,17 @@
             font-size: 9pt;
             font-family: 'Peyda';
         }
+       .offer {
+        background-color: red;
+        border-radius: 0 0 25% 25%;
+        padding: 4%;
+        margin-top: -1rem;
+        margin-left: 8px;
+        height: 2rem;
+        width: 2rem;
+        border: 1px dotted #910707;
+
+        }
     </style>
 @endsection
 @section('title')  
@@ -205,6 +216,11 @@
 @section('content')   
 <div id="content2" class="content2">             
      @if($challs->count())
+            @php
+                $current=now();//date_create(date('Y-m-d H:i:s'));
+                $startdate=date_create('2024-08-22 00:00:00');
+                $enddate=date_create('2024-08-31 23:59:59');
+            @endphp
             @foreach ($challs as $item) 
             <div class="card mt-2 p-md-3 @if($item['Status']==5) bg-danger-subtle Doned @elseif($item['Done']) bg-success-subtle Doned @elseif($item['Pay']) Payed @else Other @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body">
@@ -229,7 +245,18 @@
                                 @elseif($item['Pay'])
                                 <i class="fa fa-coins pull-left status" ></i>
                                 @elseif($item['Expired'])
+                                @php
+                                   $spd= date_diff(date_create(session('User')->CallTime),now())->format("%R%a");
+                                    $f=$spd-$item['Level'];
+                                    $price=$item['Price']+(($f>2)?$f-2:0)*10000;
+                                    if($price>50000)
+                                    $price=50000;  
+                                @endphp
+                                @if($current->between($startdate,$enddate) && $price==50000)
+                                <i class="offer pull-left status" >70%</i>
+                                @else
                                 <i class="fa fa-exclamation pull-left status" ></i>
+                                @endif
                                 @else
                                 <i class="fa fa-close opacity-0 pull-left status"></i>
                                 @endif

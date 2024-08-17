@@ -196,6 +196,17 @@
             font-size: 9pt;
             font-family: 'Peyda';
         }
+       .offer {
+        background-color: red;
+        border-radius: 0 0 25% 25%;
+        padding: 4%;
+        margin-top: -0.75rem;
+        margin-left: 8px;
+        height: 2rem;
+        width: 2rem;
+        border: 1px dotted #910707;
+
+        }
     </style>
 @endsection
 @section('title')  
@@ -216,6 +227,11 @@
 <div id="content2" class="content2" >             
     <div id="PayChallsList" class="gap-3 gap-md-4  justify-content-center row w-100 m-auto">
      @if($challs->count())
+            @php
+            $current=now();//date_create(date('Y-m-d H:i:s'));
+            $startdate=date_create('2024-08-22 00:00:00');
+            $enddate=date_create('2024-08-31 23:59:59');
+            @endphp
             @foreach ($challs as $item) 
             <div class="card col-5 mt-2 p-md-3 @if($item['Status']==5) bg-danger-subtle Doned @elseif($item['Done']) bg-success-subtle Doned @elseif($item['Pay']) Payed @else Other @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">
                 <div class="card-body d-grid gap-1 text-center">
@@ -227,7 +243,19 @@
                         @elseif($item['Pay'])
                             <i class="fa fa-coins pull-left status" ></i>
                         @else
+                        
+                            @php
+                                $spd= date_diff(date_create(session('User')->CallTime),now())->format("%R%a");
+                                $f=$spd-$item['Level'];
+                                $price=$item['Price']+(($f>2)?$f-2:0)*10000;
+                                if($price>50000)
+                                $price=50000;  
+                            @endphp
+                            @if($current->between($startdate,$enddate) && $price==50000)
+                            <i class="offer pull-left status" >70%</i>
+                            @else
                             <i class="fa fa-close pull-left status opacity-0"></i>
+                            @endif                            
                         @endif
                     </div>
                         

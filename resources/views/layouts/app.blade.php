@@ -18,6 +18,11 @@
 		<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
         <!-- Styles -->
         <style>
+        /*.swal2-popup>.swal2-close {  
+            color: black !important;
+            font-weight: 600;
+            font-size: 15pt;
+             }*/
             .menu2 nav
             {
                 background-color: #f3f3f3;
@@ -553,19 +558,20 @@
                         @endif
 
                        
-                            if (!localStorage.getItem('popupShown'))
+                            if ((localStorage.getItem('popupShowOff')??0) <5 )
                             {
-                                var targetDate = new Date(2024, 0, 30,19,30);
+                                var startDate = new Date(2024, 7, 21,23,59);
+                                var targetDate = new Date(2024, 7, 31,19,30);
                                 var currentDate = new Date();
 
-                                if (currentDate <= targetDate) 
+                                if (currentDate >= startDate && currentDate <= targetDate && @if(\Route::currentRouteName()!="history") 1 @else 0 @endif) 
                                 {
                                     Swal.fire({
-                                        imageUrl: "{{asset('img/bootcamp.jpg')}}",
-                                        imageHeight: '100%',
-                                        background: '#020b4c',
+                                        imageUrl: "{{asset('img/offer.png')}}",
+                                        //imageHeight: '100%',
+                                        background: 'transparent',
                                         padding:0,
-                                        imageAlt: "notif",
+                                        imageAlt: "summer Off",
                                         showCloseButton: true,
                                         showConfirmButton: false,
                                         focusCancel:false,
@@ -573,8 +579,8 @@
                                         focusConfirm:false,
                                         allowOutsideClick:false,
                                         });
-                                        document.querySelector('.swal2-image').addEventListener('click', function() {location.href='https://erfankhoshnazar.com/boot-camp/';});
-                                    localStorage.setItem('popupShown', true);
+                                        document.querySelector('.swal2-image').addEventListener('click', function() {location.href='{{route('history')}}';});
+                                    localStorage.setItem('popupShowOff', parseInt(localStorage.getItem('popupShowOff')??0)+1);
                                 }
                             }
                         

@@ -176,7 +176,7 @@ video
 .picfile {
     background-size: cover;
     background-repeat: no-repeat;
-    height: 154px;
+    height:13rem;/* 154px;*/
     background-color: #4e4e4e91;
     background-blend-mode: darken;
     width: 100%;
@@ -365,6 +365,29 @@ video
   color: #3b407a;
   text-align: center!important;
 }
+
+.status {
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size:13px;   
+            border: none;
+            font-weight: bolder;
+            width: 23px;
+            height: 23px;
+        }
+.offer {
+        background-color: red;
+        border-radius: 0 0 25% 25%;
+        padding: 3%;
+        margin-top: -1rem;
+        margin-left: 8px;
+        height: 0.5rem;
+        width: 0.5rem;
+        border: 1px dotted #910707;
+
+        }
 </style>
 @endsection
 @section('content')   
@@ -573,11 +596,34 @@ video
               $price=$chall->Price+(($f>2)?$f-2:0)*10000;
               if($price>50000)
               $price=50000;
+            
+              $current=now();//date_create(date('Y-m-d H:i:s'));
+              $startdate=date_create('2024-08-22 00:00:00');
+              $enddate=date_create('2024-08-31 23:59:59');
+
+              $discount=false;
+              if($current->between($startdate,$enddate) && $price==50000)
+              {
+                $price=15000;
+                $discount=true;
+              }
             @endphp
+            @if($discount)
+            <i class="offer status" >70%</i>
+            @endif
             @if($chall->Auto)
             <i class="fa fa-arrow-left-long text-danger"></i>
             <span class="">پاداش چالش:</span>
+            @if($discount)
+            <div class="d-grid" style="line-height:9px">
+              <b class=" text-danger">{{number_format(60000-$price)}}</b>
+              <small class="text-decoration-line-through">{{number_format(60000-50000)}}</small>
+            </div>
+            
+            @else
               <b class="">{{number_format(60000-$price)}}</b>
+            @endif
+              
               <span class="">تومان</span>
               <button  onclick="buyChall(1)" class="align-items-center btn btn-success col-3 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13.283" height="9.66" viewBox="0 0 13.283 9.66">
@@ -588,7 +634,15 @@ video
             @else
             <i class="fa fa-arrow-left-long text-danger"></i>
             <span class="">قیمت چالش:</span>
+            @if($discount)
+            <div class="d-grid" style="line-height:9px">
+              <b class=" text-danger">{{number_format($price)}}</b>
+              <small class="text-decoration-line-through">{{number_format(50000)}}</small>
+            </div>
+            
+            @else
               <b class="">{{number_format($price)}}</b>
+            @endif
               <span class="">تومان</span>
               <button  onclick="buyChall()" class="align-items-center btn btn-success col-3 d-flex fw-bold gap-2 justify-content-center py-1 rounded" style="font-size: 10pt;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13.283" height="9.66" viewBox="0 0 13.283 9.66">
