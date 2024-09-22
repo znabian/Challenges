@@ -137,7 +137,7 @@ class PanelController extends Controller
                  (select top 1  cc.Resiver from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatResiver,
                  (select top 1  cc.Id from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatId,
                  (select mcc.Body from InterviewChallMsgTbl as mcc inner join InterviewChallChatTbl as cc1  on cc1.Id=mcc.ChatId and cc1.Active=1 and cc1.ChallUserId=uc.Id and  mcc.Active=1 where uc.Answer=mcc.Id  ) as MyAnswer
-                  From InterviewChallUserTbl as uc inner join InterviewChallTbl as c on uc.ChallId=c.Id and c.Active=1 and uc.Active=1 and  uc.UserId=".$param['uid']." where ((cast(uc.ExpiredAt as Date) >= cast(GETDATE() as Date) and  cast(uc.Date as Date)  <=  cast(GETDATE() as Date)) or cast(uc.ExpiredAt as Date) =  cast(GETDATE() as Date) ) order By Date,c.Id,uc.ExpiredAt ";
+                  From InterviewChallUserTbl as uc inner join InterviewChallTbl as c on uc.ChallId=c.Id and c.Active=1 and uc.Active=1 and  uc.UserId=".$param['uid']." where ((cast(uc.ExpiredAt as Date) >= cast(GETDATE() as Date) and  cast(uc.Date as Date)  <=  cast(GETDATE() as Date)) or cast(uc.ExpiredAt as Date) =  cast(GETDATE() as Date) ) and c.Gold=0 order By Date,c.Id,uc.ExpiredAt ";
                 $update="update  InterviewChallUserTbl set Expired=1 where UserId=".$param['uid']." and Expired <> 1 and ExpiredAt <=GETDATE()";
                 break;
             case 'history':
@@ -146,7 +146,7 @@ class PanelController extends Controller
                  (select  top 1 cc.Resiver from InterviewChallChatTbl as cc where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatResiver,
                  (select  top 1 cc.Id from InterviewChallChatTbl as cc      where cc.ChallUserId=uc.Id and cc.Active=1 order by cc.Id) as ChatId,
                  (select mcc.Body from InterviewChallMsgTbl as mcc inner join InterviewChallChatTbl as cc1  on cc1.Id=mcc.ChatId and cc1.Active=1 and cc1.ChallUserId=uc.Id and  mcc.Active=1 where uc.Answer=mcc.Id  ) as MyAnswer 
-                 From InterviewChallUserTbl as uc inner join InterviewChallTbl as c on uc.ChallId=c.Id and c.Active=1 and uc.Active=1 and  uc.UserId=".$param['uid']." where (Expired=1 or Done=1) order By Date,c.Id";
+                 From InterviewChallUserTbl as uc inner join InterviewChallTbl as c on uc.ChallId=c.Id and c.Active=1 and uc.Active=1 and  uc.UserId=".$param['uid']." where (Expired=1 or Done=1) and c.Gold=0 order By Date,c.Id";
                 $update="update  InterviewChallUserTbl set Expired=1 where UserId=".$param['uid']." and Expired <> 1 and ExpiredAt <=GETDATE()";        
                 break;
             case 'details':
@@ -177,14 +177,17 @@ class PanelController extends Controller
                 $select="SELECT c.Id,c.Level,c.Expire FROM InterviewChallTbl as c
                 where Level<=".$param['lvl']." 
                 and not exists(select Id from InterviewChallUserTbl as uc where uc.ChallId=c.Id and uc.UserId=".$param['uid']." and uc.Active=1)
-                and c.Active=1";
+                and c.Active=1 and c.Gold=0";
                 $update="";
                 break;
             case 'InsertChalls':
                 $select="INSERT INTO InterviewChallUserTbl (ChallId, UserId,ExpiredAt,Expired,Done,[Date]) VALUES (".$param['ChallId'].", ".$param['UserId'].", '".$param['ExpiredAt']."',0,0,'".$param['Date']."')";
                 $update="";
                 break;
-            
+            case 'MySupport':
+                $select="select top 1 SellerId,SupportId from UserTbl where Id=".$param['uid'];
+                $update="";
+                break;
             default:
                 # code...
                 break;

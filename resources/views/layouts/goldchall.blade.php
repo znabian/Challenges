@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="icon" type="image/x-icon" href="{{asset('favicon.ico')}}">
         <link rel="apple-touch-icon" href="{{asset('favicon.ico')}}">
-        <title>چالش فرست کلاس</title>
+        <title>چالش طلایی فرست کلاس</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -17,28 +17,29 @@
         <link rel="stylesheet" href="{{ asset('fontawesome-6.4.2/css/all.css') }}">
 		<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
         <!-- Styles -->
+        
         <style>
-             @media (min-width: 760px)
-            {
-                                        
-                ::-webkit-scrollbar {  
-                    width: 5px; /* Width of the scrollbar */  
-                }  
+            @media (min-width: 760px)
+           {
+                                       
+               ::-webkit-scrollbar {  
+                   width: 5px; /* Width of the scrollbar */  
+               }  
 
-                ::-webkit-scrollbar-track {  
-                    background: transparent; /* Background of the scrollbar track */  
-                }  
+               ::-webkit-scrollbar-track {  
+                   background: transparent; /* Background of the scrollbar track */  
+               }  
 
-                ::-webkit-scrollbar-thumb {  
-                    background: #bebebe; /* Color of the scrollbar thumb */  
-                    border-radius: 10px; /* Rounded corners for the thumb */  
-                }  
+               ::-webkit-scrollbar-thumb {  
+                   background: #bebebe; /* Color of the scrollbar thumb */  
+                   border-radius: 10px; /* Rounded corners for the thumb */  
+               }  
 
-                ::-webkit-scrollbar-thumb:hover {  
-                    background: #9e9e9e; /* Color of the thumb on hover */  
-                }  
-            }
-        </style>
+               ::-webkit-scrollbar-thumb:hover {  
+                   background: #9e9e9e; /* Color of the thumb on hover */  
+               }  
+           }
+       </style>
         <style>
         /*.swal2-popup>.swal2-close {  
             color: black !important;
@@ -101,11 +102,21 @@
                 }
             }
             .navicon {
+                @if(session('User')->Age<12)
                 margin-top: 13px;
                 background-color: #dcdcdc;
                 color: #404040;
                 fill: #404040;
                 border: 3px solid #838383;
+                box-shadow: 3px 3px 10px -2px #9E9E9E;
+                @else
+                margin-top: 11px;
+                background-color: #4c4c4c;
+                color: #b59f64;
+                fill: #b59f64;
+                border: 3px solid #060606;
+                box-shadow: 3px 3px 10px -2px #000000e0;
+                @endif
                 border-radius: 50px;
                 width: 40px;
                 height: 40px;
@@ -114,7 +125,6 @@
                 justify-content: center;
                 align-items: center;
                 font-size: 21px;
-                box-shadow: 3px 3px 10px -2px #9E9E9E;
             }
             nav a
             {
@@ -293,9 +303,6 @@
             }
            @media (max-width: 760px)
             {
-                #directmn {
-                font-size: 4.5pt;
-                }
                 .menu2
                 {
                     width: 92vw!important;
@@ -458,22 +465,12 @@
     <body class="antialiased overflow-x-hidden" onload="loding() ">
         <div class="container-fluid d-none"  id="content" >
         @if(session('User'))                        
-                @include('layouts.menu')            
+                @include('layouts.menugold')            
         @endif
-            <div class="d-grid justify-content-center w-100" id="title">
-                <h6 class=" bold text-center" style="font-size: 16pt;" >@yield('title')</h6> 
-                @yield('subtitle')
-            </div>
+            
                 @yield('content')
         </div>
 
-        {{-- <div id="loader" class="container-fluid text-center" style="position: absolute;top: 45%;" >
-                <div class="loader">
-                <div></div>
-                <div></div>
-                <div></div>
-                </div>
-         </div> --}}
          <div id="loader">
             <div class="scene">
                 <div class="cube-wrapper">
@@ -497,8 +494,6 @@
             @endif
          </div>
         
-        <audio src="{{asset('sound/notification.mp3') }}" id="notifaudio" style="display: none"></audio>
-         
         {{-- </div> --}}
     </body>  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
@@ -506,105 +501,11 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
     
     <script>
-        @if(session('User'))
-        function logout()
-        {
-            Swal.fire({
-                title: 'خروج از برنامه',
-                text: "{{session('User')->FullName}}  می خوای خارج بشی؟",//"آیا از خروج از حساب کاربری خود اطمینان دارید؟",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'بله',
-                cancelButtonText: 'نه',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    axios({
-                    method: "POST",
-                    url: "{{route('logout')}}"
-                    })
-                    .then((response) => {
-                        window.location.href='{{route('home')}}';
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-                }
-            });
-        }
-        function showWallet()
-        {
-            Swal.fire({
-                title:"صبر کن ...",
-                html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
-                icon:'info',
-                allowOutsideClick:false,
-                showConfirmButton:false,
-              });
-                axios.post('{{route("user.wallet")}}')
-                  .then(response => { 
-                    if(response.data.success)
-                        Swal.fire({
-                                  icon: 'success',                      
-                                  confirmButtonText: 'بله',
-                                  html:response.data.msg,
-                              });
-                    })
-                  .catch(error => {
-                      console.log(error);
-                      Swal.fire({
-                                  icon: 'error',
-                                  title: 'خطا',                        
-                                  confirmButtonText: 'بله',
-                                  //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
-                                  html:"مشکل پیش آمده دوباره تلاش کن",
-
-                              });
-                  });
-        }
-        @endif
-           function loding () {
-                    @if(session('User'))
-                        @if(session('Notifs'))
-                        notif.classList.remove('d-none');
-                        @else
-                        notif.classList.add('d-none');
-                        @endif
-                    
-
-                       
-                        if ((localStorage.getItem('popupShowOff')??0) <5 )
-                            {
-                                var startDate = new Date(2024, 7, 21,23,59);
-                                var targetDate = new Date(2024, 7, 31,19,30);
-                                var currentDate = new Date();
-
-                                if (currentDate >= startDate && currentDate <= targetDate && @if(\Route::currentRouteName()!="history") 1 @else 0 @endif) 
-                                {
-                                    Swal.fire({
-                                        imageUrl: "{{asset('img/offer.png')}}",
-                                        //imageHeight: '100%',
-                                        background: 'transparent',
-                                        padding:0,
-                                        imageAlt: "summer Off",
-                                        showCloseButton: true,
-                                        showConfirmButton: false,
-                                        focusCancel:false,
-                                        focusDeny:false,
-                                        focusConfirm:false,
-                                        allowOutsideClick:false,
-                                        });
-                                        document.querySelector('.swal2-image').addEventListener('click', function() {location.href='{{route('history')}}';});
-                                    localStorage.setItem('popupShowOff', parseInt(localStorage.getItem('popupShowOff')??0)+1);
-                                }
-                            }
-                        
-
-                    @endif
+    
+           function loding () 
+           {
                    loader.remove();
                     content.classList.remove('d-none');
 
@@ -630,122 +531,9 @@
                                     text:"<?php foreach ($errors->all() as $error) echo $error;?>"
                                 });
                         @endif
-            }    
+        }    
     
     </script>  
-     @if(session('User'))
-    <script>
-        const userid='{{session('User')->Id}}';
-        if(typeof Notification !== "undefined")
-        {
-        var perm=Notification.permission;
-        if(perm=='default' || perm=='denied')
-        {
-            Notification.requestPermission().then(function (permission) {
-
-            perm=permission;
-
-            });
-        }
-    }
-    else
-    perm='denied';
-        const icon="{{ asset('img/Logored.png') }}";
-        const ably = new Ably.Realtime.Promise('{{env('ABLY_KEY')}}');
-          ably.connection.once('connected');
-        /* Rsive Chall Channel*/
-          var channel = ably.channels.get('Challenge_Set.'+userid);
-          channel.subscribe('ChallengeSet', function(data)
-           {
-              @if(\Route::currentRouteName()=="home") 
-              showchall(JSON.parse(data.data));  
-              @elseif(\Route::currentRouteName()=="notif.index") 
-                axios.post('{{route("notif.reg")}}',{data:data.data});  
-              shownotifList(JSON.parse(data.data));  
-              @else
-                axios.post('{{route("notif.reg")}}',{data:data.data});  
-                shownotif(JSON.parse(data.data));    
-              @endif
-                         
-              
-          });
-          
-          /*Rsive Message Channel*/
-          var channel = ably.channels.get('Challenge-Chat-Resive.'+userid);
-          channel.subscribe('ChatResive', function(data) {   
-              var d=JSON.parse(data.data);
-              @if(\Route::currentRouteName()=="notif.index") 
-                axios.post('{{route("notif.reg")}}',{data:data.data});  
-              shownotifList(JSON.parse(data.data)); 
-              @else
-              if(({{(\Route::currentRouteName()!="chat.index")?1:0}} && ({{(\Route::currentRouteName()!="direct.index")?1:0}})) || ({{(\Route::currentRouteName()=="chat.index")?1:0 }} && {{$chall->Id??0}}!=d.ChatId))
-                {  
-                shownotif(JSON.parse(data.data));    
-                axios.post('{{route("notif.reg")}}',{data:data.data});                      
-                }
-              @endif
-              
-          });
-      
-         function shownotif(data)
-         {
-            notif.classList.remove('d-none');
-              document.getElementById('notifaudio').play();
-            if(perm=='granted')  
-            {
-                body=data.Body.replaceAll('<br>','\n');
-                body=body.replaceAll('/<br>/gi','\n\t');
-                var notification = new Notification('چالش فرست کلاس', { body, icon });
-                notification.onclick = () => {
-                    notification.close();
-                    axios.post('{{route("notif.seen")}}',{data:data});
-                    if(data.url=='chall')
-                    {
-                     window.location.href='{{route("home")}}';
-                    }
-                    else if(data.url=='message')
-                    { 
-                        window.location.href='{{route("home")}}/message';
-                    }
-                    else
-                    { 
-                        window.location.href='{{route("home")}}/chat/'+data.ChatId;
-                    }
-                }
-            }             
-               
-         }
-         function showchall(data)
-         {
-            axios.post('{{route("chall.get")}}').then(function ({data}) {
-                if (data.success)
-                    content2.innerHTML=data.data;
-                else 
-                {
-
-                }
-            })
-            .catch(error => {
-                console.log('Report NewChall Error')
-            });     
-                
-         }
-         function shownotifList(data)
-         {
-            axios.post('{{route("notif.ajax")}}').then(function ({data}) {
-                if (data.success)
-                    content2.innerHTML=data.data;
-                else 
-                {
-
-                }
-            })
-            .catch(error => {
-                console.log('Report NewNotif Error')
-            });     
-                
-         }
-      </script>
-     @endif
+    
     @yield('script')
 </html>

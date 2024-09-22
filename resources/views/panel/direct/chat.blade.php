@@ -749,6 +749,14 @@
 @endsection
 @section('script')
 <script>
+  Swal.fire({
+                        icon: 'info',
+                        title: 'توجه',                        
+                        confirmButtonText: 'متوجه شدم',
+                        //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                        html:"<small>{{session('User')->Name}} عزیز \n این صفحه برای ارتباط مستقیم با استاد خوش نظر است و نه ارسال پاسخ چالش ها! جهت ارسال پاسخ چالش، به صفحه همان چالش مراجعه کنید<br> درصورت ارسال پاسخ چالش ها در این صفحه، هیچ پاداشی دریافت نخواهید کرد</small>",
+
+            });
   var replyId=0;
   var msgs=[];
   getMsgs({!!$chats->toJson()!!});

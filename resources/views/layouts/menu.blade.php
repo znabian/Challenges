@@ -17,7 +17,7 @@
       <a class="  @if(\Route::currentRouteName()=="chall.details" || \Route::currentRouteName()=="cloud.index") d-none @endif " href="{{route('cloud.index')}}" id="uploder" style="">
       <i class="fa fa-folder fa-regular navicon"  style="height: 39px;padding-left: 3px;"></i>
       </a>
-      <a class="  @if(\Route::currentRouteName()=="chall.details" || \Route::currentRouteName()=="direct.index") d-none @endif " href="{{route('direct.index')}}" id="uploder" style="">
+      <a class="d-none  @if(\Route::currentRouteName()=="chall.details" || \Route::currentRouteName()=="direct.index") d-none @endif " href="{{route('direct.index')}}"  style="">
       <i class="fa fa-user-tie fw-bold navicon"  style="height: 39px;padding-left: 3px;"></i>
       </a>
       <a class="  @if(\Route::currentRouteName()!="cloud.file.show") d-none @endif " onclick="helpcompress2.show()"  style="">
@@ -35,7 +35,7 @@
       </a>
     </div>
   </nav>
-@if(\Route::currentRouteName()!="chat.index" && \Route::currentRouteName()!="direct.index")
+@if(\Route::currentRouteName()!="chat.index" && \Route::currentRouteName()!="direct.index" && !str_contains(\Route::currentRouteName(),"gold"))
   <div class="bg-body col-12 d-flex  p-2">
     <div  class="px-3 col">
       <span style="font-size: 8pt;font-family: 'PEYDA-BLACK';">موجودی کیف پول شما:</span>

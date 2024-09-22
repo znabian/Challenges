@@ -24,6 +24,16 @@ class ChatController extends Controller
     {   
         $user=session('User'); 
         $panel=new PanelController();
+
+        $MySupport=$panel->getData('select',['uid'=>$user->Id],'MySupport',1);       
+        if($MySupport->count()) 
+        {
+            $user->SellerId=$MySupport->first()['SellerId'];
+            $user->SupportId=$MySupport->first()['SupportId'];
+            //session()->forget('User');    
+            session(['User'=>$user]);
+        }
+        
         $panel->getData('update',['uid'=>$user->Id],'index',"Challs"); 
         $panel->getData('update',['uid'=>$user->Id],'history',"Histories");  
         $challs=(session('Challs'));
@@ -536,6 +546,10 @@ class ChatController extends Controller
                 (select top 1 ISNULL(u.Name,N' ')+N' '+ISNULL(u.Family,N' ') as FullName from UserTbl as u where u.Id=ms.ReceiverId) as ResiverName
                 from ChatTbl as ms where (ReceiverId=".$param['uid']." or SenderId=".$param['uid'].") and Active=1 order By Date";
                 $update="update ChatTbl set  Active=0 where Id=".$param['Id']." and SenderId=".$param['uid'];
+                break;
+            case 'MySupport':
+                $select="select top 1 SellerId,SupportId from UserTbl where Id=".$param['uid'];
+                $update="";
                 break;
             
             default:

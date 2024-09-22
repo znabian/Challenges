@@ -17,6 +17,29 @@
         <link rel="stylesheet" href="{{ asset('fontawesome-6.4.2/css/all.css') }}">
 		<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
         <!-- Styles -->
+        
+        <style>
+            @media (min-width: 760px)
+           {
+                                       
+               ::-webkit-scrollbar {  
+                   width: 5px; /* Width of the scrollbar */  
+               }  
+
+               ::-webkit-scrollbar-track {  
+                   background: transparent; /* Background of the scrollbar track */  
+               }  
+
+               ::-webkit-scrollbar-thumb {  
+                   background: #bebebe; /* Color of the scrollbar thumb */  
+                   border-radius: 10px; /* Rounded corners for the thumb */  
+               }  
+
+               ::-webkit-scrollbar-thumb:hover {  
+                   background: #9e9e9e; /* Color of the thumb on hover */  
+               }  
+           }
+       </style>
         <style>
         /*.swal2-popup>.swal2-close {  
             color: black !important;
@@ -275,6 +298,9 @@
             }
            @media (max-width: 760px)
             {
+                #directmn {
+                font-size: 4.5pt;
+                }
                 .menu2
                 {
                     width: 92vw!important;

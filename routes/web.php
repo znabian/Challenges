@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CloudController;
+use App\Http\Controllers\GoldChallController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NotifController;
 use App\Http\Controllers\PanelController;
@@ -62,6 +63,21 @@ Route::prefix('/chat')->group(function () {
         Route::post('/delete_message', [ChatController::class,'Direct_delete_message'])->name('direct.delete');
         Route::post('/Read', [ChatController::class,'Direct_read_chat'])->name('direct.read'); 
         Route::post('/{Resiver}/All', [ChatController::class,'Direct_All_chat'])->name('direct.all');  
+       
+        });
+        Route::prefix('/Gold')->group(function () {
+        Route::get('/reset',[GoldChallController::class,'reset'])->name('gold.reset');
+        Route::get('/index',[GoldChallController::class,'landing'])->name('gold.landing');
+        Route::get('/',[GoldChallController::class,'index'])->name('gold.index');
+        Route::get('/supervisor',[GoldChallController::class,'mySupervisor'])->name('gold.supervisor');
+        Route::post('/set-supervisor',[GoldChallController::class,'setSupervisor'])->name('gold.supervisor.set');
+        Route::get('{castle}/headers',[GoldChallController::class,'AppHeader'])->name('gold.header');
+        Route::get('{header}/subjects',[GoldChallController::class,'HeaderSubject'])->name('gold.subject');
+        Route::post('select-subject',[GoldChallController::class,'SelectSubject'])->name('gold.subject.select');
+        Route::get('/challs',[GoldChallController::class,'GoldChall'])->name('gold.chall');
+        Route::get('/play/{vid}',[GoldChallController::class,'PlayVideo'])->name('gold.chall.paly');
+        Route::post('/chall/unlock',[GoldChallController::class,'ChallDone'])->name('gold.chall.unlock');
+        Route::post('/chall/setpage',[GoldChallController::class,'setPage'])->name('gold.chall.setPage');
        
         });
 });
