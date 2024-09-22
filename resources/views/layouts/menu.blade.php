@@ -26,7 +26,7 @@
       <a class="  @if(\Route::currentRouteName()!="chall.details" || !($chall->Pay??0)) d-none @endif " href="{{route('chat.index',[$chall->Id??0])}}" id="chat" style="">
       <i class="fa fa-comment-dots fa-regular navicon"  style="height: 39px;padding-left: 3px;"></i>
       </a>
-      <a class="" href="{{route('notif.index')}}" >
+      <a class="@if(session('User')->Perm==3) d-none @endif" href="{{route('notif.index')}}" >
         <div class="d-flex position-relative" >
           <i class="fa fa-circle dotnotif d-none" id="notif"></i>
           <i class="fa fa-bell fa-regular navicon"></i>

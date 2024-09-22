@@ -20,6 +20,7 @@ class PanelController extends Controller
     {
         $user=session('User'); 
         $user->Wallet=$this->MyWallet($user->Id)->getData()->wallet??'-';
+        if($user->Perm!=3)
         $this->UpdatesChalls($user->Id,$user->CallTime);
 
         $this->getData('update',['uid'=>$user->Id],'index',"Challs");        
@@ -33,6 +34,7 @@ class PanelController extends Controller
     {
         $user=session('User');
         $user->Wallet=$this->MyWallet($user->Id)->getData()->wallet??'-'; 
+        if($user->Perm!=3)
         $this->UpdatesChalls($user->Id,$user->CallTime);
 
         $this->getData('update',['uid'=>$user->Id],'history',"Histories");        

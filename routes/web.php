@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::prefix('/support')->group(function () {
+Route::get('/login',[LoginController::class,'suppport_index'])->name('sup.Login');
+Route::post('/login',[LoginController::class,'suppport_login'])->name('sup.login');
+Route::post('/forget',[LoginController::class,'suppport_forget'])->name('sup.login.forget');
+});
 
 Route::get('/login',[LoginController::class,'index'])->name('Login');
 Route::post('/login',[LoginController::class,'login'])->name('login');
