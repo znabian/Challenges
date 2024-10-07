@@ -178,7 +178,7 @@
       right: 0;
     }
     .blurEffect{
-      filter: opacity(0.5);
+      filter: opacity(0.8);
         background-color: #c50b08;
     }
     .backcircle {
@@ -336,7 +336,7 @@
             <div class="col-12 d-flex gap-2 justify-content-center mt-3">
              
               <div class="col-12 position-relative">
-                <video id="videoplayer" poster="{{asset('img/logowhite.png')}}" class="videoRes embed-responsive-16by9 picfile " oncontextmenu="return false;"  controlsList="nodownload"  >
+                <video id="videoplayer" poster="{{asset('img/logowhite.png')}}" class="videoRes embed-responsive-16by9 picfile blurEffect" oncontextmenu="return false;"  controlsList="nodownload"  >
                 <source data-src="{{$video['File']}}" type="video/mp4">
               </video>
               <span class="playicon"></span>

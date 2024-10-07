@@ -144,6 +144,7 @@
             color: black;
             background: #f8f8f8;
             font-family: 'Peyda';
+            font-weight: 400;
 
         }
       
@@ -206,7 +207,7 @@
 @section('content')  
 
 <div id="content2" class="content2 " >    
-    <div style="font-size: 10pt;" class="title col-md-12 mb-2 h-auto m-auto pt-3 py-2 rounded-4 text-center" style="background-color: #ffffff8c;border: 4px double #75757533;">
+    <div class="title col-md-12 h-auto m-auto pt-3 py-2 rounded-4 text-center" style="background-color: #ffffff8c;border: 4px double #75757533;font-size:10pt">
         کاخی که انتخاب کنی دارای چندین سرفصل است. کاخ موردعلاقه خودت رو انتخاب کن
         
     </div>            

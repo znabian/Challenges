@@ -151,6 +151,7 @@
             font-size: 9pt; 
             /* line-height:0 !important; */
             font-family: 'PEYDA';
+            font-weight: 400;
         }
       
         #content
@@ -256,10 +257,10 @@
                         @endphp     
                         @if(0 && strlen($castle['Title'])>100) 
                         <p class="mx-3" id="limitsubj{{$castle['Id']}}">
-                            {{$string}} <a class="c-pointer pull-left btn-link" onclick="limitsubj{{$castle['Id']}}.classList.add('d-none');allsubj{{$castle['Id']}}.classList.remove('d-none')">بیشتر</a>
+                            {!!$string!!} <a class="c-pointer pull-left btn-link" onclick="limitsubj{{$castle['Id']}}.classList.add('d-none');allsubj{{$castle['Id']}}.classList.remove('d-none')">بیشتر</a>
                         </p>
                         <p class="mx-3 d-none" id="allsubj{{$castle['Id']}}">
-                            {{$castle['Title']}}
+                            {!!$castle['Title']!!}
                         </p>
                         @else
                         <p class="mx-3" id="allsubj{{$castle['Id']}}">

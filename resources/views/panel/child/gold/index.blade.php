@@ -186,7 +186,7 @@
         }
         .topimg
         {
-            width:10rem;
+            width:15rem;
         }
         #content
         {

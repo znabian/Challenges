@@ -190,7 +190,7 @@
             }
             #content2
             {
-                height: 93% !important;
+               /* height: 93% !important;*/
             }
 
                         
@@ -223,7 +223,7 @@
         }
         .content2
         {
-            height:unset!important;
+            height:83vh!important;
         }
         .card-body
         {

@@ -83,6 +83,9 @@ Route::prefix('/chat')->group(function () {
         Route::get('/play/{vid}',[GoldChallController::class,'PlayVideo'])->name('gold.chall.paly');
         Route::post('/chall/unlock',[GoldChallController::class,'ChallDone'])->name('gold.chall.unlock');
         Route::post('/chall/setpage',[GoldChallController::class,'setPage'])->name('gold.chall.setPage');
+        Route::post('/chall/reset/platform',[GoldChallController::class,'reset_platform'])->name('gold.chall.reset.platform');
        
         });
+        
+
 });

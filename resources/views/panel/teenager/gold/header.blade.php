@@ -145,6 +145,7 @@
             font-size: 9pt; 
             /* line-height:0 !important; */
             font-family: 'PEYDA';
+            font-weight: 400;
         }
       
         #content

@@ -20,7 +20,7 @@
     }
     .centerdiv
     {
-        margin-top: 15% !important;
+        margin-top: 10% !important;
     }
         .card.active:hover
         {
@@ -41,7 +41,7 @@
             /* border: 1px solid #edc587; */
             color: #616161;
             /* padding: 10px; */
-            font-weight: bolder;
+            font-weight: normal;
             font-family: 'PEYDA-BLACK';
             box-shadow: -3px 0px 7px -3px #c2c2c2, 5px 5px 10px -3px #c2c2c2;
             /* margin-bottom: 30px; */
@@ -187,6 +187,7 @@
             color: #676767;
             font-size: 9pt; 
             font-family: 'Peyda';
+			font-weight: 400;
         }
       
         #content
@@ -253,26 +254,6 @@
 
 <div id="content2" class="content2 " >    
     <div class="col-11 m-auto bg-body-secondary border border-3 row mt-0 noinfo p-2 rounded-4 shadow-none align-items-center">
-        <div class="col-3 d-grid gap-1 text-center">
-         <small class="">موضوع:</small>  
-         
-            @if(is_null($subject['Confirm']))
-            <span class="bg-secondary subtit p-1 rounded text-light" >
-            در انتظار تایید
-            </span>
-            @elseif($subject['Confirm']==1)
-            <span class="bg-gradient  subtit p-1 rounded text-light bg-success" >
-            تایید شده 
-             </span>
-            @if($subject['Page'])
-                <span class="bg-2F3068 bg-gradient p-1 px-2 rounded subtit text-light">{{$subject['Page']}}</span>
-            @endif
-             @elseif($subject['Confirm']==2)
-             <span class=" subtit p-1 rounded text-light bg-danger" >
-                 رد شده
-             </span>
-             @endif
-        </div>
          @php
          $subject['Subject']=trim(strtr($subject['Subject'],["\n"=>' ']));
             $stringCut = substr($subject['Subject'], 0, 100);
@@ -280,11 +261,12 @@
              $string = $endPoint? substr($stringCut, 0, $endPoint) : substr($stringCut, 0);
              $string .= '...';
          @endphp 
-         <div class="col-9">
+         <div class="col-9 d-grid">
+         <small class="">موضوع:</small> 
                  
             @if(strlen($subject['Subject'])>100) 
             <span class="title" id="limitsubj">
-                {{$string}} <a class="c-pointer pull-left btn-link" onclick="limitsubj.classList.add('d-none');allsubj.classList.remove('d-none')">بیشتر</a>
+                {{$string}} <a class="c-pointer btn-link" onclick="limitsubj.classList.add('d-none');allsubj.classList.remove('d-none')">بیشتر</a>
             </span>
             <span class="title d-none" id="allsubj">
                 {{$subject['Subject']}}
@@ -295,7 +277,24 @@
             </span>
             @endif
          </div>
-        
+        <div class="col-3 d-grid text-center px-2 gap-1">
+		@if(is_null($subject['Confirm']))
+            <span class="bg-secondary subtit p-1 rounded text-light" >
+            در انتظار تایید
+            </span>
+            @elseif($subject['Confirm']==1)
+            <span class="bg-gradient  subtit p-1 rounded text-light bg-success" >
+            تایید شده 
+             </span>
+            @if($subject['Page'])
+                <span class="bg-2F3068 bg-gradient p-1 rounded subtit text-light">{{last(explode('/',$subject['Page']))}}</span>
+            @endif
+             @elseif($subject['Confirm']==2)
+             <span class=" subtit p-1 rounded text-light bg-danger" >
+                 رد شده
+             </span>
+             @endif
+		</div>
         @if(!$subject['Page'] && $subject['Confirm']==1)
             <div class="mt-2 align-items-center border-top col-12 d-flex justify-content-center p-2 title">
                 
@@ -310,7 +309,7 @@
         @if($subject['Confirm']==2)
         <div id="pNochall" class="p-4 d-grid text-right noinfo">
             <small class="text-center">موضوع انتخابیت به دلیل زیر رد شده:</small>
-            <p class="subtitle">
+            <p class="subtitle mt-2" style="font-size:10pt;">
                 {{$subject['Description']}}
             </p>
             
@@ -324,9 +323,15 @@
           </div>
         @else
         <div id="plist" class="gap-3 gap-md-4 h-auto justify-content-center row w-100 m-auto @if(!$subject['Platform']) centerdiv @endif ">
+            <div id="ptit" class="text-center">
+            <p class="px-md-5 subtit text-success " style="text-align: justify;text-wrap: pretty;">
+                &bullet; پس از تایید موضوع، برای انجام دادن چالش طلایی خودت میتونی از اینستاگرام و یا از روبیکا استفاده کنی.
+            </p>
+            <span class="">  اپلیکیشن مورد نظرت رو انتخاب کن</span>
+            </div>
+
             
-            @if(!$subject['Platform'])
-            <div id="insta" class=" headerbtn card col-12 col-md-5 d-flex p-md-3" onclick="showitems('instagram',this)">
+            <div id="insta" class="@if($subject['Platform']) d-none @endif headerbtn card col-12 col-md-5 d-flex p-md-3 c-pointer" onclick="showitems('instagram',this)">
                 <div class=" align-items-center card-body d-flex flex-row-reverse gap-1">
                     <span class="col-10 title text-center">
                         آموزش های اینستاگرام
@@ -336,7 +341,7 @@
                         
                 </div>  
             </div>
-            <div id="rubika" class="headerbtn card col-12 col-md-5 d-flex p-md-3" onclick="showitems('rubika',this)">
+            <div id="rubika" class="@if($subject['Platform']) d-none @endif headerbtn card col-12 col-md-5 d-flex p-md-3 c-pointer" onclick="showitems('rubika',this)">
                 <div class=" align-items-center card-body d-flex flex-row-reverse gap-1">
                     <span class="col-10 title text-center">
                         آموزش های روبیکا
@@ -346,7 +351,29 @@
                         
                 </div>  
             </div>
-            @endif
+            
+            <div id="reselect" class="col-md-10 gap-1 justify-content-between mt-2 row @if(!$subject['Platform']) d-none @endif">
+                <div class="bg-gradient bg-opacity-50 bg-primary c-pointer card col-md-5 col d-flex p-md-3 rounded-3" onclick="window.open('{{route('home')}}/uploads/Gold/template.zip');window.focus();">
+                    <div class=" align-items-center card-body d-flex flex-row-reverse gap-1">
+                        <span class="col-10 text-center title">دانلود قالب استوری و ریلز</span>
+                        
+                        <i class="bg-opacity-50 bg-primary-subtle fa fa-download p-1 rounded-circle"></i>
+    
+                            
+                    </div>  
+                </div>
+                <div class="bg-gradient bg-opacity-50 bg-warning c-pointer card col-md-5 col d-flex p-md-3 rounded-3" onclick="reSelectPlatform(this)">
+                    <div class=" align-items-center card-body d-flex flex-row-reverse gap-1">
+                        <span class="col-10 text-center title">
+                            انتخاب مجدد اپلیکیشن
+                        </span>
+                        
+                        <i class="bg-opacity-50 bg-warning-subtle fa fa-undo p-1 rounded-circle"></i>
+    
+                            
+                    </div>  
+                </div>
+            </div>
             @php
                 $unlock['instagram']=1;
                 $unlock['rubika']=1;
@@ -355,7 +382,7 @@
                 
             @endphp
             @foreach ($videos as $item) 
-            <div class="{{$item['Logo']}} myVideos card col-12 col-md-10 d-none mt-2 p-md-3 @if($unlock[$item['Logo']]) active @else disabled @endif"  @if($unlock[$item['Logo']]) onclick="playvideo({{$item['Id']}})" @endif>
+            <div class="{{$item['Logo']}} myVideos card col-12 col-md-10 d-none mt-1 p-md-3 @if($unlock[$item['Logo']]) active @else disabled @endif"  @if($unlock[$item['Logo']]) onclick="playvideo({{$item['Id']}})" @endif>
                 <div class="align-items-center card-body d-flex flex-row-reverse gap-1">
                    <div class="col-10 d-grid">
                     <span class="title">
@@ -412,6 +439,8 @@
                     element.classList.add('d-none');
                 });
                 plist.classList.remove('centerdiv');
+                ptit.classList.add('d-none');
+                reselect.classList.remove('d-none');
                 /*obj.classList.remove('col-5');
                 obj.classList.add('col-12');
                 obj.classList.remove('d-none');*/
@@ -421,9 +450,13 @@
             {
                 document.querySelectorAll('.headerbtn').forEach(element => {
                     element.classList.remove('d-none');
-                    element.classList.remove('col-12');
-                    element.classList.add('col-5');
+                    //element.classList.remove('col-12');
+                    //element.classList.add('col-5');
                 });
+                
+                plist.classList.add('centerdiv');
+                ptit.classList.remove('d-none');
+                reselect.classList.add('d-none');
             }
         @else
             if(Swal)
@@ -508,6 +541,63 @@
           });
         }     
         
+        @else
+            if(Swal)
+            {
+                Swal.fire({
+                            icon: 'error',
+                            title: 'دسترسی بسته شده',                        
+                            confirmButtonText: 'بله',
+                            //text:"{{session('User')->FullName}} \n مشکلی پیش آمده مجدد تلاش کن"
+                            html:"{{session('User')->Name}} عزیز <br> موضوع شما هنوز توسط استاد خوش نظر تایید نشده",
+
+                        });
+            }
+            else
+            alert("{{session('User')->Name}} عزیز \n موضوع شما هنوز توسط استاد خوش نظر تایید نشده");
+        @endif
+        
+
+    }
+    function reSelectPlatform()
+    {
+        
+        @if($subject['Confirm']==1)   
+        @if(!$subject['Platform'])
+        showitems(0,0);
+        @else
+            Swal.fire({
+                  title:"کمی صبر کن",
+                  html:'<i class="fa fa-spinner fa-pulse" style="font-size: 12pt;"></i>',
+                  icon:'info',
+                  allowOutsideClick:false,
+                  showConfirmButton:false,
+                });
+          axios({
+          method: 'POST',
+          url:'{{route('gold.chall.reset.platform')}}',
+          data:{sid:'{{$subject['Id']}}'},
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }).then(function ({data}) {
+              if (data.status)
+                {
+                    location.reload();
+                    return true;
+              }
+              else {
+                  
+                  Swal.fire('توجه',"اطلاعات ثبت نشد یکبار دیگه تلاش کن",'error');
+                  return false;
+
+              }
+          })
+          .catch(error => {
+                Swal.fire('توجه',"اطلاعات ثبت نشد یکبار دیگه تلاش کن",'error');
+                  return false;
+          });  
+        @endif
         @else
             if(Swal)
             {

@@ -205,6 +205,13 @@ class GoldChallController extends Controller
        return response()->json(['status'=>$done]);
        
     }
+    public function reset_platform(Request $req)
+    {
+        $user=session('User');
+       $done= $this->functions('update',['sid'=>$req->sid,'uid'=>$user->Id],'resetPlatform',1);     
+       return response()->json(['status'=>$done]);
+       
+    }
     public function functions($type,$param,$function,$sName=null)
     {
         if($type=="update")
@@ -310,6 +317,10 @@ class GoldChallController extends Controller
             case 'setPageChall':
                 $select="select Page from GoldChallSelectTbl where Id=".$param['sid'];
                 $update="update GoldChallSelectTbl set Page='".$param['page']."' where Active=1 and Confirm=1 and Id=".$param['sid']." and UserId=".$param['uid'];
+                break;
+            case 'resetPlatform':
+                $select="select Platform from GoldChallSelectTbl where Id=".$param['sid'];
+                $update="update GoldChallSelectTbl set Platform=NULL where Active=1 and Confirm=1 and Id=".$param['sid']." and UserId=".$param['uid'];
                 break;
             
             default:

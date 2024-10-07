@@ -540,8 +540,14 @@ video
         <div class="cardChall" >
           <div class="card-body">
             @if(in_array(($chall->Type??'text'),['image','movie','audio']) || !$chall->Options??0)
-            <p id="mintxt"> {!! Str::limit($chall->Body, 200, ' ...<a onclick="mintxt.classList.toggle(\'d-none\');fulltxt.classList.toggle(\'d-none\');" class="btn btn-link"> بیشتر </a>')!!}</p>
-            <p id="fulltxt" class="d-none">{!!$chall->Body!!}</p>
+              @if(strlen(strip_tags($chall->Body))>200) 
+              <p id="mintxt">
+                  {!!Str::limit(strip_tags($chall->Body), 200, ' ... ')!!} <a class="c-pointer btn-link" onclick="mintxt.classList.toggle('d-none');fulltxt.classList.toggle('d-none')">بیشتر</a>
+              </p>
+              <p id="fulltxt" class="d-none">{!!$chall->Body!!}</p>
+              @else
+              <p> {!!$chall->Body!!}</p>
+              @endif
             @else
             <p> {!!$chall->Body!!}</p>
             @endif
