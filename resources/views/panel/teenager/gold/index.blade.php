@@ -281,7 +281,7 @@
         </div>
        </div>
         <div class="d-flex gap-2 m-0 py-1 col-md-6">
-            <audio src="{{asset('sound/ringing.mp3')}}" id="player1" class="d-none"></audio>
+            <audio src="{{asset('sound/goldchall.mp3')}}" id="player1" class="d-none"></audio>
             <div class="bg-light d-flex justify-content-center waveplayer">
             <div class="wave" id="wave1">
               <div class="played" id="played1"></div>

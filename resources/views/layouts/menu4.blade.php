@@ -20,14 +20,12 @@
             کف بازار
         </li>
       </a>
-      @if(in_array(session('User')->Id,[79,4464,186,41827,100499,74922,24142,106209,120658,124799]) || in_array(session('User')->Perm,[4,3])) 
       <a href="{{route('gold.landing')}}" class="@if(str_contains(\Route::currentRouteName(),"gold")) active @endif  text-decoration-none" >
         <li style="color: goldenrod;">
             <i class="fa fa-star"></i>
             <span style="font-size: 5pt;">چالش طلایی</span>
         </li>
-      </a>  
-      @endif
+      </a>
       <a href="javascript:logout();" class="text-decoration-none">
         <li>
             <i class="fa fa-sign-out-alt"></i>
