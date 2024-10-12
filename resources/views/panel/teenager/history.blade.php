@@ -188,14 +188,14 @@
             font-family: 'Peyda';
         }
        .offer {
-        background-color: red;
+        background: linear-gradient(228deg,#f76801,#dc5507);
         border-radius: 0 0 25% 25%;
         padding: 4%;
         margin-top: -1rem;
         margin-left: 8px;
         height: 2rem;
         width: 2rem;
-        border: 1px dotted #910707;
+        border: 1px dotted #dc5507;
 
         }
     </style>
@@ -218,8 +218,8 @@
      @if($challs->count())
             @php
                 $current=now();//date_create(date('Y-m-d H:i:s'));
-                $startdate=date_create('2024-08-22 00:00:00');
-                $enddate=date_create('2024-08-31 23:59:59');
+                $startdate=date_create('2024-10-22 00:00:00');
+                $enddate=date_create('2024-11-01 00:00:00');
             @endphp
             @foreach ($challs as $item) 
             <div class="card mt-2 p-md-3 @if($item['Status']==5) bg-danger-subtle Doned @elseif($item['Done']) bg-success-subtle Doned @elseif($item['Pay']) Payed @else Other @endif " onclick="location.href='{{route('chall.details',[$item['Id']])}}'">

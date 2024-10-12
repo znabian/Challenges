@@ -378,14 +378,14 @@ video
             height: 23px;
         }
 .offer {
-        background-color: red;
+        background: linear-gradient(228deg,#f76801,#dc5507);
         border-radius: 0 0 25% 25%;
         padding: 3%;
         margin-top: -1rem;
         margin-left: 8px;
         height: 0.5rem;
         width: 0.5rem;
-        border: 1px dotted #910707;
+        border: 1px dotted #dc5507;
 
         }
 </style>
@@ -604,8 +604,8 @@ video
               $price=50000;
             
               $current=now();//date_create(date('Y-m-d H:i:s'));
-              $startdate=date_create('2024-08-22 00:00:00');
-              $enddate=date_create('2024-08-31 23:59:59');
+              $startdate=date_create('2024-10-22 00:00:00');
+              $enddate=date_create('2024-11-01 00:00:00');
 
               $discount=false;
               if($current->between($startdate,$enddate) && $price==50000)

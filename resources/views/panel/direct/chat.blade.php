@@ -378,7 +378,7 @@
     border-radius: 23px;
     /* box-shadow: 0px 6px 10px -5px #1a18188f; */
     object-fit: scale-down;
-    background-color: #fff;;
+    background-color: #fff;
 }
     </style>
 @endsection
@@ -1693,7 +1693,7 @@
           {
             if(msg[0].Message)
             {
-            var body=msg[0].Message.replace("\n"," ").substring(0,20);;
+            var body=msg[0].Message.replace("\n"," ").substring(0,20);
             if(msg[0].Message.replace("\n"," ").length>20)
             body+='...';
             }

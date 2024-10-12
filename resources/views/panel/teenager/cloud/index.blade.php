@@ -380,7 +380,7 @@
     border-radius: 23px;
     /* box-shadow: 0px 6px 10px -5px #1a18188f; */
     object-fit: scale-down;
-    background-color: #fff;;
+    background-color: #fff;
 }
     </style>
 @endsection

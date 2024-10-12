@@ -577,16 +577,16 @@
                     
 
                        
-                        if ((localStorage.getItem('popupShowOff')??0) <5 )
+                        if ((localStorage.getItem('ShowOffAutumn')??0) <5 )
                             {
-                                var startDate = new Date(2024, 7, 21,23,59);
-                                var targetDate = new Date(2024, 7, 31,19,30);
+                                var startDate = new Date(2024, 9, 12,10,59);
+                                var targetDate = new Date(2024, 9, 31,19,30);
                                 var currentDate = new Date();
 
                                 if (currentDate >= startDate && currentDate <= targetDate && @if(\Route::currentRouteName()!="history") 1 @else 0 @endif) 
                                 {
                                     Swal.fire({
-                                        imageUrl: "{{asset('img/offer.png')}}",
+                                        imageUrl: "{{asset('img/offer.png?120')}}",
                                         //imageHeight: '100%',
                                         background: 'transparent',
                                         padding:0,
@@ -599,7 +599,7 @@
                                         allowOutsideClick:false,
                                         });
                                         document.querySelector('.swal2-image').addEventListener('click', function() {location.href='{{route('history')}}';});
-                                    localStorage.setItem('popupShowOff', parseInt(localStorage.getItem('popupShowOff')??0)+1);
+                                    localStorage.setItem('ShowOffAutumn', parseInt(localStorage.getItem('ShowOffAutumn')??0)+1);
                                 }
                             }
                         
