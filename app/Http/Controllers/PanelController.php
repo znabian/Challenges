@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\Http;
 class PanelController extends Controller
 {
     private $api_token;
+    private $childPhone;
+    private $teenagerPhone;
     public function __construct()
     {
         $this->api_token=env('API_TOKEN');
+        // $this->childPhone=["09141189105", "09146524985", "09144195318", "09145223506", "09929104053", "09148068280", "09144901418", "09031122456", "09155024783", "09156895426", "09114231806", "09159779871", "09154015254", "09151011697", "09055397964", "09155854270", "09057396770", "09177056984", "09368899907", "09177397077", "09917573897", "09172437519", "09176564245", "09175967546", "09393818531", "09171395481", "09132457459", "09912790124", "09021148880", "09179186089", "09176136631", "09917333028", "09025625814", "09171194785", "09171839158", "09174907256", "09177027093", "09171005464", "09179186089"];
+        // $this->teenagerPhone=["09144162745","09149372035","09354520031","09011652038","09142180823","09186739410","09148360176","09142180823","09908262380","09937677952","09147816843","09143147411","09143722353","09352126845","09144920762","09143533894","09143549356","09152221234","09151244332","09398904513","09057545800","09158385628","09153888826","09333048447","09156662433","09154279765","09155513530","09152328942","09166050132","09153063414","09177882253","09376135322","09173060067","09178726268","09373801945","09130698277","09331209626","09173057804","09133046428","09171029420","09339420286","09178930819"];
     }
     public function index()
     {
@@ -22,7 +26,13 @@ class PanelController extends Controller
         $user->Wallet=$this->MyWallet($user->Id)->getData()->wallet??'-';
         if($user->Perm!=3)
         $this->UpdatesChalls($user->Id,$user->CallTime);
-
+        /*if(in_array($user->Phone,$this->childPhone) || in_array($user->Father,$this->childPhone))
+        $user->seminar='child';
+        elseif(in_array($user->Phone,$this->teenagerPhone) || in_array($user->Father,$this->teenagerPhone))
+        $user->seminar='teenager';
+        else
+        $user->seminar=0;
+        session(['seminar'=>$user->seminar]);*/
         $this->getData('update',['uid'=>$user->Id],'index',"Challs");        
         $challs=session('Challs');
         if($user->Age<12)
@@ -37,6 +47,13 @@ class PanelController extends Controller
         if($user->Perm!=3)
         $this->UpdatesChalls($user->Id,$user->CallTime);
 
+        /*if(in_array($user->Phone,$this->childPhone) || in_array($user->Father,$this->childPhone))
+        $user->seminar='child';
+        elseif(in_array($user->Phone,$this->teenagerPhone) || in_array($user->Father,$this->teenagerPhone))
+        $user->seminar='teenager';
+        else
+        $user->seminar=0;
+        session(['seminar'=>$user->seminar]);*/
         $this->getData('update',['uid'=>$user->Id],'history',"Histories");        
         $challs=session('Histories');
         

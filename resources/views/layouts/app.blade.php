@@ -583,10 +583,46 @@
                         notif.classList.add('d-none');
                         @endif
 
-                       
+                        /*@if(session('seminar')??0)
+                        if ((localStorage.getItem('ShowSeminar')??1)  )
+                            {
+                                var startDate = new Date(2024, 9, 14,10,59);
+                                var targetDate = new Date(2024, 9, 15,19,30);
+                                var currentDate = new Date();
+
+                                if (currentDate >= startDate && currentDate <= targetDate ) 
+                                {                                    
+                                    Swal.fire({
+                                        @if(session('seminar')=='child')
+                                        imageUrl: "{{asset('img/child_seminar.png?121')}}",
+                                        @else
+                                        imageUrl: "{{asset('img/teenager_seminar.png?121')}}",
+                                        @endif
+                                        background: 'transparent',
+                                        padding:0,
+                                        imageAlt: "Seminar",
+                                        showCloseButton: true,
+                                        @if(session('seminar')=='child' && date('Y-m-d')=='2024-10-15'  && (date('H:i')>="15:45" && date('H:i')<="17:05"))
+                                        imageHeight: '96%',
+                                        html:"<a class='bg-gradient btn-warning btn btn-sm pull-rigth' href='https://meet.google.com/urx-cknn-azt'>ورود به وبینار</a><a class='bg-gradient btn-danger btn btn-sm pull-left' onclick='swal.close()'>بستن</a>",
+                                        @elseif(session('seminar')=='teenager' && date('Y-m-d')=='2024-10-15'  && (date('H:i')>="17:45" && date('H:i')<="19:05"))
+                                        imageHeight: '96%',
+                                        html:"<a class='bg-gradient btn-warning btn btn-sm pull-rigth' href='https://meet.google.com/urx-cknn-azt'>ورود به وبینار</a><a class='bg-gradient btn-danger btn btn-sm pull-left' onclick='swal.close()'>بستن</a>",
+                                        @endif
+                                        showConfirmButton: false,
+                                        confirmButtonColor: '#f12630',
+                                        focusCancel:false,
+                                        focusDeny:false,
+                                        focusConfirm:false,
+                                        allowOutsideClick:false,
+                                        });
+                                    localStorage.setItem('ShowSeminar', parseInt(localStorage.getItem('ShowSeminar')??0)+1);
+                                }
+                            }
+							@else*/
                             if ((localStorage.getItem('ShowOffAutumn')??0) <5 )
                             {
-                                var startDate = new Date(2024, 9, 12,10,59);
+                                var startDate = new Date(2024, 9, 12,12,59);
                                 var targetDate = new Date(2024, 9, 31,19,30);
                                 var currentDate = new Date();
 
@@ -609,6 +645,8 @@
                                     localStorage.setItem('ShowOffAutumn', parseInt(localStorage.getItem('ShowOffAutumn')??0)+1);
                                 }
                             }
+							
+							/*@endif*/
                         
 
                     @endif
