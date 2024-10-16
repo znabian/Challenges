@@ -17,8 +17,8 @@
       <a class="  @if(\Route::currentRouteName()=="chall.details" || \Route::currentRouteName()=="cloud.index") d-none @endif " href="{{route('cloud.index')}}" id="uploder" style="">
       <i class="fa fa-folder fa-regular navicon"  style="height: 39px;padding-left: 3px;"></i>
       </a>
-      <a class="d-none  @if(\Route::currentRouteName()=="chall.details" || \Route::currentRouteName()=="direct.index") d-none @endif " href="{{route('direct.index')}}"  style="">
-      <i class="fa fa-user-tie fw-bold navicon"  style="height: 39px;padding-left: 3px;"></i>
+      <a class="@if(\Route::currentRouteName()=="chall.details" || \Route::currentRouteName()=="rank.index") d-none @endif " href="{{route('rank.index')}}"  style="">
+      <i class="fa fa-trophy fw-bold navicon"  style="height: 39px;padding-left: 1px;font-size: 13pt;"></i>
       </a>
       <a class="  @if(\Route::currentRouteName()!="cloud.file.show") d-none @endif " onclick="helpcompress2.show()"  style="">
       <i class="fa fa-question navicon"  style="height: 39px;padding-left: 3px;"></i>

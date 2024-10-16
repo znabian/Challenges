@@ -86,6 +86,10 @@ Route::prefix('/chat')->group(function () {
         Route::post('/chall/reset/platform',[GoldChallController::class,'reset_platform'])->name('gold.chall.reset.platform');
        
         });
+        Route::prefix('/Rank')->group(function () {
+        Route::get('/',[PanelController::class,'MyRank'])->name('rank.index');
+       
+        });
         
 
 });
