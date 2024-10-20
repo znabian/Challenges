@@ -188,8 +188,9 @@
         }
         #content2
             {
-               padding: 12px 15px;
-               height: 60vh!important;
+               padding: 12px 15px;			  
+			   height: 70vh!important; 
+               
             }
             select#filterChalls {
             font-size: 9pt;
@@ -206,6 +207,11 @@
         border: 1px dotted #dc5507;
 
         }
+            
+        #rnktit
+        {
+            font-size: 8pt;
+        }
     </style>
 @endsection
 @section('title')  
@@ -213,12 +219,12 @@
 @endsection
 @section('subtitle')  
 <h6 id="rnktit">
-    
+    رتبه کل در چالش های فرست کلاس 
 </h6>
 @endsection
 @section('content')   
 <div id="content2" class="content2"> 
-    <div id="allrank" class="tabrnk">
+    <div id="allrank" class="tabrnk  overflow-y-auto p-2" style="height:88%;">
             @foreach ($ranks->take(20) as $item) 
             <div class="card mt-1 p-md-3 @if($item['Id']==$user->Id) d-none  @endif " @if($item['Id']==$user->Id) id="mrank_all" @endif >
                 <div class="card-body">
@@ -231,9 +237,12 @@
                                 <b class="h6  text-center  title" >
                                     {{$item['FullName']}}
                                 </b>
+                                <b class="text-center   subtitle" >
+                                    {{number_format($item['wallet'])}} تومان
+                                </b>
                             
                         </div>
-                        <div class=" col-2 d-grid flex-column pt-0" style="margin-right: 16px;">
+                        <div class="d-none col-2 d-grid flex-column pt-0" style="margin-right: 16px;">
                     
                             <b class="ltr  subtitle" >
                                 <i class="fa fa-wallet" style="font-size:8pt"></i> {{number_format($item['wallet'])}}
@@ -248,7 +257,7 @@
             </div>
             @endforeach
     </div>
-    <div id="cityrank" class="tabrnk" style="display:none;">
+    <div id="cityrank" class="tabrnk overflow-y-auto p-2" style="height: 88%;display:none;">
             @foreach ($Cityranks->take(20) as $item) 
             <div class="card mt-1 p-md-3 @if($item['Id']==$user->Id) d-none  @endif " >
                 <div class="card-body">
@@ -261,9 +270,12 @@
                                 <b class="h6  text-center  title" >
                                     {{$item['FullName']}}
                                 </b>
+                                <b class="text-center   subtitle" >
+                                    {{number_format($item['wallet'])}} تومان
+                                </b>
                             
                         </div>
-                        <div class=" col-2 d-grid flex-column pt-0" style="margin-right: 16px;">
+                        <div class="d-none col-2 d-grid flex-column pt-0" style="margin-right: 16px;">
                     
                             <b class="ltr  subtitle" >
                                <i class="fa fa-wallet" style="font-size:8pt"></i> {{number_format($item['wallet'])}}
@@ -280,7 +292,7 @@
     </div>
 
 </div>
-<div id="mrankdiv" class="menu2" style="bottom: 43px;width: calc(53vw - 10vw);right: calc(43vw - 15vw);">
+<div id="mrankdiv" class="menu2" style="@if($mycity) bottom: 43px; @else bottom: 8px; @endif width: calc(53vw - 10vw);right: calc(43vw - 15vw);">
     
     <div class="card mt-1 p-md-3 " style="background-color: #f9d8a4;border-color: #4c4c4c;" >
         <div class="card-body">
@@ -294,9 +306,12 @@
                         <b class="h6  text-center  title" >
                             {{$myRank->FullName}}
                         </b>
+                        <b class="text-center   subtitle" >
+                            {{number_format($myRank->wallet)}} تومان
+                        </b>
                     
                 </div>
-                <div class=" col-2 d-grid flex-column pt-0" style="margin-right: 16px;">
+                <div class="d-none col-2 d-grid flex-column pt-0" style="margin-right: 16px;">
                     
                         <b class="ltr  subtitle" >
                            <i class="fa fa-wallet" style="font-size:8pt"></i> {{number_format($myRank->wallet)}}
@@ -317,16 +332,16 @@
   <nav class="" >
     <ul class="d-flex justify-content-around list-inline p-1 position-relative">
      
-      <a id="rankall" onclick="$('.mrank').hide();$('#mrankall').show();$('.tabrnk').hide();$('#allrank').show();rankcity.classList.remove('active');rankall.classList.add('active');" class="c-pointer  active text-decoration-none">
+      <a id="rankall" onclick="$('.mrank').hide();$('#mrankall').show();$('.tabrnk').hide();$('#allrank').show();rankcity.classList.remove('active');rankall.classList.add('active');rnktit.innerHTML='رتبه کل در چالش های فرست کلاس'" class="c-pointer  active text-decoration-none">
         <li>
             <i class="fa fa-ranking-star"></i>
-            رتبه کل
+            کل
         </li>
       </a>  
-      <a id="rankcity" onclick="$('.mrank').hide();$('#mrankcity').show();$('.tabrnk').hide();$('#cityrank').show();rankcity.classList.add('active');rankall.classList.remove('active');" class="c-pointer text-decoration-none" >
+      <a id="rankcity" onclick="$('.mrank').hide();$('#mrankcity').show();$('.tabrnk').hide();$('#cityrank').show();rankcity.classList.add('active');rankall.classList.remove('active');rnktit.innerHTML='رتبه در استان {{$mycity}}'" class="c-pointer text-decoration-none" >
         <li class="">
             <i class="fa fa-chart-simple"></i>
-            رتبه  استانی
+            استانی
         </li>
       </a>
     </ul>

@@ -287,7 +287,16 @@
             تایید شده 
              </span>
             @if($subject['Page'])
-                <span class="bg-2F3068 bg-gradient p-1 rounded subtit text-light">{{last(explode('/',$subject['Page']))}}</span>
+            @php
+            $page=last(explode('/',$subject['Page']));
+            $page=(explode('?',$page))[0];
+            $stringCut = substr($page, 0, 30);
+             $endPoint = strrpos($stringCut, ' ');
+             $string = $endPoint? substr($stringCut, 0, $endPoint) : substr($stringCut, 0);
+             if(strlen($page)>30)
+             $string .= '...';
+            @endphp
+                <span class="bg-2F3068 bg-gradient p-1 rounded subtit text-light">{{$string}}</span>
             @endif
              @elseif($subject['Confirm']==2)
              <span class=" subtit p-1 rounded text-light bg-danger" >
