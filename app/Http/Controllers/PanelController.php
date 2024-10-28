@@ -207,10 +207,14 @@ class PanelController extends Controller
                 $select="select top 1 SellerId,SupportId from UserTbl where Id=".$param['uid'];
                 $update="";
                 break;
-            case 'MyFCType':
-                $select="select AppId from PaymentTbl where Active=1 and AppId in(38,39,40,41,51,52) and UserId=".$param['uid'];
+            case 'AbstractFile':
+                $select="select * from AppTbl where Active=1 and Parent=1740 Order By Meta,Sort";
                 $update="";
                 break;
+            case 'MyFCType':
+                    $select="select AppId from PaymentTbl where Active=1 and AppId in(38,39,40,41,51,52) and UserId=".$param['uid'];
+                    $update="";
+                    break;
             case 'AllRank':
                 $select="select Id,Phone, concat(Name,' ',Family) as FullName,(SELECT TOP (1) Province
                        FROM UserDetailsTbl
@@ -335,6 +339,28 @@ class PanelController extends Controller
         return view('panel.child.rank',compact('myRank','ranks','Cityranks','myRankCity','mycity','user'));
         else
         return view('panel.teenager.rank',compact('myRank','ranks','Cityranks','myRankCity','mycity','user'));
+    }
+    function abstractList(Request $req)
+    {
+        $user=session('User');  
+        $headers=Collection::make($this->getData('select',[],'AbstractFile',1)); 
+        /*$headers=[
+            [['Id'=>"1-12",'Title'=>"یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]]
+        ];*/
+        if($user->Age<12)
+        return view('panel.child.abstarct',compact('headers'));
+        else
+        return view('panel.teenager.abstarct',compact('headers'));
+    }
+    function abstractShow($id,Request $req)
+    {
+        $user=session('User');
+        $headers=Collection::make($this->getData('select',[],'AbstractFile',1));   
+       /* $headers=[
+            "1-12"=>['Title'=>"نکات یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]
+        ];*/
+        $video=$headers->where('Id',$id)->first();
+        return view('panel.teenager.abstarctplay',compact('video'));
     }
     /** SQl Server */
     public function index_SQL()

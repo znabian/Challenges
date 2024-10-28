@@ -90,6 +90,8 @@ Route::prefix('/chat')->group(function () {
         Route::get('/',[PanelController::class,'MyRank'])->name('rank.index');
        
         });
+        Route::get('/FirstCalss-abstract',[PanelController::class,'abstractList'])->name('abstract');
+        Route::get('/FirstCalss-abstract/{id}',[PanelController::class,'abstractShow'])->name('abstract.show');
         
 
 });

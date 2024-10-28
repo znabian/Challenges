@@ -35,7 +35,7 @@
       </a>
     </div>
   </nav>
-@if(\Route::currentRouteName()!="rank.index" && \Route::currentRouteName()!="chat.index" && \Route::currentRouteName()!="direct.index" && !str_contains(\Route::currentRouteName(),"gold"))
+@if(\Route::currentRouteName()!="rank.index" && \Route::currentRouteName()!="abstract" && \Route::currentRouteName()!="chat.index" && \Route::currentRouteName()!="direct.index" && !str_contains(\Route::currentRouteName(),"gold"))
   <div class="bg-body col-12 d-flex  p-2">
     <div  class="px-3 col">
       <span style="font-size: 8pt;font-family: 'PEYDA-BLACK';">موجودی کیف پول شما:</span>
