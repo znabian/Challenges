@@ -287,6 +287,16 @@
 @endsection
 @section('script')  
 <script>
+    @if($mysubject->Count() && $user->Perm==3)
+    $('document').ready(function(){
+    document.querySelectorAll('input[name=mysubject]').forEach(elm => {
+        elm.disabled=true;
+    });
+    document.querySelector('.btn-master').disabled=true;
+    document.querySelector('.btn-master').classList.add('d-none');
+
+    });
+    @endif
 function reservation(obj)
 {
     obj.disabled=true;

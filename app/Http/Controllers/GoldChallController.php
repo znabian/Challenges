@@ -79,7 +79,7 @@ class GoldChallController extends Controller
         $user=session('User');
         $mysubject=$this->functions('select',['uid'=>$user->Id],'mySubject',1);
         
-        if($mysubject->count())
+        if($mysubject->count() && $user->Perm!=3)
             return redirect(route('gold.chall'));
         
             $castles=$this->functions('select',[],'castle','castles');
@@ -95,7 +95,7 @@ class GoldChallController extends Controller
         $user=session('User');
 
         $mysubject=$this->functions('select',['uid'=>$user->Id],'mySubject',1);
-        if($mysubject->count())
+        if($mysubject->count() && $user->Perm!=3)
             return redirect(route('gold.chall'));
         
         $headers=$this->functions('select',['aid'=>$castle],'header',1);
@@ -112,7 +112,7 @@ class GoldChallController extends Controller
         $user=session('User');
 
         $mysubject=$this->functions('select',['uid'=>$user->Id],'mySubject',1);
-        if($mysubject->count())
+        if($mysubject->count() && $user->Perm!=3)
             return redirect(route('gold.chall'));
 
         $subjects=$this->functions('select',['hid'=>$header],'subject',1);
@@ -120,9 +120,9 @@ class GoldChallController extends Controller
         abort(404);
         $app=$subjects->first();
         if($user->Age<12)
-        return view('panel.child.gold.subject',compact('subjects','app'));
+        return view('panel.child.gold.subject',compact('subjects','app','mysubject','user'));
         else
-        return view('panel.teenager.gold.subject',compact('subjects','app'));
+        return view('panel.teenager.gold.subject',compact('subjects','app','mysubject','user'));
     }
     public function SelectSubject(Request $req)
     {

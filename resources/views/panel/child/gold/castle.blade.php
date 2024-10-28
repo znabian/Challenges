@@ -137,8 +137,8 @@
         }
         .title
         {
-            /*color: #676767;
-            font-size: 9pt; */
+            /*color: #676767;*/
+            font-size: 9pt; 
             border-radius: 0 0 25px 25px;
             text-align: center;
             color: black;
@@ -207,7 +207,7 @@
 @section('content')  
 
 <div id="content2" class="content2 " >    
-    <div title col-md-12 h-auto m-auto pt-3 py-2 rounded-4 text-center" style="background-color: #ffffff8c;border: 4px double #75757533;">
+    <div class="title col-md-12 h-auto m-auto pt-3 py-2 rounded-4 text-center" style="background-color: #ffffff8c;border: 4px double #75757533;">
         کاخی که انتخاب کنی دارای چندین سرفصل است. کاخ موردعلاقه خودت رو انتخاب کن
         
     </div>            

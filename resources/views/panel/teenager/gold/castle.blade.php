@@ -137,8 +137,8 @@
         }
         .title
         {
-            /*color: #676767;
-            font-size: 9pt; */
+            /*color: #676767;*/
+            font-size: 9pt; 
             border-radius: 0 0 25px 25px;
             text-align: center;
             color: black;

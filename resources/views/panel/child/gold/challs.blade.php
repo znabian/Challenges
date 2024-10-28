@@ -249,6 +249,11 @@
 @section('title')  
  چالش طلایی
 @endsection
+@section('subtitle')  
+@if(session('User')->Perm==3)
+ <a class="subtit btn btn-link" href="{{route('gold.index')}}">مشاهده لیست موضوعات</a>
+ @endif
+@endsection
 @section('content')  
 
 
