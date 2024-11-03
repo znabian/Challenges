@@ -231,7 +231,7 @@ class PanelController extends Controller
                 $update="";
                 break;
             case 'AbstractFile':
-                $select="select * from AppTbl where Active=1 and Parent=1740 Order By Meta,Sort";
+                $select="select *,(select top 1 Fullcount from ViewTbl as v where v.CId=AppTbl.Id and v.AId=AppTbl.Parent and  v.type='FirstClass' and v.UserId=".$param['uid'].") as Seen from AppTbl where Active=1 and Parent=1740 Order By Meta,Sort";
                 $update="";
                 break;
             case 'MyFCType':
@@ -385,14 +385,20 @@ class PanelController extends Controller
         }
         if($user->FisrtClass==2)
         abort(403);
-        $headers=Collection::make($this->getData('select',[],'AbstractFile',1)); 
+        $headers=Collection::make($this->getData('select',['uid'=>$user->Id],'AbstractFile',1)); 
         /*$headers=[
             [['Id'=>"1-12",'Title'=>"یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]]
         ];*/
         if($user->Age<12)
-        return view('panel.child.abstarct',compact('headers'));
+        return response()->view('panel.child.abstarct',compact('headers'))
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate')  
+        ->header('Pragma', 'no-cache')  
+        ->header('Expires', '0');
         else
-        return view('panel.teenager.abstarct',compact('headers'));
+        return response()->view('panel.teenager.abstarct',compact('headers'))
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate')  
+        ->header('Pragma', 'no-cache')  
+        ->header('Expires', '0');
     }
     function abstractShow($id,Request $req)
     {
@@ -409,7 +415,7 @@ class PanelController extends Controller
         }
         if($user->FisrtClass==2)
         abort(403);
-        $headers=Collection::make($this->getData('select',[],'AbstractFile',1));   
+        $headers=Collection::make($this->getData('select',['uid'=>$user->Id],'AbstractFile',1));   
        /* $headers=[
             "1-12"=>['Title'=>"نکات یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]
         ];*/

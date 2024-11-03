@@ -202,7 +202,7 @@
         }
         .lists
         {
-            height: 52vh; 
+            height: 62vh; 
             overflow-y: auto;
             padding-bottom: 10px;
         }
@@ -241,7 +241,7 @@
             <div class="nokat lists">
                 @if($headers->where('Meta','نکات')->count())
                 @foreach ($headers->where('Meta','نکات') as $item)            
-                <div class="c-pointer card col-12 mt-2 p-md-3 selected" onclick="this.classList.remove('selected');location.href='{{route('abstract.show',[$item['Id']])}}'">
+                <div class="c-pointer card col-12 mt-2 p-md-3 @if($item['Seen']) bg-success-subtle border border-success @elseif(!is_null($item['Seen']))  bg-warning-subtle border border-warning @else selected @endif" onclick="this.classList.remove('selected');location.href='{{route('abstract.show',[$item['Id']])}}'">
                     <div class="card-body d-flex gap-1 text-right  align-items-center">
                         
                         <img src="{{asset('img/login/pic2.png')}}" class="imgicon rounded-2" alt="{{$item['Name']}}">
@@ -285,7 +285,7 @@
              @if($headers->where('Meta','مشاغل')->count())
              @foreach ($headers->where('Meta','مشاغل') as $item)            
 
-                <div class="c-pointer card col-12 mt-2 p-md-3 selected" onclick="this.classList.remove('selected');location.href='{{route('abstract.show',[$item['Id']])}}'">
+                <div class="c-pointer card col-12 mt-2 p-md-3 @if($item['Seen']) bg-success-subtle border border-success @elseif(!is_null($item['Seen'])) bg-warning-subtle border border-warning @else selected @endif" onclick="this.classList.remove('selected');location.href='{{route('abstract.show',[$item['Id']])}}'">
                     <div class="card-body d-flex gap-1 text-right  align-items-center">
                         
                         <img src="{{asset('img/login/pic2.png')}}" class="imgicon rounded-2" alt="{{$item['Name']}}">
