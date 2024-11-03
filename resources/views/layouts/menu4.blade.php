@@ -26,12 +26,14 @@
             <span style="font-size: 5pt;">چالش طلایی</span>
         </li>
       </a>
+      @if(session('User')->FisrtClass==1)
       <a href="{{route('abstract')}}" class="@if(\Route::currentRouteName()=="abstract") active @endif  text-decoration-none" >
         <li>
             <i class="fa fa-book"></i>
             چکیده
         </li>
       </a>
+      @endif
       <a href="javascript:logout();" class="text-decoration-none">
         <li>
             <i class="fa fa-sign-out-alt"></i>

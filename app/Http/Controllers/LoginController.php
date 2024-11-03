@@ -82,6 +82,16 @@ class LoginController extends Controller
                             { 
                                 $panel=new PanelController();
                                 $user->Wallet=$panel->MyWallet($user->Id)->getData()->wallet??'-';
+
+                                $a=new PanelController();
+                                $fc1=[38,39,40,41];
+                                $fc2=[51,52];      
+                                $apps=$a->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+                                if($apps->whereIn('AppId',$fc1)->count())
+                                $user->FisrtClass=1;
+                                else
+                                $user->FisrtClass=2;
+                                
                                 session(['User'=>$user]);
                                 //$url="http://85.208.255.101/API/updateApi_jwt.php";
                                 $url="http://185.116.161.39/API/updateApi_jwt.php";

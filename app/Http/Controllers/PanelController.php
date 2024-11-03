@@ -33,6 +33,18 @@ class PanelController extends Controller
         else
         $user->seminar=0;
         session(['seminar'=>$user->seminar]);*/
+        if(!($user->FisrtClass??0))
+        {
+            $fc1=[38,39,40,41];
+            $fc2=[51,52];      
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereIn('AppId',$fc1)->count())
+            $user->FisrtClass=1;
+            else
+            $user->FisrtClass=2;
+        }
+        
+
         $this->getData('update',['uid'=>$user->Id],'index',"Challs");        
         $challs=session('Challs');
         if($user->Age<12)
@@ -54,6 +66,17 @@ class PanelController extends Controller
         else
         $user->seminar=0;
         session(['seminar'=>$user->seminar]);*/
+        if(!($user->FisrtClass??0))
+        {
+            $fc1=[38,39,40,41];
+            $fc2=[51,52];      
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereIn('AppId',$fc1)->count())
+            $user->FisrtClass=1;
+            else
+            $user->FisrtClass=2;
+        }
+
         $this->getData('update',['uid'=>$user->Id],'history',"Histories");        
         $challs=session('Histories');
         
@@ -305,10 +328,17 @@ class PanelController extends Controller
     {
         $fc1=[38,39,40,41];
         $fc2=[51,52];
-        $user=session('User');        
-        $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
-        //$apps=array_column($apps->toArray(),'AppId');
-        if($apps->whereIn('AppId',$fc1))
+        $user=session('User');  
+        if(!($user->FisrtClass??0))
+        {   
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereIn('AppId',$fc1)->count())
+            $user->FisrtClass=1;
+            else
+            $user->FisrtClass=2;
+        }      
+        
+        if($user->FisrtClass==1)
         {
             $ranks=$this->getData('select',['apps'=>implode(',',$fc1)],'AllRank',1); 
             if(!$ranks->count())
@@ -343,6 +373,18 @@ class PanelController extends Controller
     function abstractList(Request $req)
     {
         $user=session('User');  
+        if(!($user->FisrtClass??0))
+        {
+            $fc1=[38,39,40,41];
+            $fc2=[51,52];      
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereIn('AppId',$fc1)->count())
+            $user->FisrtClass=1;
+            else
+            $user->FisrtClass=2;
+        }
+        if($user->FisrtClass==2)
+        abort(403);
         $headers=Collection::make($this->getData('select',[],'AbstractFile',1)); 
         /*$headers=[
             [['Id'=>"1-12",'Title'=>"یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]]
@@ -355,6 +397,18 @@ class PanelController extends Controller
     function abstractShow($id,Request $req)
     {
         $user=session('User');
+        if(!($user->FisrtClass??0))
+        {
+            $fc1=[38,39,40,41];
+            $fc2=[51,52];      
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereIn('AppId',$fc1)->count())
+            $user->FisrtClass=1;
+            else
+            $user->FisrtClass=2;
+        }
+        if($user->FisrtClass==2)
+        abort(403);
         $headers=Collection::make($this->getData('select',[],'AbstractFile',1));   
        /* $headers=[
             "1-12"=>['Title'=>"نکات یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]
