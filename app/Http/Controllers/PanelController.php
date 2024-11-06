@@ -238,8 +238,67 @@ class PanelController extends Controller
                     $select="select AppId from PaymentTbl where Active=1 and AppId in(38,39,40,41,51,52) and UserId=".$param['uid'];
                     $update="";
                     break;
+            case 'MyRank':
+                $select="select * from (select Id,Phone, concat(Name,' ',Family) as FullName,(SELECT TOP (1) Province
+                       FROM UserDetailsTbl
+                       WHERE   (DetailId=UserDetailsTbl.Id)) AS Province,                      
+                        [Perm],BirthDay,CallTime, 
+                        isnull((SELECT count(uc.Pay)
+                            FROM InterviewChallUserTbl as uc 
+                            join InterviewChallTbl as c on c.Id=uc.ChallId and c.Active=1 and uc.UserId=A.Id and uc.Active=1
+                            where isnull(uc.Pay,0)<>0 and uc.Done=1
+                            ),0) AS Challs,isnull((SELECT (sum(isnull(uc.Price,0))+100000) - sum(isnull(uc.Pay,0)) as Buy
+                            FROM InterviewChallUserTbl as uc 
+                            join InterviewChallTbl as c on c.Id=uc.ChallId and c.Active=1 and uc.UserId=A.Id and uc.Active=1
+                            where isnull(uc.Pay,0)<>0 
+                            ),100000) as wallet,
+                            DENSE_RANK ( ) OVER ( order By (
+                            (SELECT isnull((sum(isnull(uc.Price,0))+100000) - sum(isnull(uc.Pay,0)),100000) as Buy
+                            FROM InterviewChallUserTbl as uc 
+                            join InterviewChallTbl as c on c.Id=uc.ChallId and c.Active=1 and uc.UserId=A.Id and uc.Active=1
+                            where isnull(uc.Pay,0)<>0 
+                            ) ) 
+                        desc)  rank from UserTbl as A where (Active > 0) AND CallTime is not NULL AND (ISNULL(Cancel, 0) = 0) 
+	                    AND EXISTS(select * from PaymentTbl where UserId=A.Id and PaymentTbl.Active=1 and AppId in(".$param['apps']."))
+					    and Perm in (0,2)) as r where r.Id=".$param['uid'];
+                        
+                $update="";
+                break;
+
+            case 'MyCityRank':
+                $select="select * from (select Id,Phone, concat(Name,' ',Family) as FullName,(SELECT TOP (1) Province
+                       FROM UserDetailsTbl
+                       WHERE   (DetailId=UserDetailsTbl.Id)) AS Province,                      
+                        [Perm],BirthDay,CallTime, 
+                        isnull((SELECT count(uc.Pay)
+                        FROM InterviewChallUserTbl as uc 
+                        join InterviewChallTbl as c on c.Id=uc.ChallId and c.Active=1 and uc.UserId=A.Id and uc.Active=1
+                        where isnull(uc.Pay,0)<>0 and uc.Done=1
+                        ),0) AS Challs,isnull((SELECT (sum(isnull(uc.Price,0))+100000) - sum(isnull(uc.Pay,0)) as Buy
+                        FROM InterviewChallUserTbl as uc 
+                        join InterviewChallTbl as c on c.Id=uc.ChallId and c.Active=1 and uc.UserId=A.Id and uc.Active=1
+                        where isnull(uc.Pay,0)<>0 
+                        ),100000) as wallet,
+                        DENSE_RANK ( ) OVER ( order By (
+                            (SELECT isnull((sum(isnull(uc.Price,0))+100000) - sum(isnull(uc.Pay,0)),100000) as Buy
+                            FROM InterviewChallUserTbl as uc 
+                            join InterviewChallTbl as c on c.Id=uc.ChallId and c.Active=1 and uc.UserId=A.Id and uc.Active=1
+                            where isnull(uc.Pay,0)<>0 
+                            and exists(SELECT TOP (1) Province
+                       FROM      UserDetailsTbl
+                       WHERE   (DetailId=UserDetailsTbl.Id) and Province like N'%".$param['city']."%')
+                            ) ) 
+                        desc)  rank from UserTbl as A where (Active > 0) AND CallTime is not NULL AND (ISNULL(Cancel, 0) = 0) 
+	                    AND EXISTS(select * from PaymentTbl where UserId=A.Id and PaymentTbl.Active=1 and AppId in(".$param['apps']."))
+					    and Perm in (0,2) and exists(SELECT TOP (1) Province
+                       FROM      UserDetailsTbl
+                       WHERE   (DetailId=UserDetailsTbl.Id) and Province like N'%".$param['city']."%')) as r where r.Id=".$param['uid'];
+                        
+                $update="";
+                break;
+
             case 'AllRank':
-                $select="select Id,Phone, concat(Name,' ',Family) as FullName,(SELECT TOP (1) Province
+                $select="select top 20 Id,Phone, concat(Name,' ',Family) as FullName,(SELECT TOP (1) Province
                        FROM UserDetailsTbl
                        WHERE   (DetailId=UserDetailsTbl.Id)) AS Province,                      
                         [Perm],BirthDay,CallTime, 
@@ -265,7 +324,7 @@ class PanelController extends Controller
                 $update="";
                 break;
             case 'CityRank':
-                $select="select Id,Phone, concat(Name,' ',Family) as FullName,(SELECT TOP (1) Province
+                $select="select top 20 Id,Phone, concat(Name,' ',Family) as FullName,(SELECT TOP (1) Province
                        FROM UserDetailsTbl
                        WHERE   (DetailId=UserDetailsTbl.Id)) AS Province,                      
                         [Perm],BirthDay,CallTime, 
@@ -337,32 +396,32 @@ class PanelController extends Controller
             else
             $user->FisrtClass=2;
         }      
-        
+           
         if($user->FisrtClass==1)
         {
             $ranks=$this->getData('select',['apps'=>implode(',',$fc1)],'AllRank',1); 
             if(!$ranks->count())
             abort(404);
-            $myRank=(object)$ranks->where('Id',$user->Id)->first();
+            $myRank=(object)$this->getData('select',['apps'=>implode(',',$fc1),'uid'=>$user->Id],'MyRank',1)->first();
             $mycity=$myRank->Province??'0';
             if($mycity)
             $Cityranks=$this->getData('select',['city'=>$mycity,'apps'=>implode(',',$fc1)],'CityRank',1); 
             else
             $Cityranks=$ranks;
-            $myRankCity=(object)$Cityranks->where('Id',$user->Id)->first();
+            $myRankCity=(object)$this->getData('select',['city'=>$mycity,'apps'=>implode(',',$fc1),'uid'=>$user->Id],'MyCityRank',1)->first();
         }
         else
         {
             $ranks=$this->getData('select',['apps'=>implode(',',$fc2)],'AllRank',1);  
             if(!$ranks->count())
             abort(404);
-            $myRank=(object)$ranks->where('Id',$user->Id)->first();
+            $myRank=(object)$this->getData('select',['apps'=>implode(',',$fc2),'uid'=>$user->Id],'MyRank',1)->first();
             $mycity=$myRank->Province??'0';
             if($mycity)
             $Cityranks=$this->getData('select',['city'=>$mycity,'apps'=>implode(',',$fc2)],'CityRank',1); 
             else
             $Cityranks=$ranks;
-            $myRankCity=(object)$Cityranks->where('Id',$user->Id)->first();
+            $myRankCity=(object)$this->getData('select',['city'=>$mycity,'apps'=>implode(',',$fc2),'uid'=>$user->Id],'MyCityRank',1)->first();
 
         }
         if($user->Age<12)

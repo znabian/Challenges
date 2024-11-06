@@ -221,7 +221,7 @@
 @section('content')   
 <div id="content2" class="content2"> 
     <div id="allrank" class="tabrnk overflow-y-auto p-2" style="height:88%;">
-            @foreach ($ranks->take(20) as $item) 
+            @foreach ($ranks as $item) 
             <div class="card mt-1 p-md-3 @if($item['Id']==$user->Id) d-none  @endif " @if($item['Id']==$user->Id) id="mrank_all" @endif >
                 <div class="card-body">
                     <div class="row d-flex">
@@ -254,7 +254,7 @@
             @endforeach
     </div>
     <div id="cityrank" class="tabrnk overflow-y-auto p-2" style="height:88%;display:none;">
-            @foreach ($Cityranks->take(20) as $item) 
+            @foreach ($Cityranks as $item) 
             <div class="card mt-1 p-md-3 @if($item['Id']==$user->Id) d-none  @endif " >
                 <div class="card-body">
                     <div class="row d-flex">
@@ -295,7 +295,7 @@
             <div class="row d-flex">
                 <div class="col-2 m-auto mx-1" style="padding-right:5px !important;" >                                
                     <span class="circleImg mrank" id="mrankall"> {{$myRank->rank}}</span>
-                    <span class="circleImg mrank" id="mrankcity" style="display: none;"> {{$myRankCity->rank}}</span>
+                    <span class="circleImg mrank" id="mrankcity" style="display: none;"> {{$myRankCity->rank??0}}</span>
                 </div>
                 <div class="col d-flex flex-column pt-0" style="margin-right: 16px;">
                     
