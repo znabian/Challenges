@@ -583,29 +583,29 @@
                         notif.classList.add('d-none');
                         @endif
 
-                        /*@if(session('seminar')??0)
-                        if ((localStorage.getItem('ShowSeminar')??1)  )
+                        @if(session('seminar2')??0)
+                        if ((localStorage.getItem('ShowSeminar2')??1)  )
                             {
-                                var startDate = new Date(2024, 9, 14,10,59);
-                                var targetDate = new Date(2024, 9, 15,19,30);
+                                var startDate = new Date(2024, 10, 4,10,59);
+                                var targetDate = new Date(2024, 10, 5,19,30);
                                 var currentDate = new Date();
 
                                 if (currentDate >= startDate && currentDate <= targetDate ) 
                                 {                                    
                                     Swal.fire({
-                                        @if(session('seminar')=='child')
-                                        imageUrl: "{{asset('img/child_seminar.png?121')}}",
+                                        @if(session('seminar2')=='child')
+                                        imageUrl: "{{asset('img/child_seminar.png?1222')}}",
                                         @else
-                                        imageUrl: "{{asset('img/teenager_seminar.png?121')}}",
+                                        imageUrl: "{{asset('img/teenager_seminar.png?1222')}}",
                                         @endif
                                         background: 'transparent',
                                         padding:0,
                                         imageAlt: "Seminar",
                                         showCloseButton: true,
-                                        @if(session('seminar')=='child' && date('Y-m-d')=='2024-10-15'  && (date('H:i')>="15:45" && date('H:i')<="17:05"))
+                                        @if(session('seminar2')=='child' && date('Y-m-d')=='2024-11-05'  && (date('H:i')>="15:45" && date('H:i')<="17:05"))
                                         imageHeight: '96%',
                                         html:"<a class='bg-gradient btn-warning btn btn-sm pull-rigth' href='https://meet.google.com/urx-cknn-azt'>ورود به وبینار</a><a class='bg-gradient btn-danger btn btn-sm pull-left' onclick='swal.close()'>بستن</a>",
-                                        @elseif(session('seminar')=='teenager' && date('Y-m-d')=='2024-10-15'  && (date('H:i')>="17:45" && date('H:i')<="19:05"))
+                                        @elseif(session('seminar2')=='teenager' && date('Y-m-d')=='2024-11-05'  && (date('H:i')>="17:45" && date('H:i')<="19:05"))
                                         imageHeight: '96%',
                                         html:"<a class='bg-gradient btn-warning btn btn-sm pull-rigth' href='https://meet.google.com/urx-cknn-azt'>ورود به وبینار</a><a class='bg-gradient btn-danger btn btn-sm pull-left' onclick='swal.close()'>بستن</a>",
                                         @endif
@@ -616,10 +616,10 @@
                                         focusConfirm:false,
                                         allowOutsideClick:false,
                                         });
-                                    localStorage.setItem('ShowSeminar', parseInt(localStorage.getItem('ShowSeminar')??0)+1);
+                                    localStorage.setItem('ShowSeminar2', parseInt(localStorage.getItem('ShowSeminar2')??0)+1);
                                 }
                             }
-							@else*/
+							@else
                             if ((localStorage.getItem('ShowOffAutumn')??0) <5 )
                             {
                                 var startDate = new Date(2024, 9, 12,12,59);
@@ -646,7 +646,7 @@
                                 }
                             }
 							
-							/*@endif*/
+							@endif
                         
 
                     @endif
