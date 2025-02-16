@@ -246,9 +246,13 @@
                                 <i class="fa fa-coins pull-left status" ></i>
                                 @elseif($item['Expired'])
                                 @php
+                                   /*
                                    $spd= date_diff(date_create(session('User')->CallTime),now())->format("%R%a");
                                     $f=$spd-$item['Level'];
-                                    $price=$item['Price']+(($f>2)?$f-2:0)*10000;
+                                    */
+                                $f= date_diff(date_create(explode(' ',$item['ExpiredAt'])[0]),date_create(date('Y-m-d')))->format("%R%a");
+
+                                $price=$item['Price']+(($f>2)?$f-2:0)*10000;                                
                                     if($price>50000)
                                     $price=50000;  
                                 @endphp

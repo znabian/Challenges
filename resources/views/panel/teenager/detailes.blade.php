@@ -597,8 +597,12 @@ video
 
                
               @php
+              /*
               $spd= date_diff(date_create(session('User')->CallTime),now())->format("%R%a");
-              $f=$spd-$chall->Level;
+              $f=$spd-$chall->Level;              
+              */
+              $f= date_diff(date_create(explode(' ',$chall->ExpiredAt)[0]),date_create(date('Y-m-d')))->format("%R%a");
+
               $price=$chall->Price+(($f>2)?$f-2:0)*10000;
               if($price>50000)
               $price=50000;
