@@ -92,6 +92,9 @@ Route::prefix('/chat')->group(function () {
         });
         Route::get('/FirstCalss-abstract',[PanelController::class,'abstractList'])->name('abstract');
         Route::get('/FirstCalss-abstract/{id}',[PanelController::class,'abstractShow'])->name('abstract.show');
+
+        Route::get('/FirstCalss-Offline',[PanelController::class,'OfflineList'])->name('Offline');
+        Route::get('/FirstCalss-Offline/{id}',[PanelController::class,'OfflineShow'])->name('Offline.show');
         
 
 });

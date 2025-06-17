@@ -484,6 +484,59 @@ class PanelController extends Controller
         $video=$headers->where('Id',$id)->first();
         return view('panel.teenager.abstarctplay',compact('video'));
     }
+
+    function OfflineList(Request $req)
+    {
+        $user=session('User');  
+        if(!($user->FisrtClass??0))
+        {
+            $fc1=[38,39,40,41];
+            $fc2=[51,52];      
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereIn('AppId',$fc1)->count())
+            $user->FisrtClass=1;
+            else
+            $user->FisrtClass=2;
+        }
+        if($user->FisrtClass==1)
+        abort(403);
+        $headers=Collection::make($this->getData('select',['uid'=>$user->Id],'AbstractFile',1)); 
+        /*$headers=[
+            [['Id'=>"1-12",'Title'=>"یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]]
+        ];*/
+        if($user->Age<12)
+        return response()->view('panel.child.off',compact('headers'))
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate')  
+        ->header('Pragma', 'no-cache')  
+        ->header('Expires', '0');
+        else
+        return response()->view('panel.teenager.off',compact('headers'))
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate')  
+        ->header('Pragma', 'no-cache')  
+        ->header('Expires', '0');
+    }
+    function OfflineShow($id,Request $req)
+    {
+        $user=session('User');
+        if(!($user->FisrtClass??0))
+        {
+            $fc1=[38,39,40,41];
+            $fc2=[51,52];      
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereIn('AppId',$fc1)->count())
+            $user->FisrtClass=1;
+            else
+            $user->FisrtClass=2;
+        }
+        if($user->FisrtClass==1)
+        abort(403);
+        $headers=Collection::make($this->getData('select',['uid'=>$user->Id],'AbstractFile',1));   
+       /* $headers=[
+            "1-12"=>['Title'=>"نکات یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]
+        ];*/
+        $video=$headers->where('Id',$id)->first();
+        return view('panel.teenager.offplay',compact('video'));
+    }
     /** SQl Server */
     public function index_SQL()
     {

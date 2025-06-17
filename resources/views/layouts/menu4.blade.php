@@ -5,9 +5,18 @@
       <a href="{{route('direct.index')}}" class="@if(\Route::currentRouteName()=="direct.index") active @endif  text-decoration-none">
         <li>
             <i class="fa fa-user-tie"></i>
-            <span id="directmn">ارتباط بااستاد خوش نظر </span>
+            <span id="directmn">ارتباط مستقیم </span>
         </li>
       </a>
+      
+      @if(session('User')->FisrtClass==2)
+      <a href="{{route('Offline')}}" class="@if(\Route::currentRouteName()=="Offline") active @endif  text-decoration-none" >
+        <li>
+            <i class="fa fa-book-open-reader"></i>
+            آفلاین
+        </li>
+      </a>
+      @endif
       <a href="{{route('history')}}" class="@if(\Route::currentRouteName()=="history") active @endif  text-decoration-none">
         <li>
             <i class="fa fa-shopping-basket"></i>
