@@ -95,6 +95,14 @@ Route::prefix('/chat')->group(function () {
 
         Route::get('/FirstCalss-Offline',[PanelController::class,'OfflineList'])->name('Offline');
         Route::get('/FirstCalss-Offline/{id}',[PanelController::class,'OfflineShow'])->name('Offline.show');
+
+        Route::prefix('/work')->group(function () {
+            Route::get('/',[PanelController::class,'Work_index'])->name('work.index');
+            Route::post('/reservation',[PanelController::class,'Work_reserve'])->name('work.res');
+            Route::post('/reservation-cancel',[PanelController::class,'Work_reserve_cancel'])->name('work.res.cancel');
+            Route::post('/MyReservation',[PanelController::class,'Work_Myreserve'])->name('work.get');
+           
+            });
         
 
 });

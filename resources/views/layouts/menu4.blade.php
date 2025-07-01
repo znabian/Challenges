@@ -43,6 +43,14 @@
         </li>
       </a>
       @endif
+      @if(session('User')->ReserveAllow??0)
+      <a href="{{route('work.index')}}" class="@if(\Route::currentRouteName()=="work.index") active @endif  text-decoration-none" >
+        <li>
+          <i class="fa fa-calendar-days"></i>
+          فضای کاری
+        </li>
+      </a>
+      @endif
       <a href="javascript:logout();" class="text-decoration-none">
         <li>
             <i class="fa fa-sign-out-alt"></i>

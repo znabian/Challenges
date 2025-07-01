@@ -79,4 +79,18 @@ class EventController extends Controller
         $channel->publish('DirectChatChange',json_encode($a->broadcastWith()));
         return true;
     }
+    public function ReserveWork($city) 
+    {
+        //$a=new ReservationEvent('work');
+
+        try {
+        $client = new  AblyRest($this->ABLY_KEY);
+        $channel = $client->channels->get('workReserve-Change.'.$city);
+        $channel->publish('workReserveChange','');
+        return true;
+        } catch (\Throwable $th) {
+           return false;
+        }
+       
+    }
 }

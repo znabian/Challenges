@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Carbon\Carbon;
 
 class PanelController extends Controller
 {
@@ -173,6 +174,10 @@ class PanelController extends Controller
         $url="http://185.116.161.39/API/updateApi_jwt.php";
         elseif($type=="insertGetId")
         $url="http://185.116.161.39/API/insertGetIdApi_jwt.php";
+        elseif($type=="updateinsert")
+        $url="http://185.116.161.39/API/updateOrInserApi_jwt.php";
+        elseif($type=="insertselect")
+        $url="http://185.116.161.39/API/InsertSelectApi_jwt.php";
         else
         $url="http://185.116.161.39/API/selectApi_jwt.php";
         switch ($function) {
@@ -238,7 +243,7 @@ class PanelController extends Controller
                 $update="";
                 break;
             case 'MyFCType':
-                    $select="select AppId from PaymentTbl where Active=1 and AppId in(38,39,40,41,51,52) and UserId=".$param['uid'];
+                    $select="select AppId,WorkTime,GroupId from PaymentTbl where Active=1 and AppId in(38,39,40,41,51,52) and UserId=".$param['uid'];
                     $update="";
                     break;
             case 'MyRank':
@@ -356,6 +361,30 @@ class PanelController extends Controller
                        WHERE   (DetailId=UserDetailsTbl.Id) and Province like N'%".$param['city']."%')";
                 $update="";
                 break;
+                case 'capacity':
+                    $select="select count(Date) cdate,cast(Date as date) as Date from ReservationTbl where City=N'".$param['city']."' ".($param['where']??'')." and [Type] in (3,4)  and Status=0 and Active=1 group By cast(Date as date) ";
+                    $update="update ReservationTbl set Status=1 where [Type] in (3,4) and Status=0 and Active=1 and cast(Date as date)<cast(GETDATE() as date)";
+                    break;
+                case 'MyReserve':
+                    $select="select *,cast(Date as date) dday from ReservationTbl where UserId=".$param['uid']." and City=N'".$param['city']."' and [Type] in (3,4) and Active=1  order By  Status ,Date ";
+                    $update="";
+                    break;
+                case 'MyReserveAllow':
+                    $select="select isnull(cast(SUM(DATEDIFF(MINUTE, starttime, endtime)) / 60  as int),0) AS totalhours  from ReservationTbl where UserId=".$param['uid']." and City=N'".$param['city']."'  and [Type] in (3,4) and Active=1 and Status not in (2,4,5) ";
+                    $update="";
+                    break;
+                case 'Reservation':
+                        $select="select  *  from ReservationTbl where UserId=".$param['uid']." and cast(Date as date)='".$param['date']."' and Active=1 and Status in(0,4) and City=N'".$param['city']."'  and [Type]=".$param['type'];
+                        $update="update ReservationTbl set Active=1,Status=0,Description=NULL,Works=NULL,[SMS]=0 where Id=?";
+                        $insert="INSERT INTO ReservationTbl (UserId, [Date],[Type],City,[StartTime],[EndTime],AppId) VALUES (".$param['uid'].", '".$param['date']."','".$param['type']."',N'".$param['city']."','".$param['start']."','".$param['end']."',".$param['appid'].")";
+                       
+                    break;
+                case 'CancelReservation':
+                        $select="select  *  from ReservationTbl where UserId=".$param['uid']." and Active=1 and City=N'".$param['city']."'  and [Type] in(3,4)";
+                        $update="update ReservationTbl set Status=4 where Id=".$param['rid'];
+                        $insert="";
+                        
+                    break;
             default:
                 # code...
                 break;
@@ -363,7 +392,7 @@ class PanelController extends Controller
             $response = Http::withHeaders([
                 'Content-Type' => 'application/x-www-form-urlencoded',           
                 'api_token' => $this->api_token,
-            ])->asForm()->post($url,['update' => $update,'data' => $select]);
+            ])->asForm()->post($url,['update' => $update,'data' => $select,'insert' => $insert??'']);
             if($sName)
             {
                 if($response->ok())
@@ -537,6 +566,322 @@ class PanelController extends Controller
         $video=$headers->where('Id',$id)->first();
         return view('panel.teenager.offplay',compact('video'));
     }
+
+    
+    public function Work_index(Request $req)
+    {
+        $user=session('User'); 
+        if(($user->ReserveAllow??-1)==-1)
+        {    
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereNotNull('WorkTime')->count())
+            $user->ReserveAllow=1;
+            else
+            $user->ReserveAllow=0;
+            $user->GroupId=$apps->whereNotNull('WorkTime')->first()['GroupId']??0;
+            $user->FC=$apps->whereNotNull('WorkTime')->first()['AppId']??0;
+
+        }
+        if(!$user->ReserveAllow)
+        abort(403);
+
+        $city=$this->getGroupInfo($user->GroupId)['City']??'';
+        
+        $reservation=$this->getData('update',['city'=>$city,'appid'=>$user->FC],'capacity',1); 
+        $MyReserve=$this->getData('select',['city'=>$city,'uid'=>$user->Id,'appid'=>$user->FC],'MyReserve',1); 
+        //$MyReserveAllow=$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1); 
+       $tomorrow = Carbon::tomorrow();
+        $nextFriday = Carbon::now()->next('friday')->addWeek();
+        
+        if(!$req->ajax)
+        {
+            if($user->Age<12)
+            return view('panel.child.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve'));
+            else
+            return view('panel.teenager.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve'));            
+        }
+        else
+        {
+            $out='';
+            while ($tomorrow->lessThanOrEqualTo($nextFriday))
+            {
+                if(!in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'),["پنج‌شنبه","جمعه"]))
+                    $type=3;
+                else
+                    $type=4;
+                    $w=0;
+                   if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
+                    $w=1;
+                   if((($tomorrow->weekOfYear+$w )%2==0 && jdate($tomorrow)->getDayOfWeek()%2==0) || (($tomorrow->weekOfYear+$w) %2!=0 && jdate($tomorrow)->getDayOfWeek()%2!=0))
+                   {
+                    $tomorrow = $tomorrow->addDay();  
+                    $index=($index??0)+1;
+                    continue;
+                   }
+                $out.='<div class="col-12  d-flex" style="">
+                        
+                            <div class="title2 py-4 px-3 rounded-circle d-grid">
+                                    <span>'.jdate($tomorrow->format('Y-m-d'))->format('%A').'</span>
+                                    <span>'.jdate($tomorrow->format('Y-m-d'))->format('Y-m-d').'</span>                    
+                            </div>
+                            <div class="align-items-center col d-flex justify-content-between p-2 title shadow">
+                                <div class="align-items-center col d-grid">';
+                                    if($type==3)
+                                $out.="<span>ساعت 15 الی 20 </span> ";
+                                    else                                    
+                                $out.="<span>ساعت 11 الی 17 </span>";
+                                   
+                                $out.='<small id="d{{$index??0}}">
+                                   '.(10-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)).' نفر باقی مانده
+                                     </small>
+                                </div>';
+                                if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
+                                $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                 <i class="fa fa-ban"></i>
+                                </label>';
+                                elseif($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->whereNotIn('Status',[4,5])->count())
+                                $out.='<label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
+                                 <i class="fa fa-user-check"></i>
+                                </label>';
+                                elseif((10-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))==0)
+                                $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                     تکمیل
+                                </label>';
+                                else 
+                                $out.='<label class="btn-reserve c-pointer d-grid label p-3 rounded-circle" onclick="reservation(\''.$tomorrow->format('Y-m-d').'\','.$type.','.($index??0).',this)" >
+                                     رزرو 
+                                </label>';
+                    $out.='</div>
+                        
+                </div>';
+                
+                $tomorrow = $tomorrow->addDay();  
+                $index=($index??0)+1;
+            }
+            return response()->json(['data'=>$out]);
+        }
+    }
+    public function Work_reserve(Request $req)
+    {
+        $user=session('User'); 
+        if(($user->ReserveAllow??-1)==-1)
+        {    
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereNotNull('WorkTime')->count())
+            $user->ReserveAllow=1;
+            else
+            $user->ReserveAllow=0;
+            $user->GroupId=$apps->whereNotNull('WorkTime')->first()['GroupId']??0;
+            $user->FC=$apps->whereNotNull('WorkTime')->first()['AppId']??0;
+
+        }
+
+        $city=$this->getGroupInfo($user->GroupId)['City']??'';
+        if(!$user->ReserveAllow)
+         abort(403);
+        
+         //$allowHours=$this->getWorkAllow($user->Id)['Time']??1000;
+
+        //$MyReserveAllow=(object)$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1)->first(); 
+        if($req->Type==3)
+        {
+            $start="15:00:00";$end="20:00:00";
+            $date=$req->Date." 15:00:00";
+            $t=5;
+        }
+        else
+        {
+            $start="11:00:00";$end="17:00:00";
+            $date=$req->Date." 11:00:00";
+            $t=6;
+        }
+        
+        /*if((($MyReserveAllow->totalhours??0)+$t)>$allowHours)
+        return response()->json(['success'=>false,'message'=>'شما بیشتر از ساعت مجاز رزرو کردید']);*/
+
+        $MyReserve=$this->getData('updateinsert',['city'=>$city,'uid'=>$user->Id,'date'=>$date,'type'=>$req->Type,'start'=>$start,'end'=>$end,'appid'=>$user->FC],'Reservation',0); 
+        $reservation=$this->getData('update',['city'=>$city,'appid'=>$user->FC,'where'=>" and cast(Date as date)='".$date."' "],'capacity',1); 
+       if($MyReserve)
+       {
+        $EventController=new EventController();
+        $b=$EventController->ReserveWork($city);
+       }
+
+        return response()->json(['success'=>$MyReserve,'capacity'=>$reservation,'b'=>$b??1]);
+    }
+    public function Work_Myreserve(Request $req)
+    {
+        $user=session('User'); 
+        if(($user->ReserveAllow??-1)==-1)
+        {    
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereNotNull('WorkTime')->count())
+            $user->ReserveAllow=1;
+            else
+            $user->ReserveAllow=0;
+            $user->GroupId=$apps->whereNotNull('WorkTime')->first()['GroupId']??0;
+            $user->FC=$apps->whereNotNull('WorkTime')->first()['AppId']??0;
+
+        }
+        $city=$this->getGroupInfo($user->GroupId)['City']??'';
+
+        $MyReserve=(object)$this->getData('select',['city'=>$city,'uid'=>$user->Id,'appid'=>$user->FC],'MyReserve',1); 
+
+        return response()->json(['success'=>$MyReserve->count(),'data'=>$MyReserve]);
+    }
+    public function Work_reserve_cancel(Request $req)
+    {
+        $user=session('User'); 
+        
+        if(($user->ReserveAllow??-1)==-1)
+        {    
+            $apps=$this->getData('select',['uid'=>$user->Id],'MyFCType',1); 
+            if($apps->whereNotNull('WorkTime')->count())
+            $user->ReserveAllow=1;
+            else
+            $user->ReserveAllow=0;
+            $user->GroupId=$apps->whereNotNull('WorkTime')->first()['GroupId']??0;
+            $user->FC=$apps->whereNotNull('WorkTime')->first()['AppId']??0;
+
+        }
+        $city=$this->getGroupInfo($user->GroupId)['City']??'';
+        if(!$user->ReserveAllow)
+         abort(403);
+        
+        $MyReserve=$this->getData('update',['city'=>$city,'uid'=>$user->Id,'rid'=>$req->RID,'appid'=>$user->FC],'CancelReservation',0); 
+       if($MyReserve)
+       {
+        $EventController=new EventController();
+        $b=$EventController->ReserveWork($city);
+       }
+
+        return response()->json(['success'=>$MyReserve,'b'=>$b??1]);
+    }
+    public function getGroupInfo($gid=0)
+    {
+        $groups=collection::make([
+            [
+                'Id'=>0,
+                'Name'=>'',
+                'Age'=>[0,0],
+                'City'=>'',
+                'Gender'=>"",
+                'Count'=>0
+            ],
+            [
+                'Id'=>8,
+                'Name'=>'A',
+                'Age'=>[8,13],
+                'City'=>'اصفهان',
+                'Gender'=>"پسر",
+                'Count'=>8
+            ],
+            [
+                'Id'=>9,
+                'Name'=>'B',
+                'Age'=>[11,13],
+                'City'=>'اصفهان',
+                'Gender'=>"دختر",
+                'Count'=>9
+            ],
+            [
+                'Id'=>10,
+                'Name'=>'C',
+                'Age'=>[14,20],
+                'City'=>'اصفهان',
+                'Gender'=>"دختر",
+                'Count'=>7
+            ],
+            [
+                'Id'=>11,
+                'Name'=>'D',
+                'Age'=>[14,20],
+                'City'=>'اصفهان',
+                'Gender'=>"پسر",
+                'Count'=>11
+            ],
+
+            [
+                'Id'=>12,
+                'Name'=>'E',
+                'Age'=>[9,12],
+                'City'=>'تهران',
+                'Gender'=>"پسر",
+                'Count'=>8
+            ],
+            [
+                'Id'=>13,
+                'Name'=>'F',
+                'Age'=>[12,13],
+                'City'=>'تهران',
+                'Gender'=>"پسر",
+                'Count'=>8
+            ],
+            [
+                'Id'=>14,
+                'Name'=>'G',
+                'Age'=>[13,16],
+                'City'=>'تهران',
+                'Gender'=>"پسر",
+                'Count'=>8
+            ],
+            [
+                'Id'=>15,
+                'Name'=>'H',
+                'Age'=>[16,19],
+                'City'=>'تهران',
+                'Gender'=>"پسر",
+                'Count'=>8
+            ],
+            [
+                'Id'=>16,
+                'Name'=>'I',
+                'Age'=>[12,14],
+                'City'=>'تهران',
+                'Gender'=>"دختر",
+                'Count'=>10
+            ],
+            [
+                'Id'=>17,
+                'Name'=>'J',
+                'Age'=>[15,20],
+                'City'=>'تهران',
+                'Gender'=>"دختر",
+                'Count'=>10
+            ],
+
+            [
+                'Id'=>18,
+                'Name'=>'K',
+                'Age'=>[10,17],
+                'City'=>'شیراز',
+                'Gender'=>"مختلط",
+                'Count'=>11
+            ],
+            [
+                'Id'=>19,
+                'Name'=>'L',
+                'Age'=>[11,19],
+                'City'=>'مشهد',
+                'Gender'=>"مختلط",
+                'Count'=>9
+            ],
+            [
+                'Id'=>20,
+                'Name'=>'M',
+                'Age'=>[15,18],
+                'City'=>'تبریز',
+                'Gender'=>"مختلط",
+                'Count'=>6
+            ],
+            ]);
+            if($gid=='all')
+            return $groups->where('Id','<>',0);
+            else
+            return $groups->where('Id',$gid)->first();
+    }
+
+
     /** SQl Server */
     public function index_SQL()
     {

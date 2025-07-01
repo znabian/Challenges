@@ -91,7 +91,16 @@ class LoginController extends Controller
                                 $user->FisrtClass=1;
                                 else
                                 $user->FisrtClass=2;
-                                
+
+                                                            
+                                if($apps->whereNotNull('WorkTime')->count())
+                                $user->ReserveAllow=1;
+                                else
+                                $user->ReserveAllow=0;
+
+                               $user->GroupId=$apps->whereNotNull('WorkTime')->first()['GroupId']??0;
+                               $user->FC=$apps->whereNotNull('WorkTime')->first()['AppId']??0;
+
                                 session(['User'=>$user]);
                                 //$url="http://85.208.255.101/API/updateApi_jwt.php";
                                 $url="http://185.116.161.39/API/updateApi_jwt.php";
