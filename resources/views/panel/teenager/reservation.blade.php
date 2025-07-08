@@ -368,7 +368,11 @@ use Carbon\Carbon;
                                 <span>ساعت 11 الی 17 </span>                                    
                                 @endif
                                 <small id="d{{$index??0}}">
-                               {{(10-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
+                                    @if(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                   {{(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
+                                   @else
+                                   تکمیل ظرفیت
+                                   @endif
                                  </small>
                             </div>                                      
                             
@@ -382,7 +386,7 @@ use Carbon\Carbon;
                                  <i class="fa fa-user-check"></i>
                             </label>
                            
-                            @elseif((10-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))==0)
+                            @elseif((8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
                             <label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle">
                                  تکمیل
                             </label>
@@ -503,7 +507,7 @@ use Carbon\Carbon;
                   .then(response => { 
                     if(response.data.success)
                     {
-                        if(response.data.b==0)
+                        //if(response.data.b==0)
                         workReserveChange();                    
                         showMyReserves();
                     }
@@ -540,7 +544,7 @@ use Carbon\Carbon;
                   .then(response => { 
                     if(response.data.success)
                     {
-                        if(response.data.b==0)
+                        //if(response.data.b==0)
                         workReserveChange();
                         showMyReserves();
                     }

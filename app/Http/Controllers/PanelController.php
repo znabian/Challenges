@@ -631,8 +631,14 @@ class PanelController extends Controller
                                     else                                    
                                 $out.="<span>ساعت 11 الی 17 </span>";
                                    
-                                $out.='<small id="d{{$index??0}}">
-                                   '.(10-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)).' نفر باقی مانده
+                                $out.='<small id="d{{$index??0}}">';
+                                $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0));
+                               if($c>0)
+                               $out.=" $c نفر باقی مانده";
+                               else
+                               $out.="تکمیل ظرفیت";
+                               
+                                $out.='
                                      </small>
                                 </div>';
                                 if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
@@ -643,7 +649,7 @@ class PanelController extends Controller
                                 $out.='<label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-user-check"></i>
                                 </label>';
-                                elseif((10-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))==0)
+                                elseif((8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
                                 $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
                                      تکمیل
                                 </label>';
