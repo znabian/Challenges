@@ -385,6 +385,10 @@ class PanelController extends Controller
                         $insert="";
                         
                     break;
+                case 'CancelDays':
+                        $select="select count(Date) cdate,cast(Date as date) as Date,Type from ReservationTbl where City=N'".$param['city']."' ".($param['where']??'')." and [Type] in (3,4) and Status=5 and Active=1 group By cast(Date as date),Type ";
+                        $update="";
+                        break;
             default:
                 # code...
                 break;
@@ -590,15 +594,16 @@ class PanelController extends Controller
         $reservation=$this->getData('update',['city'=>$city,'appid'=>$user->FC],'capacity',1); 
         $MyReserve=$this->getData('select',['city'=>$city,'uid'=>$user->Id,'appid'=>$user->FC],'MyReserve',1); 
         //$MyReserveAllow=$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1); 
+        $CancelDays=$this->getData('select',['city'=>$city],'CancelDays',1); 
        $tomorrow = Carbon::tomorrow();
         $nextFriday = Carbon::now()->next('friday')->addWeek();
         
         if(!$req->ajax)
         {
             if($user->Age<12)
-            return view('panel.child.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve'));
+            return view('panel.child.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays'));
             else
-            return view('panel.teenager.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve'));            
+            return view('panel.teenager.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays'));            
         }
         else
         {
@@ -631,17 +636,25 @@ class PanelController extends Controller
                                     else                                    
                                 $out.="<span>ساعت 11 الی 17 </span>";
                                    
-                                $out.='<small id="d{{$index??0}}">';
+                                 $out.='<small id="d'.($index??0).'">';
+								if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                               $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";
+							   else
+							   {
                                 $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0));
                                if($c>0)
                                $out.=" $c نفر باقی مانده";
                                else
                                $out.="تکمیل ظرفیت";
-                               
+                                }
                                 $out.='
                                      </small>
                                 </div>';
                                 if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
+                                $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                 <i class="fa fa-ban"></i>
+                                </label>';
+                                elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
                                 $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
                                 </label>';
@@ -685,7 +698,8 @@ class PanelController extends Controller
         $city=$this->getGroupInfo($user->GroupId)['City']??'';
         if(!$user->ReserveAllow)
          abort(403);
-        
+        $CancelDays=$this->getData('select',['city'=>$city],'CancelDays',1); 
+
          //$allowHours=$this->getWorkAllow($user->Id)['Time']??1000;
 
         //$MyReserveAllow=(object)$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1)->first(); 
@@ -704,7 +718,9 @@ class PanelController extends Controller
         
         /*if((($MyReserveAllow->totalhours??0)+$t)>$allowHours)
         return response()->json(['success'=>false,'message'=>'شما بیشتر از ساعت مجاز رزرو کردید']);*/
-
+        if(($CancelDays->where('Type',$req->Type)->where('Date',$req->Date)->first()['cdate']??0)>0)
+            return response()->json(['success'=>false,'message'=>'امکان رزرو فضای کاری در این تاریخ توسط مدیریت بسته شده است']);
+		
         $MyReserve=$this->getData('updateinsert',['city'=>$city,'uid'=>$user->Id,'date'=>$date,'type'=>$req->Type,'start'=>$start,'end'=>$end,'appid'=>$user->FC],'Reservation',0); 
         $reservation=$this->getData('update',['city'=>$city,'appid'=>$user->FC,'where'=>" and cast(Date as date)='".$date."' "],'capacity',1); 
        if($MyReserve)

@@ -367,12 +367,16 @@ use Carbon\Carbon;
                                 @else                                    
                                 <span>ساعت 11 الی 17 </span>                                    
                                 @endif
-                                <small id="d{{$index??0}}">                                    
+                                <small id="d{{$index??0}}">
+								@if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+ 								رزرو فضای کاری در این روز توسط مدیریت لغو شده است 
+								@else
                                     @if(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
                                     {{(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
                                     @else
                                     تکمیل ظرفیت
                                     @endif
+                                @endif
                                  </small>
                             </div>                                      
                             
@@ -380,7 +384,10 @@ use Carbon\Carbon;
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
                             </label>
-                           
+                           @elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)    
+                           <label class="d-grid label px-3 py-3 rounded-circle" >
+                                 <i class="fa fa-ban"></i>
+                            </label>  
                             @elseif($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->whereNotIn('Status',[4,5])->count())
                            <label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-user-check"></i>
