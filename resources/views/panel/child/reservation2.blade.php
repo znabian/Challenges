@@ -1,4 +1,4 @@
-﻿@php    
+@php    
 use Carbon\Carbon;  
 @endphp
 @extends('layouts.childApp')
@@ -295,11 +295,11 @@ use Carbon\Carbon;
 @section('title')  
 فضای کاری
 @endsection
-@section('content')    
+@section('content')   
 
-<div id="content2" class="content2 " >  
-    <a class="btn btn-outline-dark btn-sm btn-xs fa fa-arrow-left pull-left d-none " id="backurlIcon"></a>   
-          
+<div id="content2" class="content2 " > 
+<a class="btn btn-outline-dark btn-sm btn-xs fa fa-arrow-left pull-left d-none " id="backurlIcon"></a>  
+      
     <div class="gap-lg-0 gap-md-4 h-auto justify-content-center row m-md-auto">
         <div id="startDiv" class="info animate__animate animate__fadeOut d-none  ">
             <h5>{{session('User')->FullName}} عزیز! شما در حال رزرو فضای کار اشتراکی برای شهر <b>{{$city}}</b>،  هستید!</h5>
@@ -338,15 +338,9 @@ use Carbon\Carbon;
         <div id="daysDiv" class="animate__animate animate__fadeIn row" style=" display:none; ">   
         @while ($tomorrow->lessThanOrEqualTo($nextFriday))
         @php
-        if(!in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'),["پنج‌شنبه","جمعه"]))
             $type=3;
-        else
-            $type=4;
-        $w=0;
-       if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
-        $w=1;
-        if((($tomorrow->weekOfYear+$w )%2==0 && jdate($tomorrow)->getDayOfWeek()%2==0) || (($tomorrow->weekOfYear+$w) %2!=0 && jdate($tomorrow)->getDayOfWeek()%2!=0))
-        {
+       if($tomorrow->isFriday() || jdate($tomorrow)->getDayOfWeek()%2!=0)
+       {
         $tomorrow = $tomorrow->addDay();  
         $index=($index??0)+1;
         continue;
@@ -374,10 +368,10 @@ use Carbon\Carbon;
  								رزرو فضای کاری در این روز توسط مدیریت بسته شده است 
 								@else
                                     @if(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
-                                    {{(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
-                                    @else
-                                    تکمیل ظرفیت
-                                    @endif
+                                   {{(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
+                                   @else
+                                   تکمیل ظرفیت
+                                   @endif
                                 @endif
                                  </small>
                             </div>                                      
@@ -385,12 +379,12 @@ use Carbon\Carbon;
                             @if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
-                            </label>
-                           @elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)    
+                            </label>                         
+                           @elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0) 
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
-                            </label>  
-                           @elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                            </label>                            
+                           @elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)    
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
                             </label>  
@@ -500,7 +494,7 @@ use Carbon\Carbon;
     function workReserveChange()
     {
 
-      axios.get('{{route("work.index",["ajax"=>1])}}') .then(response =>
+      axios.get('{{route("work.index",["ajax"=>2])}}') .then(response =>
       {
         Swal.close();
         daysDiv.innerHTML=response.data.data;  

@@ -370,6 +370,8 @@ use Carbon\Carbon;
                                 <small id="d{{$index??0}}">
 								@if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
  								رزرو فضای کاری در این روز توسط مدیریت لغو شده است 
+								@elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+ 								رزرو فضای کاری در این روز توسط مدیریت بسته شده است 
 								@else
                                     @if(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
                                    {{(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
@@ -385,6 +387,10 @@ use Carbon\Carbon;
                                  <i class="fa fa-ban"></i>
                             </label>                           
                            @elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)    
+                           <label class="d-grid label px-3 py-3 rounded-circle" >
+                                 <i class="fa fa-ban"></i>
+                            </label>                             
+                           @elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
                             </label>  

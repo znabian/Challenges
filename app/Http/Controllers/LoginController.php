@@ -89,14 +89,18 @@ class LoginController extends Controller
                                 $apps=$a->getData('select',['uid'=>$user->Id],'MyFCType',1); 
                                 if($apps->whereIn('AppId',$fc1)->count())
                                 $user->FisrtClass=1;
-                                else
+                                elseif($apps->whereIn('AppId',$fc2)->count())
                                 $user->FisrtClass=2;
+                                else
+                                return back()->withInput()->withErrors(['Phone'=>'با عرض پوزش، شما مجوز لازم برای ورود را ندارید']); 
 
                                                             
                                 if($apps->whereNotNull('WorkTime')->count())
                                 $user->ReserveAllow=1;
                                 else
                                 $user->ReserveAllow=0;
+                            if($user->Id==124799)
+                                $user->ReserveAllow=1;
 
                                $user->GroupId=$apps->whereNotNull('WorkTime')->first()['GroupId']??0;
                                $user->FC=$apps->whereNotNull('WorkTime')->first()['AppId']??0;

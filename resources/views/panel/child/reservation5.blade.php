@@ -1,4 +1,4 @@
-﻿@php    
+@php    
 use Carbon\Carbon;  
 @endphp
 @extends('layouts.childApp')
@@ -295,11 +295,11 @@ use Carbon\Carbon;
 @section('title')  
 فضای کاری
 @endsection
-@section('content')    
+@section('content')  
 
-<div id="content2" class="content2 " >  
-    <a class="btn btn-outline-dark btn-sm btn-xs fa fa-arrow-left pull-left d-none " id="backurlIcon"></a>   
-          
+<div id="content2" class="content2 " >
+<a class="btn btn-outline-dark btn-sm btn-xs fa fa-arrow-left pull-left d-none " id="backurlIcon"></a>  
+      
     <div class="gap-lg-0 gap-md-4 h-auto justify-content-center row m-md-auto">
         <div id="startDiv" class="info animate__animate animate__fadeOut d-none  ">
             <h5>{{session('User')->FullName}} عزیز! شما در حال رزرو فضای کار اشتراکی برای شهر <b>{{$city}}</b>،  هستید!</h5>
@@ -336,21 +336,32 @@ use Carbon\Carbon;
 
         </div>
         <div id="daysDiv" class="animate__animate animate__fadeIn row" style=" display:none; ">   
-        @while ($tomorrow->lessThanOrEqualTo($nextFriday))
+       @while ($tomorrow->lessThanOrEqualTo($nextFriday))
         @php
-        if(!in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'),["پنج‌شنبه","جمعه"]))
-            $type=3;
-        else
-            $type=4;
         $w=0;
        if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
         $w=1;
+    if(!$tomorrow->isThursday())
+    {
         if((($tomorrow->weekOfYear+$w )%2==0 && jdate($tomorrow)->getDayOfWeek()%2==0) || (($tomorrow->weekOfYear+$w) %2!=0 && jdate($tomorrow)->getDayOfWeek()%2!=0))
-        {
+       {
         $tomorrow = $tomorrow->addDay();  
         $index=($index??0)+1;
         continue;
-        }
+       }
+    }
+       
+        if(in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'),["پنج‌شنبه"]))
+            {
+                if((($tomorrow->weekOfYear+$w )%2==0 && jdate($tomorrow)->getDayOfWeek()%2==0) || (($tomorrow->weekOfYear+$w) %2!=0 && jdate($tomorrow)->getDayOfWeek()%2!=0))
+                     $type=3;
+                    else 
+                    $type=8;
+            }
+        elseif(in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'),["جمعه"]))
+            $type=8;
+        else
+            $type=3;
         @endphp
             <div class="col-12  d-flex" style="">
                 
@@ -362,23 +373,34 @@ use Carbon\Carbon;
                         </div>
                         <div class="align-items-center col d-flex justify-content-between p-2 title shadow">
                             <div class="align-items-center col d-grid">
-                                @if($type==3)
-                                <span>ساعت 15 الی 20 </span>                                    
-                                @else                                    
-                                <span>ساعت 11 الی 17 </span>                                    
-                                @endif
+                                <span>
+                                @switch($type)
+                                    @case(3)
+                                      ساعت 15 الی 20  
+                                    @break
+                                    @case(4)
+                                     ساعت 11 الی 17   
+                                    @break
+                                    @case(8)
+                                     ساعت 10 الی 15   
+                                    @break
+                                    @case(7)
+                                     ساعت 10 الی 14   
+                                    @break                                        
+                                @endswitch
+                                </span>
                                 <small id="d{{$index??0}}">
 								@if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
  								رزرو فضای کاری در این روز توسط مدیریت لغو شده است 
 								@elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
- 								رزرو فضای کاری در این روز توسط مدیریت بسته شده است 
-								@else
-                                    @if(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
-                                    {{(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
+                                رزرو فضای کاری در این روز توسط مدیریت بسته شده است 
+                               @else
+                                    @if(8-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                    {{(8-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
                                     @else
                                     تکمیل ظرفیت
                                     @endif
-                                @endif
+								@endif
                                  </small>
                             </div>                                      
                             
@@ -386,20 +408,20 @@ use Carbon\Carbon;
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
                             </label>
-                           @elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)    
+							@elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)    
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
-                            </label>  
-                           @elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
-                           <label class="d-grid label px-3 py-3 rounded-circle" >
-                                 <i class="fa fa-ban"></i>
-                            </label>  
+                            </label>   
+                           
                             @elseif($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->whereNotIn('Status',[4,5])->count())
                            <label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-user-check"></i>
                             </label>
-                           
-                            @elseif((8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                            @elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                           <label class="d-grid label px-3 py-3 rounded-circle" >
+                                 <i class="fa fa-ban"></i>
+                            </label>                           
+                            @elseif((8-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
                             <label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle">
                                  تکمیل
                             </label>
@@ -434,15 +456,29 @@ use Carbon\Carbon;
                         </div>
                         <div class="align-items-center col d-flex justify-content-between p-2 title shadow   @if($item['Date']<date('Y-m-d')) bg-secondary-subtle @endif">
                             <div class="align-items-center col d-grid">
-                                @if($item['Type']==3)
-                                <span>ساعت 15 الی 20 </span>                                    
-                                @else                                    
-                                <span>ساعت 11 الی 17 </span>                                    
-                                @endif
+                               @switch($item['Type'])
+                                    @case(3)
+                                      ساعت 15 الی 20  
+                                    @break
+                                    @case(4)
+                                     ساعت 11 الی 17   
+                                    @break
+                                    @case(8)
+                                     ساعت 10 الی 15   
+                                    @break
+                                    @case(7)
+                                     ساعت 10 الی 14   
+                                    @break                                        
+                                @endswitch
                             </div> 
-                            @if($item['Status']==1)
+                            @if($item['Status']==1 || $item['Status']==3)
                             <label class="d-grid label px-3 py-3 rounded-circle text-success">
                                 <i class="fa fa-2x fa-circle-check"></i>
+                           </label>
+                            @elseif($item['Status']==2)
+                            <label class="d-grid label px-3 py-3 rounded-circle text-danger">
+                                <i class="fa fa-2x fa-user-xmark"></i>
+                                عدم حضور
                            </label>
                            @elseif(in_array($item['Status'],[4,5]))
                             <label class="d-grid label px-3 py-3 rounded-circle text-danger">
@@ -465,6 +501,8 @@ use Carbon\Carbon;
                 $checkOut = Carbon::parse($item['EndTime']);
             if($item['Status']==1)
                 $myHours += $checkOut->diffInHours($checkIn);
+            if($item['Status']==3)
+                $myHours += $checkOut->diffInHours($checkIn);
             if(!in_array($item['Status'],[4,5]))
                 $totalHours += $checkOut->diffInHours($checkIn);
                 
@@ -475,7 +513,7 @@ use Carbon\Carbon;
                         
                 <div class="align-items-center col d-flex justify-content-between p-4 title" style="border: 1px dashed #343E66;background: transparent;">
                     <div class="align-items-center col d-grid">
-                        <span>{{"شما ".$myHours.' ساعت  در فضای کاری اشتراکی حضور داشتید '}}</span> 
+                       <span>{{"شما ".$myHours.' ساعت  در فضای کاری اشتراکی حضور داشتید '}}</span> 
 
                     </div> 
                 </div>
@@ -500,7 +538,7 @@ use Carbon\Carbon;
     function workReserveChange()
     {
 
-      axios.get('{{route("work.index",["ajax"=>1])}}') .then(response =>
+      axios.get('{{route("work.index",["ajax"=>5])}}') .then(response =>
       {
         Swal.close();
         daysDiv.innerHTML=response.data.data;  
@@ -581,6 +619,7 @@ use Carbon\Carbon;
                               });
                   });
     }
+    
     function showDives(hid,show,tit=0)
     {
         $(hid).hide();$(show).show(); 
@@ -637,11 +676,23 @@ use Carbon\Carbon;
                      statusDiv.className +='bg-danger-subtle';*/
                     const timeDiv = document.createElement('div');  
                     timeDiv.className = 'align-items-center col d-grid';  
-                    timeDiv.innerHTML = `<span>${item.Type == 3 ? 'ساعت 15 الی 20' : 'ساعت 11 الی 17'}</span>`;  
-                    
+                   switch (parseInt(item.Type)) {
+                        case 3:
+                        timeDiv.innerHTML = `<span>ساعت 15 الی 20</span>`;       
+                            break;
+                        case 4:
+                        timeDiv.innerHTML = `<span>ساعت 11 الی 17</span>`;       
+                            break;
+                        case 8:
+                        timeDiv.innerHTML = `<span>ساعت 10 الی 15</span>`;       
+                            break;
+                        case 7:
+                        timeDiv.innerHTML = `<span>ساعت 10 الی 14</span>`;       
+                            break;
+                    }
                     statusDiv.appendChild(timeDiv);  
 
-                    if (item.Status == 1) {  
+                    if (item.Status == 1 || item.Status == 3) {  
                         const label = document.createElement('label');  
                         label.className = 'd-grid label px-3 py-3 rounded-circle text-success';  
                         label.innerHTML = '<i class="fa fa-2x fa-circle-check"></i>';  
@@ -670,7 +721,13 @@ use Carbon\Carbon;
                             Cancelreservation(item.Id,this);
                         });
                         statusDiv.appendChild(label); 
-                    } 
+                    }else if (item.Status == 2) {
+                                const label = document.createElement('label');
+                                label.className = 'd-grid label px-3 py-3 rounded-circle text-danger';
+                                label.innerHTML = '<i class="fa fa-2x fa-user-xmark"></i>';
+                                label.innerHTML +="عدم حضور";
+                                statusDiv.appendChild(label);
+                            } 
                     if(!([4,5].includes(parseInt(item.Status))))
                     totalHours +=Math.abs((new Date(date.toDateString()+' '+item.StartTime))-(new Date(date.toDateString()+' '+item.EndTime)))/  (1000 * 60 * 60);
 
@@ -683,7 +740,7 @@ use Carbon\Carbon;
                     remainingHoursItem.className = 'align-items-center col justify-content-between p-4 title';  
                     remainingHoursItem.style.border = '1px dashed #343E66';  
                     remainingHoursItem.style.background = 'transparent';  
-                    remainingHoursItem.innerHTML = `<span>شما ${myHours} ساعت  در فضای کاری اشتراکی حضور داشتید </span> `;
+                    remainingHoursItem.innerHTML = `<span>شما ${myHours} ساعت  در فضای کاری اشتراکی حضور داشتید </span>  `;
 
                     remainingHoursDiv.appendChild(remainingHoursItem);  
                     reserveDiv.appendChild(remainingHoursDiv); // Append the remaining hours div to the body or a specific container  

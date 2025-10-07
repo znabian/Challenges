@@ -394,7 +394,7 @@
             height: 23px;
         }
 .offer {
-        background: linear-gradient(228deg,#f76801,#dc5507);
+        background: linear-gradient(228deg,#f74701,#dc5507);
         border-radius: 0 0 25% 25%;
         padding: 3%;
         margin-top: -1rem;

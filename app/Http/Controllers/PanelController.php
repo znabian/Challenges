@@ -362,15 +362,15 @@ class PanelController extends Controller
                 $update="";
                 break;
                 case 'capacity':
-                    $select="select count(Date) cdate,cast(Date as date) as Date from ReservationTbl where City=N'".$param['city']."' ".($param['where']??'')." and [Type] in (3,4)  and Status=0 and Active=1 group By cast(Date as date) ";
-                    $update="update ReservationTbl set Status=1 where [Type] in (3,4) and Status=0 and Active=1 and cast(Date as date)<cast(GETDATE() as date)";
+                    $select="select count(Date) cdate,cast(Date as date) as Date,Type from ReservationTbl where City=N'".$param['city']."' ".($param['where']??'')." and [Type] in (3,4,8,7)  and Status=0 and Active=1 group By cast(Date as date),Type ";
+                    $update="update ReservationTbl set Status=1 where [Type] in (3,4,8,7) and Status=0 and Active=1 and cast(Date as date)<cast(GETDATE() as date)";
                     break;
                 case 'MyReserve':
-                    $select="select *,cast(Date as date) dday from ReservationTbl where UserId=".$param['uid']." and City=N'".$param['city']."' and [Type] in (3,4) and Active=1  order By  Status ,Date ";
+                    $select="select *,cast(Date as date) dday from ReservationTbl where UserId=".$param['uid']." and City=N'".$param['city']."' and [Type] in (3,4,8,7) and Active=1  order By  Status ,Date ";
                     $update="";
                     break;
                 case 'MyReserveAllow':
-                    $select="select isnull(cast(SUM(DATEDIFF(MINUTE, starttime, endtime)) / 60  as int),0) AS totalhours  from ReservationTbl where UserId=".$param['uid']." and City=N'".$param['city']."'  and [Type] in (3,4) and Active=1 and Status not in (2,4,5) ";
+                    $select="select isnull(cast(SUM(DATEDIFF(MINUTE, starttime, endtime)) / 60  as int),0) AS totalhours  from ReservationTbl where UserId=".$param['uid']." and City=N'".$param['city']."'  and [Type] in (3,4,8,7) and Active=1 and Status not in (2,4,5) ";
                     $update="";
                     break;
                 case 'Reservation':
@@ -380,15 +380,19 @@ class PanelController extends Controller
                        
                     break;
                 case 'CancelReservation':
-                        $select="select  *  from ReservationTbl where UserId=".$param['uid']." and Active=1 and City=N'".$param['city']."'  and [Type] in(3,4)";
+                        $select="select  *  from ReservationTbl where UserId=".$param['uid']." and Active=1 and City=N'".$param['city']."'  and [Type] in(3,4,8,7)";
                         $update="update ReservationTbl set Status=4 where Id=".$param['rid'];
                         $insert="";
                         
                     break;
                 case 'CancelDays':
-                        $select="select count(Date) cdate,cast(Date as date) as Date,Type from ReservationTbl where City=N'".$param['city']."' ".($param['where']??'')." and [Type] in (3,4) and Status=5 and Active=1 group By cast(Date as date),Type ";
+                        $select="select count(Date) cdate,cast(Date as date) as Date,Type from ReservationTbl where City=N'".$param['city']."' ".($param['where']??'')." and [Type] in (3,4,8,7) and Status=5 and Active=1 group By cast(Date as date),Type ";
                         $update="";
                         break;
+            case 'ReservationAlert':
+                    $select="INSERT INTO AlarmTbl (SenderId,UserId, Active, SupportId,Description,Type,[Date]) VALUES (8,".$param['uid'].", 1, ".$param['sid'].",N'".$param['des']."',".$param['type'].",GETDATE())";
+                    $update="";                    
+                break;
             default:
                 # code...
                 break;
@@ -596,18 +600,367 @@ class PanelController extends Controller
         //$MyReserveAllow=$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1); 
         $CancelDays=$this->getData('select',['city'=>$city],'CancelDays',1); 
        $tomorrow = Carbon::tomorrow();
+       /* if($city=="تهران")
+        $nextFriday = Carbon::now()->next('friday')->addWeek(2);
+        else*/
         $nextFriday = Carbon::now()->next('friday')->addWeek();
         
+        try
+        {
+         $response = Http::withHeaders([
+                'Content-Type' => 'application/x-www-form-urlencoded',           
+                'api_token' => $this->api_token,
+            ])->get('https://pnldev.com/api/calender?year='.jdate($tomorrow->format('Y-m-d'))->format('Y').'&month='.ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),'0'));
+            if($response->ok())
+                {
+                     $data=$response->json();
+                     if($data['status'])
+                     {
+                        $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),'0')]=$data['result'];
+                     }
+                }
+                else
+                    $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),'0')]=[];
+                if(jdate($nextFriday->format('Y-m-d'))->format('m')!=jdate($tomorrow->format('Y-m-d'))->format('m'))
+                {
+                    $response = Http::withHeaders([
+                    'Content-Type' => 'application/x-www-form-urlencoded',           
+                    'api_token' => $this->api_token,
+                    ])->get('https://pnldev.com/api/calender?year='.jdate($nextFriday->format('Y-m-d'))->format('Y').'&month='.ltrim(jdate($nextFriday->format('Y-m-d'))->format('m'),'0'));
+                    if($response->ok())
+                        {
+                            $data=$response->json();
+                            if($data['status'])
+                            {
+                                $days[ltrim(jdate($nextFriday->format('Y-m-d'))->format('m'),'0')]=$data['result'];
+                            }
+                        }
+                        else
+                            $days[ltrim(jdate($nextFriday->format('Y-m-d'))->format('m'),'0')]=[];
+                }
+         
+		} catch (\Throwable $th) {
+           $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),'0')]=[];
+           if(jdate($nextFriday->format('Y-m-d'))->format('m')!=jdate($tomorrow->format('Y-m-d'))->format('m'))
+           $days[ltrim(jdate($nextFriday->format('Y-m-d'))->format('m'),'0')]=[];
+        } 
+       session(['days'=>$days]);
+
         if(!$req->ajax)
         {
-            if($user->Age<12)
-            return view('panel.child.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays'));
+           if($city=="تهران")
+			{
+			if($user->Age<12)
+            return view('panel.child.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));
             else
-            return view('panel.teenager.reservation',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays'));            
+            return view('panel.teenager.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));            
+			}
+            if($user->Age<12)
+            return view('panel.child.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));
+            else
+            return view('panel.teenager.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));            
         }
         else
         {
             $out='';
+            if($req->ajax==2)
+            {
+                while ($tomorrow->lessThanOrEqualTo($nextFriday))
+                {
+                        $type=3;
+                    if($tomorrow->isFriday() || jdate($tomorrow)->getDayOfWeek()%2!=0)
+                    {
+                        $tomorrow = $tomorrow->addDay();  
+                        $index=($index??0)+1;
+                        continue;
+                    }
+                    $out.='<div class="col-12  d-flex" style="">
+                            
+                                <div class="title2 py-4 px-3 rounded-circle d-grid">
+                                        <span>'.jdate($tomorrow->format('Y-m-d'))->format('%A').'</span>
+                                        <span>'.jdate($tomorrow->format('Y-m-d'))->format('Y-m-d').'</span>                    
+                                </div>
+                                <div class="align-items-center col d-flex justify-content-between p-2 title shadow">
+                                    <div class="align-items-center col d-grid">';
+                                        if($type==3)
+                                    $out.="<span>ساعت 15 الی 20 </span> ";
+                                        else                                    
+                                    $out.="<span>ساعت 11 الی 17 </span>";
+                                    
+                                    $out.='<small id="d'.($index??0).'">';
+                                    if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                $out.=" رزرو فضای کاری در این روز توسط مدیریت لغو شده است ";
+                                elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                                $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";
+                                else
+                                {
+                                    $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0));
+                                if($c>0)
+                                $out.=" $c نفر باقی مانده";
+                                else
+                                $out.="تکمیل ظرفیت";
+                                    }
+                                    $out.='
+                                        </small>
+                                    </div>';
+                                    if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
+                                    $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)                                                              
+                                    $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                    $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    elseif($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->whereNotIn('Status',[4,5])->count())
+                                    $out.='<label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-user-check"></i>
+                                    </label>';
+                                    elseif((8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                        تکمیل
+                                    </label>';
+                                    else 
+                                    $out.='<label class="btn-reserve c-pointer d-grid label p-3 rounded-circle" onclick="reservation(\''.$tomorrow->format('Y-m-d').'\','.$type.','.($index??0).',this)" >
+                                        رزرو 
+                                    </label>';
+                        $out.='</div>
+                            
+                    </div>';
+                    
+                    $tomorrow = $tomorrow->addDay();  
+                    $index=($index??0)+1;
+                }
+
+            }            
+			elseif($req->ajax==5)
+			{
+                $out='';
+                while ($tomorrow->lessThanOrEqualTo($nextFriday))
+                {
+                    
+                        $w = 0;
+                        if (in_array(jdate($tomorrow)->getDayOfWeek(), [0, 1])) {
+                            $w = 1;
+                        }
+                        if (!$tomorrow->isThursday()) {
+                            if (
+                                (($tomorrow->weekOfYear + $w) % 2 == 0 && jdate($tomorrow)->getDayOfWeek() % 2 == 0) ||
+                                (($tomorrow->weekOfYear + $w) % 2 != 0 && jdate($tomorrow)->getDayOfWeek() % 2 != 0)
+                            ) {
+                                $tomorrow = $tomorrow->addDay();
+                                $index = ($index ?? 0) + 1;
+                                continue;
+                            }
+                        }
+
+                        if (in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'), ['پنج‌شنبه'])) {
+                            if (
+                                (($tomorrow->weekOfYear + $w) % 2 == 0 && jdate($tomorrow)->getDayOfWeek() % 2 == 0) ||
+                                (($tomorrow->weekOfYear + $w) % 2 != 0 && jdate($tomorrow)->getDayOfWeek() % 2 != 0)
+                            ) {
+                                $type = 3;
+                            } else {
+                                $type = 8;
+                            }
+                        } elseif (in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'), ['جمعه'])) {
+                            $type = 8;
+                        } else {
+                            $type = 3;
+                        }
+                    $out.='<div class="col-12 gap-2 d-flex" style="">
+                            
+                                <div class="title2 py-4 px-3 rounded-circle d-grid">
+                                        <span>'.jdate($tomorrow->format('Y-m-d'))->format('%A').'</span>
+                                        <span>'.jdate($tomorrow->format('Y-m-d'))->format('Y-m-d').'</span>                    
+                                </div>
+                                <div class="align-items-center col d-flex justify-content-between p-2 title shadow">
+                                    <div class="align-items-center col d-grid"><span>';
+                                    
+                                    switch($type)
+                                    {
+                                        case 3:
+                                            $out.='ساعت 15 الی 20';
+                                        break;
+
+                                        case 4:
+                                           $out.='ساعت 11 الی 17';
+                                        break;
+
+                                        case 8:
+                                            $out.='ساعت 10 الی 15';
+                                        break;
+
+                                        case 7:
+                                            $out.='ساعت 10 الی 14';
+                                        break;
+                                    }
+                                $out.='</span> 
+                                    <small id="d'.($index??0).'">';								
+                                if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                $out.=" رزرو فضای کاری در این روز توسط مدیریت لغو شده است ";
+                                elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                                $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";
+                                else
+                                {
+                                     $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
+                                    if($c>0)
+                                    $out.=" $c نفر باقی مانده";
+                                    else
+                                    $out.="تکمیل ظرفیت";
+                                }
+                                    $out.='</small>
+                                    </div>';
+                                    if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
+                                    $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                                $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                    $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    elseif($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->whereNotIn('Status',[4,5])->count())
+                                    $out.='<label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-user-check"></i>
+                                    </label>';
+                                    elseif((8-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                        تکمیل
+                                    </label>';
+                                    else 
+                                    $out.='<label class="btn-reserve c-pointer d-grid label p-3 rounded-circle" onclick="reservation(\''.$tomorrow->format('Y-m-d').'\','.$type.','.($index??0).',this)" >
+                                        رزرو 
+                                    </label>';
+                        $out.='</div>';
+                        
+                            
+                    $out.='</div>';
+                    
+                    $tomorrow = $tomorrow->addDay();  
+                    $index=($index??0)+1;
+                }
+
+			}
+			elseif($req->ajax==6)
+			{
+                $out='';
+                while ($tomorrow->lessThanOrEqualTo($nextFriday))
+                {
+                   $w=0;
+                    if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
+                        $w=1;
+                        if(!in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'),["پنج‌شنبه","جمعه"]))
+                        {
+                            if((($tomorrow->weekOfYear+$w )%2==0 && jdate($tomorrow)->getDayOfWeek()%2==0) || (($tomorrow->weekOfYear+$w) %2!=0 && jdate($tomorrow)->getDayOfWeek()%2!=0))
+                            {
+                                $tomorrow = $tomorrow->addDay();  
+                                $index=($index??0)+1;
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            $tomorrow = $tomorrow->addDay();  
+                            $index=($index??0)+1;
+                            continue;
+                        }
+                    
+                    if($days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                        {
+                            if(($tomorrow->weekOfYear+$w )%2!=0)
+                            $type=7;
+                            else
+                            $type=3;
+                        }
+                        else
+                            $type=3;
+                    $out.='<div class="col-12 gap-2 d-flex" style="">
+                            
+                                <div class="title2 py-4 px-3 rounded-circle d-grid">
+                                        <span>'.jdate($tomorrow->format('Y-m-d'))->format('%A').'</span>
+                                        <span>'.jdate($tomorrow->format('Y-m-d'))->format('Y-m-d').'</span>                    
+                                </div>
+                                <div class="align-items-center col d-flex justify-content-between p-2 title shadow">
+                                    <div class="align-items-center col d-grid"><span>';
+                                    
+                                    switch($type)
+                                    {
+                                        case 3:
+                                            $out.='ساعت 15 الی 20';
+                                        break;
+
+                                        case 4:
+                                           $out.='ساعت 11 الی 17';
+                                        break;
+
+                                        case 8:
+                                            $out.='ساعت 10 الی 15';
+                                        break;
+
+                                        case 7:
+                                            $out.='ساعت 10 الی 14';
+                                        break;
+                                    }
+                                $out.='</span> 
+                                    <small id="d'.($index??0).'">';								
+                                if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                $out.=" رزرو فضای کاری در این روز توسط مدیریت لغو شده است ";
+                                /*elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                                $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";*/
+                                else
+                                {
+                                     $c=(15-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
+                                    if($c>0)
+                                    $out.=" $c نفر باقی مانده";
+                                    else
+                                    $out.="تکمیل ظرفیت";
+                                }
+                                    $out.='</small>
+                                    </div>';
+                                    if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
+                                    $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    /*elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                                $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';*/
+                                    elseif(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                    $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-ban"></i>
+                                    </label>';
+                                    elseif($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->whereNotIn('Status',[4,5])->count())
+                                    $out.='<label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
+                                    <i class="fa fa-user-check"></i>
+                                    </label>';
+                                    elseif((15-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                        تکمیل
+                                    </label>';
+                                    else 
+                                    $out.='<label class="btn-reserve c-pointer d-grid label p-3 rounded-circle" onclick="reservation(\''.$tomorrow->format('Y-m-d').'\','.$type.','.($index??0).',this)" >
+                                        رزرو 
+                                    </label>';
+                        $out.='</div>';
+                        
+                            
+                    $out.='</div>';
+                    
+                    $tomorrow = $tomorrow->addDay();  
+                    $index=($index??0)+1;
+                }
+
+			}
+            else
+            {
+                $out='';
             while ($tomorrow->lessThanOrEqualTo($nextFriday))
             {
                 if(!in_array(jdate($tomorrow->format('Y-m-d'))->format('%A'),["پنج‌شنبه","جمعه"]))
@@ -639,6 +992,8 @@ class PanelController extends Controller
                                  $out.='<small id="d'.($index??0).'">';
 								if(($CancelDays->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
                                $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";
+							   elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+                               $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";
 							   else
 							   {
                                 $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0));
@@ -651,6 +1006,10 @@ class PanelController extends Controller
                                      </small>
                                 </div>';
                                 if($MyReserve->where('dday',$tomorrow->format('Y-m-d'))->where('Type',$type)->where('Status',5)->count())
+                                $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
+                                 <i class="fa fa-ban"></i>
+                                </label>';
+                                elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)                                                              
                                 $out.='<label class=" d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
                                 </label>';
@@ -677,6 +1036,8 @@ class PanelController extends Controller
                 $tomorrow = $tomorrow->addDay();  
                 $index=($index??0)+1;
             }
+                
+            }
             return response()->json(['data'=>$out]);
         }
     }
@@ -699,7 +1060,7 @@ class PanelController extends Controller
         if(!$user->ReserveAllow)
          abort(403);
         $CancelDays=$this->getData('select',['city'=>$city],'CancelDays',1); 
-
+        
          //$allowHours=$this->getWorkAllow($user->Id)['Time']??1000;
 
         //$MyReserveAllow=(object)$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1)->first(); 
@@ -709,24 +1070,53 @@ class PanelController extends Controller
             $date=$req->Date." 15:00:00";
             $t=5;
         }
+        elseif($req->Type==8)
+        {
+            $start="10:00:00";$end="15:00:00";
+            $date=$req->Date." 10:00:00";
+            $t=5;
+        }
+        elseif($req->Type==7)
+        {
+            $start="10:00:00";$end="14:00:00";
+            $date=$req->Date." 10:00:00";
+            $t=4;
+        }
         else
         {
             $start="11:00:00";$end="17:00:00";
             $date=$req->Date." 11:00:00";
             $t=6;
         }
-        
         /*if((($MyReserveAllow->totalhours??0)+$t)>$allowHours)
         return response()->json(['success'=>false,'message'=>'شما بیشتر از ساعت مجاز رزرو کردید']);*/
         if(($CancelDays->where('Type',$req->Type)->where('Date',$req->Date)->first()['cdate']??0)>0)
             return response()->json(['success'=>false,'message'=>'امکان رزرو فضای کاری در این تاریخ توسط مدیریت بسته شده است']);
-		
+        if($city!="تهران")
+        {
+		 $days=session('days');
+        $dday=Carbon::parse($req->Date);
+       if(!$dday->isFriday() && $days[ltrim(jdate($dday->format('Y-m-d'))->format('m'),0)][ltrim(jdate($dday->format('Y-m-d'))->format('d'),0)]['holiday']??0)
+        return response()->json(['success'=>false,'message'=>'امکان رزرو فضای کاری در این تاریخ بسته شده است']);
+        }
         $MyReserve=$this->getData('updateinsert',['city'=>$city,'uid'=>$user->Id,'date'=>$date,'type'=>$req->Type,'start'=>$start,'end'=>$end,'appid'=>$user->FC],'Reservation',0); 
         $reservation=$this->getData('update',['city'=>$city,'appid'=>$user->FC,'where'=>" and cast(Date as date)='".$date."' "],'capacity',1); 
        if($MyReserve)
        {
         $EventController=new EventController();
         $b=$EventController->ReserveWork($city);
+
+        $MySupport=$this->getData('select',['uid'=>$user->Id],'MySupport',1);       
+        if($MySupport->count()) 
+        {
+            $user->SellerId=$MySupport->first()['SellerId'];
+            $user->SupportId=$MySupport->first()['SupportId'];
+            session(['User'=>$user]);
+        }
+        $des=$user->FullName."  برای ".jdate($date)->format('l تاریخ d F Y')." از ساعت ".jdate($start)->format('H')." تا ساعت ".jdate($end)->format('H')." کارآموزی رزرو کرد";
+        $this->getData('insertGetId',['type'=>19,'sid'=>$user->SellerId,'uid'=>$user->Id,'des'=>$des],'ReservationAlert',0); 
+        $this->smsWork(1,['date'=>$date,'start'=>$start,'end'=>$end]);
+
        }
 
         return response()->json(['success'=>$MyReserve,'capacity'=>$reservation,'b'=>$b??1]);
@@ -768,16 +1158,77 @@ class PanelController extends Controller
         }
         $city=$this->getGroupInfo($user->GroupId)['City']??'';
         if(!$user->ReserveAllow)
-         abort(403);
-        
+         abort(403);        
+        $MyReserves=$this->getData('select',['city'=>$city,'uid'=>$user->Id,'appid'=>$user->FC],'MyReserve',1); 
         $MyReserve=$this->getData('update',['city'=>$city,'uid'=>$user->Id,'rid'=>$req->RID,'appid'=>$user->FC],'CancelReservation',0); 
        if($MyReserve)
        {
         $EventController=new EventController();
         $b=$EventController->ReserveWork($city);
+
+        $reserve=(object)$MyReserves->where('Id',$req->RID)->first();
+        $MySupport=$this->getData('select',['uid'=>$user->Id],'MySupport',1);       
+        if($MySupport->count()) 
+        {
+            $user->SellerId=$MySupport->first()['SellerId'];
+            $user->SupportId=$MySupport->first()['SupportId'];
+            session(['User'=>$user]);
+        }
+        $des=$user->FullName."  رزرو کارآموزی ".jdate($reserve->Date)->format('l تاریخ d F Y')." از ساعت ".jdate($reserve->StartTime)->format('H')." تا ساعت ".jdate($reserve->EndTime)->format('H')." رو لغو کرد";
+        $this->getData('insertGetId',['type'=>19,'sid'=>$user->SellerId,'uid'=>$user->Id,'des'=>$des],'ReservationAlert',0); 
+        $this->smsWork(2,['date'=>$reserve->Date,'start'=>$reserve->StartTime,'end'=>$reserve->EndTime]);
        }
 
         return response()->json(['success'=>$MyReserve,'b'=>$b??1]);
+    }
+    public function smsWork($sms,$data)
+    {
+        $user=session('User'); 
+        switch($sms)
+        {
+        case '1':
+            $SmsBody ="family عزیز،
+                رزرو فضای کاری شما برای روز day مورخ date از ساعت start تا end با موفقیت ثبت شد.
+                با تشکر";
+            break;
+        case '2':
+            $SmsBody ="family عزیز،
+                شما از رزرو فضای کاری در روز day مورخ date از ساعت start تا end انصراف دادید.
+                در صورت تمایل به رزرو مجدد، لطفاً به اپلیکیشن مراجعه کنید.
+                با تشکر";
+            break;
+        
+        }
+        $SmsBody=strtr($SmsBody,['day'=>jdate($data['date'])->format('l'),'date'=>jdate($data['date'])->format('d F'),'start'=>jdate($data['start'])->format('H'),'end'=>jdate($data['end'])->format('H'),'family'=>$user->FullName]);
+       
+        $url =  "http://sms.parsgreen.ir/Apiv2/Message/SendSms";
+         $ch = curl_init($url);
+         $Mobiles =  array($user->Phone);
+         $SmsNumber = null;
+         $myjson = ["SmsBody"=>$SmsBody, "Mobiles"=>$Mobiles,"SmsNumber"=>$SmsNumber];
+     
+        $jsonDataEncoded = json_encode($myjson);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonDataEncoded);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $header =array('authorization: BASIC APIKEY:1F7ACF9B-67B5-4E02-A270-A3C377554AD2','Content-Type: application/json;charset=utf-8');
+        curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+        $result = curl_exec($ch);
+        $res = json_decode($result);
+        curl_close($ch);
+
+         $msg=($res->R_Success??0)?"پیامک با موفقیت ارسال شد":"ارسال پیامک با شکست مواجه شد";
+            $key=($res->R_Success??0)?"success":"error";
+         return response()->json(['status'=>$key,'message'=>$msg]);
+        
+    }
+    public function videotet(Request $req)
+    {
+        $link='https://appdev.erfankhoshnazar.com/Videos/test.mp4';
+		return view('testvideo',compact('link'));
+
     }
     public function getGroupInfo($gid=0)
     {
