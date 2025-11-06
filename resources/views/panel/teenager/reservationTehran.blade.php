@@ -338,6 +338,7 @@ use Carbon\Carbon;
         <div id="daysDiv" class="animate__animate animate__fadeIn row" style=" display:none; ">   
        @while ($tomorrow->lessThanOrEqualTo($nextFriday))
         @php
+        $capacity=15;
         $w=0;
        if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
         $w=1;
@@ -345,16 +346,22 @@ use Carbon\Carbon;
         {
             if((($tomorrow->weekOfYear+$w )%2==0 && jdate($tomorrow)->getDayOfWeek()%2==0) || (($tomorrow->weekOfYear+$w) %2!=0 && jdate($tomorrow)->getDayOfWeek()%2!=0))
             {
-                $tomorrow = $tomorrow->addDay();  
-                $index=($index??0)+1;
-                continue;
+               if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count()<=0)
+                {
+                    $tomorrow = $tomorrow->addDay();
+                    $index = ($index ?? 0) + 1;
+                    continue;
+                }
             }
         }
         else
         {
-            $tomorrow = $tomorrow->addDay();  
-            $index=($index??0)+1;
-            continue;
+            if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count()<=0)
+                {
+                    $tomorrow = $tomorrow->addDay();
+                    $index = ($index ?? 0) + 1;
+                    continue;
+                }
         }
        
        if($days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
@@ -366,6 +373,12 @@ use Carbon\Carbon;
         }
         else
             $type=3;
+        
+            if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count())
+            {
+                $capacity=$DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->first()['Capacity'];
+                $type=$DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->first()['Type'];
+            }
         @endphp
             <div class="col-12  d-flex" style="">
                 
@@ -399,8 +412,8 @@ use Carbon\Carbon;
 								{{-- @elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
                                 رزرو فضای کاری در این روز توسط مدیریت بسته شده است  --}}
                                @else
-                                    @if(15-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
-                                    {{(15-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
+                                    @if($capacity-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
+                                    {{($capacity-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
                                     @else
                                     تکمیل ظرفیت
                                     @endif
@@ -425,7 +438,7 @@ use Carbon\Carbon;
                            <label class="d-grid label px-3 py-3 rounded-circle" >
                                  <i class="fa fa-ban"></i>
                             </label>                            --}}
-                            @elseif((15-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                            @elseif(($capacity-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
                             <label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle">
                                  تکمیل
                             </label>

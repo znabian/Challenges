@@ -385,6 +385,12 @@ class PanelController extends Controller
                         $insert="";
                         
                     break;
+            case 'DaysReservation':
+                    $select="select  *  from BCReserveDayTbl where Platform='FC' and Active=1 and City like N'%".$param['city']."%'  and [Type] in(3,4,8,7)";
+                    $update="";
+                    $insert="";
+                    
+                break;
                 case 'CancelDays':
                         $select="select count(Date) cdate,cast(Date as date) as Date,Type from ReservationTbl where City=N'".$param['city']."' ".($param['where']??'')." and [Type] in (3,4,8,7) and Status=5 and Active=1 group By cast(Date as date),Type ";
                         $update="";
@@ -599,6 +605,7 @@ class PanelController extends Controller
         $MyReserve=$this->getData('select',['city'=>$city,'uid'=>$user->Id,'appid'=>$user->FC],'MyReserve',1); 
         //$MyReserveAllow=$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1); 
         $CancelDays=$this->getData('select',['city'=>$city],'CancelDays',1); 
+        $DaysReservation=$this->getData('select',['city'=>$city],'DaysReservation',1); 
        $tomorrow = Carbon::tomorrow();
        /* if($city=="تهران")
         $nextFriday = Carbon::now()->next('friday')->addWeek(2);
@@ -651,14 +658,14 @@ class PanelController extends Controller
            if($city=="تهران")
 			{
 			if($user->Age<12)
-            return view('panel.child.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));
+            return view('panel.child.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));
             else
-            return view('panel.teenager.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));            
+            return view('panel.teenager.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));            
 			}
             if($user->Age<12)
-            return view('panel.child.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));
+            return view('panel.child.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));
             else
-            return view('panel.teenager.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days'));            
+            return view('panel.teenager.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));            
         }
         else
         {
@@ -738,6 +745,7 @@ class PanelController extends Controller
             }            
 			elseif($req->ajax==5)
 			{
+                $capacity=8;
                 $out='';
                 while ($tomorrow->lessThanOrEqualTo($nextFriday))
                 {
@@ -751,9 +759,12 @@ class PanelController extends Controller
                                 (($tomorrow->weekOfYear + $w) % 2 == 0 && jdate($tomorrow)->getDayOfWeek() % 2 == 0) ||
                                 (($tomorrow->weekOfYear + $w) % 2 != 0 && jdate($tomorrow)->getDayOfWeek() % 2 != 0)
                             ) {
-                                $tomorrow = $tomorrow->addDay();
-                                $index = ($index ?? 0) + 1;
-                                continue;
+                               if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count()<=0)
+                                {
+                                    $tomorrow = $tomorrow->addDay();
+                                    $index = ($index ?? 0) + 1;
+                                    continue;
+                                }
                             }
                         }
 
@@ -771,6 +782,11 @@ class PanelController extends Controller
                         } else {
                             $type = 3;
                         }
+                         if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count())
+                            {
+                                $capacity=$DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->first()['Capacity'];
+                                $type=$DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->first()['Type'];
+                            }
                     $out.='<div class="col-12 gap-2 d-flex" style="">
                             
                                 <div class="title2 py-4 px-3 rounded-circle d-grid">
@@ -806,7 +822,7 @@ class PanelController extends Controller
                                 $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";
                                 else
                                 {
-                                     $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
+                                     $c=($capacity-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
                                     if($c>0)
                                     $out.=" $c نفر باقی مانده";
                                     else
@@ -830,7 +846,7 @@ class PanelController extends Controller
                                     $out.='<label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
                                     <i class="fa fa-user-check"></i>
                                     </label>';
-                                    elseif((8-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    elseif(($capacity-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
                                     $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
                                         تکمیل
                                     </label>';
@@ -853,6 +869,7 @@ class PanelController extends Controller
                 $out='';
                 while ($tomorrow->lessThanOrEqualTo($nextFriday))
                 {
+                    $capacity=15;
                    $w=0;
                     if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
                         $w=1;
@@ -860,16 +877,22 @@ class PanelController extends Controller
                         {
                             if((($tomorrow->weekOfYear+$w )%2==0 && jdate($tomorrow)->getDayOfWeek()%2==0) || (($tomorrow->weekOfYear+$w) %2!=0 && jdate($tomorrow)->getDayOfWeek()%2!=0))
                             {
-                                $tomorrow = $tomorrow->addDay();  
-                                $index=($index??0)+1;
-                                continue;
+                               if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count()<=0)
+                                {
+                                    $tomorrow = $tomorrow->addDay();
+                                    $index = ($index ?? 0) + 1;
+                                    continue;
+                                }
                             }
                         }
                         else
                         {
-                            $tomorrow = $tomorrow->addDay();  
-                            $index=($index??0)+1;
-                            continue;
+                            if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count()<=0)
+                                {
+                                    $tomorrow = $tomorrow->addDay();
+                                    $index = ($index ?? 0) + 1;
+                                    continue;
+                                }
                         }
                     
                     if($days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
@@ -881,6 +904,12 @@ class PanelController extends Controller
                         }
                         else
                             $type=3;
+                        
+                         if($DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->count())
+                            {
+                                $capacity=$DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->first()['Capacity'];
+                                $type=$DaysReservation->where('Day',$tomorrow->format('Y-m-d'))->first()['Type'];
+                            }
                     $out.='<div class="col-12 gap-2 d-flex" style="">
                             
                                 <div class="title2 py-4 px-3 rounded-circle d-grid">
@@ -916,7 +945,7 @@ class PanelController extends Controller
                                 $out.=" رزرو فضای کاری در این روز توسط مدیریت بسته شده است ";*/
                                 else
                                 {
-                                     $c=(15-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
+                                     $c=($capacity-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
                                     if($c>0)
                                     $out.=" $c نفر باقی مانده";
                                     else
@@ -940,7 +969,7 @@ class PanelController extends Controller
                                     $out.='<label class="btn-reserved d-grid label px-3 py-3 rounded-circle" >
                                     <i class="fa fa-user-check"></i>
                                     </label>';
-                                    elseif((15-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    elseif(($capacity-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
                                     $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
                                         تکمیل
                                     </label>';
