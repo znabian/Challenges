@@ -478,7 +478,7 @@ class PanelController extends Controller
     function abstractList(Request $req)
     {
         $user=session('User');  
-        if(!($user->FisrtClass??0))
+        /*if(!($user->FisrtClass??0))
         {
             $fc1=[38,39,40,41];
             $fc2=[51,52];      
@@ -489,7 +489,7 @@ class PanelController extends Controller
             $user->FisrtClass=2;
         }
         if($user->FisrtClass==2)
-        abort(403);
+        abort(403);*/
         $headers=Collection::make($this->getData('select',['uid'=>$user->Id],'AbstractFile',1)); 
         /*$headers=[
             [['Id'=>"1-12",'Title'=>"یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]]
@@ -508,7 +508,7 @@ class PanelController extends Controller
     function abstractShow($id,Request $req)
     {
         $user=session('User');
-        if(!($user->FisrtClass??0))
+        /*if(!($user->FisrtClass??0))
         {
             $fc1=[38,39,40,41];
             $fc2=[51,52];      
@@ -519,7 +519,7 @@ class PanelController extends Controller
             $user->FisrtClass=2;
         }
         if($user->FisrtClass==2)
-        abort(403);
+        abort(403);*/
         $headers=Collection::make($this->getData('select',['uid'=>$user->Id],'AbstractFile',1));   
        /* $headers=[
             "1-12"=>['Title'=>"نکات یک تا دوازده",'File'=>"https://kakheroshd.ir:448/RedCastleFileManager/first-class/abstarct/1-12.mp4"]

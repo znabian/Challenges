@@ -35,14 +35,12 @@
             <span style="font-size: 5pt;">چالش طلایی</span>
         </li>
       </a>
-      @if(session('User')->FisrtClass==1)
       <a href="{{route('abstract')}}" class="@if(\Route::currentRouteName()=="abstract") active @endif  text-decoration-none" >
         <li>
             <i class="fa fa-book"></i>
             چکیده
         </li>
       </a>
-      @endif
       @if(session('User')->ReserveAllow??0)
       <a href="{{route('work.index')}}" class="@if(\Route::currentRouteName()=="work.index") active @endif  text-decoration-none" >
         <li>
