@@ -600,7 +600,7 @@ class PanelController extends Controller
         abort(403);
 
         $city=$this->getGroupInfo($user->GroupId)['City']??'';
-        
+        $isFull=in_array($user->Id,[140287, 112889, 119026, 63976]);
         $reservation=$this->getData('update',['city'=>$city,'appid'=>$user->FC],'capacity',1); 
         $MyReserve=$this->getData('select',['city'=>$city,'uid'=>$user->Id,'appid'=>$user->FC],'MyReserve',1); 
         //$MyReserveAllow=$this->getData('select',['city'=>$city,'uid'=>$user->Id],'MyReserveAllow',1); 
@@ -658,14 +658,14 @@ class PanelController extends Controller
            if($city=="تهران")
 			{
 			if($user->Age<12)
-            return view('panel.child.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));
+            return view('panel.child.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation','isFull'));
             else
-            return view('panel.teenager.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));            
+            return view('panel.teenager.reservationTehran',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation','isFull'));            
 			}
             if($user->Age<12)
-            return view('panel.child.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));
+            return view('panel.child.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation','isFull'));
             else
-            return view('panel.teenager.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation'));            
+            return view('panel.teenager.reservation5',compact('reservation','tomorrow','nextFriday','city','MyReserve','CancelDays','days','DaysReservation','isFull'));            
         }
         else
         {
@@ -702,6 +702,8 @@ class PanelController extends Controller
                                 else
                                 {
                                     $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0));
+                                    if($isFull)
+                                        $c=0;
                                 if($c>0)
                                 $out.=" $c نفر باقی مانده";
                                 else
@@ -727,6 +729,10 @@ class PanelController extends Controller
                                     <i class="fa fa-user-check"></i>
                                     </label>';
                                     elseif((8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                        تکمیل
+                                    </label>';
+                                    elseif($isFull)
                                     $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
                                         تکمیل
                                     </label>';
@@ -823,6 +829,8 @@ class PanelController extends Controller
                                 else
                                 {
                                      $c=($capacity-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
+                                    if($isFull)
+                                        $c=0;
                                     if($c>0)
                                     $out.=" $c نفر باقی مانده";
                                     else
@@ -847,6 +855,10 @@ class PanelController extends Controller
                                     <i class="fa fa-user-check"></i>
                                     </label>';
                                     elseif(($capacity-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                        تکمیل
+                                    </label>';
+                                    elseif($isFull)
                                     $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
                                         تکمیل
                                     </label>';
@@ -946,6 +958,8 @@ class PanelController extends Controller
                                 else
                                 {
                                      $c=($capacity-($reservation->where('Date',$tomorrow->format('Y-m-d'))->where('Type',$type)->first()['cdate']??0));
+                                    if($isFull)
+                                        $c=0;
                                     if($c>0)
                                     $out.=" $c نفر باقی مانده";
                                     else
@@ -970,6 +984,10 @@ class PanelController extends Controller
                                     <i class="fa fa-user-check"></i>
                                     </label>';
                                     elseif(($capacity-($reservation->where('Type',$type)->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                                    $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                        تکمیل
+                                    </label>';
+                                    elseif($isFull)
                                     $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
                                         تکمیل
                                     </label>';
@@ -1026,6 +1044,8 @@ class PanelController extends Controller
 							   else
 							   {
                                 $c=(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0));
+                                if($isFull)
+                                    $c=0;
                                if($c>0)
                                $out.=" $c نفر باقی مانده";
                                else
@@ -1053,6 +1073,10 @@ class PanelController extends Controller
                                 elseif((8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
                                 $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
                                      تکمیل
+                                </label>';
+                                elseif($isFull)
+                                $out.='<label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle" >
+                                    تکمیل
                                 </label>';
                                 else 
                                 $out.='<label class="btn-reserve c-pointer d-grid label p-3 rounded-circle" onclick="reservation(\''.$tomorrow->format('Y-m-d').'\','.$type.','.($index??0).',this)" >

@@ -373,11 +373,15 @@ use Carbon\Carbon;
 								@elseif(!$tomorrow->isFriday() && $days[ltrim(jdate($tomorrow->format('Y-m-d'))->format('m'),0)][ltrim(jdate($tomorrow->format('Y-m-d'))->format('d'),0)]['holiday']??0)
  								رزرو فضای کاری در این روز توسط مدیریت بسته شده است 
 								@else
+                                @if($isFull)
+                                    تکمیل ظرفیت
+                                @else
                                     @if(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0)>0)
                                     {{(8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))}} نفر باقی مانده
                                     @else
                                     تکمیل ظرفیت
                                     @endif
+                                @endif
                                 @endif
                                  </small>
                             </div>                                      
@@ -400,6 +404,10 @@ use Carbon\Carbon;
                             </label>
                            
                             @elseif((8-($reservation->where('Date',$tomorrow->format('Y-m-d'))->first()['cdate']??0))<=0)
+                            <label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle">
+                                 تکمیل
+                            </label>
+                            @elseif($isFull) 
                             <label class="btn-reserved bg-danger d-grid label px-2 py-3 rounded-circle">
                                  تکمیل
                             </label>
