@@ -338,7 +338,7 @@ use Carbon\Carbon;
         <div id="daysDiv" class="animate__animate animate__fadeIn row" style=" display:none; ">   
         @while ($tomorrow->lessThanOrEqualTo($nextFriday))
         @php
-        $capacity=5;
+        $capacity=12;//5;
         $w=0;
        if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
         $w=1;

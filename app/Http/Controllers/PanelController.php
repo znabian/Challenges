@@ -751,7 +751,7 @@ class PanelController extends Controller
             }            
 			elseif($req->ajax==5)
 			{
-                $capacity=5;
+                $capacity=12;//5;
                 $out='';
                 while ($tomorrow->lessThanOrEqualTo($nextFriday))
                 {
@@ -881,7 +881,7 @@ class PanelController extends Controller
                 $out='';
                 while ($tomorrow->lessThanOrEqualTo($nextFriday))
                 {
-                    $capacity=8;
+                    $capacity=12;//8;
                    $w=0;
                     if(in_array(jdate($tomorrow)->getDayOfWeek(),[0,1]))
                         $w=1;
